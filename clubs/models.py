@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from libgravatar import Gravatar
 
 class User(AbstractUser):
     username = models.CharField(
@@ -36,3 +37,9 @@ class User(AbstractUser):
             MaxValueValidator(limit_value=5)
             ]
     )
+
+    def gravatar(self, size=120):
+        """Return a URL to the user's gravatar."""
+        gravatar_object = Gravatar(self.email)
+        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        return gravatar_url
