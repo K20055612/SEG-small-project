@@ -1,21 +1,18 @@
 """Unit tests for the User model."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from .models import User
+from clubs.models import User
 
 class UserModelTestCase(TestCase):
     """Unit tests for the User model."""
 
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/other_users.json'
+        ]
+
     def setUp(self):
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name='John',
-            last_name='Doe',
-            email='johndoe@example.org',
-            password='Password123',
-            bio='The quick brwon fox jumps over the lazy dog.',
-            chess_experience_level = 2
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_valid_user(self):
         self._assert_user_is_valid()
@@ -34,7 +31,7 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_username_must_be_unique(self):
-        second_user = self.create_second_user()
+        second_user = User.objects.get(username='janedoe')
         self.user.username = second_user.username
         self._assert_user_is_invalid()
 
@@ -56,8 +53,8 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_first_name_need_not_be_unique(self):
-        second_user = self.create_second_user()
-        self.user.first_name = second_user.first_name
+        second_user = User.objects.get(username='janedoe')
+        self.user.first_name = User.objects.get(username='janedoe')
         self._assert_user_is_valid()
 
     def test_first_name_may_contain_50_characters(self):
@@ -74,8 +71,8 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_last_name_need_not_be_unique(self):
-        second_user = self.create_second_user()
-        self.user.last_name = second_user.last_name
+        second_user = User.objects.get(username='janedoe')
+        self.user.last_name = User.objects.get(username='janedoe')
         self._assert_user_is_valid()
 
     def test_last_name_may_contain_50_characters(self):
@@ -92,7 +89,7 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_email_must_be_unique(self):
-        second_user = self.create_second_user()
+        second_user = User.objects.get(username='janedoe')
         self.user.email = second_user.email
         self._assert_user_is_invalid()
 
@@ -122,7 +119,7 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_valid()
 
     def test_bio_need_not_be_unique(self):
-        second_user = self.create_second_user()
+        second_user = User.objects.get(username='janedoe')
         self.user.bio = second_user.bio
         self._assert_user_is_valid()
 
@@ -146,18 +143,6 @@ class UserModelTestCase(TestCase):
         self.user.chess_experience_level = 3
         self._assert_user_is_valid()
 
-
-    def create_second_user(self):
-        user = User.objects.create_user(
-            'janedoe',
-            first_name='Jane',
-            last_name='Doe',
-            email='janedoe@example.org',
-            password='Password123',
-            bio='The quick brwon fox jumps over the lazy dog.',
-            chess_experience_level = 2
-        )
-        return user
 
     def _assert_user_is_valid(self):
         try:
