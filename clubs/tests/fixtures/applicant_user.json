@@ -5,7 +5,7 @@
     "fields": {
       "first_name": "Alice",
       "last_name": "Doe",
-      "username": "bobdoe",
+      "username": "alicedoe",
       "email": "alicedoe@example.org",
       "bio": "Hello, I am Alice Doe.",
       "chess_experience_level": 1,

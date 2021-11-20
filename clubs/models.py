@@ -44,6 +44,12 @@ class User(AbstractUser):
 
     is_member = models.BooleanField(default = False)
 
+    def toggle_member(user):
+        if user.is_member == True:
+            return
+        elif user.is_member == False:
+            user.is_member == True
+            
     is_officer = models.BooleanField(default = False)
 
 
@@ -52,8 +58,8 @@ class User(AbstractUser):
     def toggle_officer(user):
         if user.is_owner == True:
             return
-        elif user.is_officer == True:
-            user.is_officer == False
+        elif user.is_officer == False:
+            user.is_officer == True
 
 
     def gravatar(self, size=120):

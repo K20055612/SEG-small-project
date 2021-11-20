@@ -7,7 +7,7 @@ class UserModelTestCase(TestCase):
     """Unit tests for the User model."""
 
     fixtures = [
-        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/member_user.json',
         'clubs/tests/fixtures/officer_user.json',
         'clubs/tests/fixtures/owner_user.json',
         'clubs/tests/fixtures/applicant_user.json'
@@ -18,7 +18,6 @@ class UserModelTestCase(TestCase):
 
     def test_valid_user(self):
         self._assert_user_is_valid()
-
 
     def test_username_cannot_be_blank(self):
         self.user.username = ''
@@ -161,12 +160,51 @@ class UserModelTestCase(TestCase):
         self.assertEqual(before,after)
         self._assert_user_is_valid()
 
-    def test_is_officer_may_be_not_owner(self):
-        officer_user = User.objects.get(username = 'johndoe')
-        officer_user.is_owner = False
+    def test_owner_must_be_member(self):
+        owner_user = User.objects.get(username='janedoe')
+        before = owner_user.is_member
+        owner_user.toggle_officer()
+        after = owner_user.is_officer
+        self.assertEqual(before,after)
         self._assert_user_is_valid()
 
+    def test_officer_must_be_member(self):
+        officer_user = User.objects.get(username='johndoe')
+        before = officer_user.is_member
+        officer_user.toggle_member()
+        after = officer_user.is_member
+        self.assertEqual(before,after)
+        self._assert_user_is_valid()
 
+    def test_applicant_must_not_be_member(self):
+        applicant_user = User.objects.get(username='alicedoe')
+        self.assertFalse(applicant_user.is_member)
+        self._assert_user_is_valid()
+
+    def test_applicant_must_not_be_officer(self):
+        applicant_user = User.objects.get(username='alicedoe')
+        self.assertFalse(applicant_user.is_officer)
+        self._assert_user_is_valid()
+
+    def test_applicant_must_not_be_owner(self):
+        applicant_user = User.objects.get(username='alicedoe')
+        self.assertFalse(applicant_user.is_owner)
+        self._assert_user_is_valid()
+
+    def test_member_must_not_be_officer(self):
+        applicant_user = User.objects.get(username='bobdoe')
+        self.assertFalse(applicant_user.is_officer)
+        self._assert_user_is_valid()
+
+    def test_member_must_not_be_owner(self):
+        applicant_user = User.objects.get(username='bobdoe')
+        self.assertFalse(applicant_user.is_owner)
+        self._assert_user_is_valid()
+
+    def test_officer_must_not_be_owner(self):
+        applicant_user = User.objects.get(username='johndoe')
+        self.assertFalse(applicant_user.is_owner)
+        self._assert_user_is_valid()
 
     def _assert_user_is_valid(self):
         try:
