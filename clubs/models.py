@@ -1,7 +1,11 @@
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.db.models import When
 from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
+
+
 
 class User(AbstractUser):
     username = models.CharField(
@@ -37,6 +41,20 @@ class User(AbstractUser):
             MaxValueValidator(limit_value=5)
             ]
     )
+
+    is_member = models.BooleanField(default = False)
+
+    is_officer = models.BooleanField(default = False)
+
+
+    is_owner = models.BooleanField(default = False)
+
+    def toggle_officer(user):
+        if user.is_owner == True:
+            return
+        elif user.is_officer == True:
+            user.is_officer == False
+
 
     def gravatar(self, size=120):
         """Return a URL to the user's gravatar."""

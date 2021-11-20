@@ -8,11 +8,13 @@ class UserModelTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/other_users.json'
+        'clubs/tests/fixtures/officer_user.json',
+        'clubs/tests/fixtures/owner_user.json',
+        'clubs/tests/fixtures/applicant_user.json'
         ]
 
     def setUp(self):
-        self.user = User.objects.get(username='johndoe')
+        self.user = User.objects.get(username='bobdoe')
 
     def test_valid_user(self):
         self._assert_user_is_valid()
@@ -36,15 +38,15 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_username_must_contain_only_alphanumericals(self):
-        self.user.username = 'john!doe'
+        self.user.username = 'bob!doe'
         self._assert_user_is_invalid()
 
     def test_username_must_contain_at_least_3_alphanumericals(self):
-        self.user.username = 'jo'
+        self.user.username = 'bo'
         self._assert_user_is_invalid()
 
     def test_username_may_contain_numbers(self):
-        self.user.username = 'j0hndoe2'
+        self.user.username = 'bob0doe2'
         self._assert_user_is_valid()
 
 
@@ -142,6 +144,28 @@ class UserModelTestCase(TestCase):
     def test_chess_experience_level_may_be_greater_or_equal_to_0_and_less_or_equal_to_5(self):
         self.user.chess_experience_level = 3
         self._assert_user_is_valid()
+
+    def test_is_officer_cannot_be_blank(self):
+        self.user.is_officer = ''
+        self._assert_user_is_invalid()
+
+    def test_is_owner_cannot_be_blank(self):
+        self.user.is_owner = ''
+        self._assert_user_is_invalid()
+
+    def test_owner_must_be_officer(self):
+        owner_user = User.objects.get(username='janedoe')
+        before = owner_user.is_officer
+        owner_user.toggle_officer()
+        after = owner_user.is_officer
+        self.assertEqual(before,after)
+        self._assert_user_is_valid()
+
+    def test_is_officer_may_be_not_owner(self):
+        officer_user = User.objects.get(username = 'johndoe')
+        officer_user.is_owner = False
+        self._assert_user_is_valid()
+
 
 
     def _assert_user_is_valid(self):
