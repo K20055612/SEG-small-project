@@ -1,0 +1,48 @@
+<html>
+<head>
+  <title>User list</title>
+</head>
+<body>
+  <h1>Applicant list</h1>
+  <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                </tr>
+            </thead>
+            <tbody>
+  {% for user in applicants %}
+
+    <tr>
+        <th scope="row">{{ user.username }}</th>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h1>Member list</h1>
+  <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                </tr>
+            </thead>
+            <tbody>
+  {% for user in members %}
+
+    <tr>
+        <th scope="row">{{ user.username }}</th>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+
+</body>
+</html>

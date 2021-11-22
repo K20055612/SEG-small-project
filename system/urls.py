@@ -19,6 +19,6 @@ from clubs import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('feed/',views.main_feed,name='main_feed'),
-    
+    path('officer/feed/',views.main_officer_feed,name='main_officer_feed'),
+
 ]
