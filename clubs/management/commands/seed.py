@@ -39,10 +39,10 @@ class Command(BaseCommand):
             email=email,
             password=Command.PASSWORD,
             bio=bio,
-            chess_experience_level=chess_experience_level
-            is_member=is_member
-            is_officer=is_officer
-            is_owner=is_owner
+            chess_experience_level=chess_experience_level,
+            is_member=is_member,
+            is_officer=is_officer,
+            is_owner=is_owner,
 
         )
 
