@@ -4,7 +4,7 @@ from clubs.models import User
 from django.urls import reverse
 
 
-class MainFeedTestCase(TestCase):
+class OfficerFeedTestCase(TestCase):
     """Unit tests for the officer feed."""
 
     fixtures = ['clubs/tests/fixtures/officer_user.json']
