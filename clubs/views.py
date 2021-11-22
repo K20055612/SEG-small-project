@@ -32,7 +32,6 @@ def profile(request):
     return render(request, 'profile.html')
 
 #@login_required
-def main_officer_feed(request):
+def applicants_list(request):
     applicants = User.objects.all().filter(is_member=False)
-    members = User.objects.all().filter(is_member=True, is_officer=False, is_owner=False)
-    return render(request,'officer_feed.html', {'applicants':applicants ,'members':members})
+    return render(request,'applicants_list.html', {'applicants':applicants})
