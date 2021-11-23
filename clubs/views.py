@@ -4,11 +4,13 @@ from .models import User
 from django.contrib import messages
 from .forms import LogInForm
 from django.contrib.auth.decorators import login_required
+from .helpers import login_prohibited
 
 
 def home(request):
     return render(request, 'home.html')
 
+@login_prohibited
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
