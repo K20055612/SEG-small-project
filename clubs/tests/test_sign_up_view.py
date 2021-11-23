@@ -4,21 +4,21 @@ from django.test import TestCase
 from clubs.forms import SignUpForm
 from django.urls import reverse
 from clubs.models import User
-from .helper import LogInTester
 
 
-class SignUpViewTestCase(TestCase, LogInTester):
+class SignUpViewTestCase(TestCase):
     """"Tests of the sign up view."""
     def setUp(self):
         self.url = reverse('sign_up')
         self.form_input = {
             'first_name':'Jane',
             'last_name' : 'Doe',
-            'username':'@jandoe',
+            'username':'@janedoe',
             'email' : 'janedoe@example.com',
-            'bio' : 'Hi, I am Jane.",
-            'new_password':'Password1234',
-            'password_confirmation': 'Password1234'
+            'bio' : 'My bio',
+            'new_password':'Password123',
+            'password_confirmation': 'Password123',
+            'chess_experience_level': '1',
         }
 
     def test_sign_up_url(self):
@@ -33,7 +33,7 @@ class SignUpViewTestCase(TestCase, LogInTester):
         self.assertFalse(form.is_bound)
 
     def test_unsuccessful_sign_up(self):
-        self.form_input['username'] = 'John'
+        self.form_input['username'] = 'BADUSERNAME'
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
         after_count = User.objects.count()
@@ -49,14 +49,15 @@ class SignUpViewTestCase(TestCase, LogInTester):
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count+1)
-        response_url = reverse('feed')
+        response_url = reverse('home')
         self.assertRedirects(response, response_url, status_code = 302, target_status_code = 200)
-        self.assertTemplateUsed(response, 'feed.html')
-        user = User.objects.get(username = '@jandoe')
+        self.assertTemplateUsed(response, 'home.html')
+        user = User.objects.get(username = '@janedoe')
         self.assertEqual(user.first_name, 'Jane')
         self.assertEqual(user.last_name, 'Doe')
         self.assertEqual(user.email, 'janedoe@example.com')
-        self.assertEqual(user.bio, 'Hi, I am Jane.')
-        is_password_correct = check_password('Password1234', user.password)
+        self.assertEqual(user.bio, 'My bio')
+        self.assertEqual(user.chess_experience_level, '1')
+        is_password_correct = check_password('Password123', user.password)
         self.assertTrue(is_password_correct)
         self.assertTrue(self._is_logged_in())
