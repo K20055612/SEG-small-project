@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 def home(request):
     return render(request, 'home.html')
 
+<<<<<<< HEAD
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
@@ -35,3 +36,24 @@ def profile(request):
 def applicants_list(request):
     applicants = User.objects.all().filter(is_member=False)
     return render(request,'applicants_list.html', {'applicants':applicants})
+=======
+def login_prohibited(view_function):
+    def modified_view_funtion(request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        else:
+            return view_function(request)
+    return modified_view_funtion
+
+@login_prohibited
+def sign_up(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request,user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'sign_up.html', {'form': form})
+>>>>>>> sign-up

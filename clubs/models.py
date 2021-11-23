@@ -48,8 +48,12 @@ class User(AbstractUser):
             return
         elif user.is_member == False:
             user.is_member == True
+<<<<<<< HEAD
     is_officer = models.BooleanField(default = False)
+=======
+>>>>>>> sign-up
 
+    is_officer = models.BooleanField(default = False)
 
     is_owner = models.BooleanField(default = False)
 
