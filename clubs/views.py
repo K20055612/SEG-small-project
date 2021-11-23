@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
 from .forms import SignUpForm
 from .models import User
+from django.contrib.auth import authenticate, login, logout
+
 
 def home(request):
     return render(request, 'home.html')

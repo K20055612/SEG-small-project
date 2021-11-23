@@ -49,9 +49,8 @@ class User(AbstractUser):
             return
         elif user.is_member == False:
             user.is_member == True
-            
-    is_officer = models.BooleanField(default = False)
 
+    is_officer = models.BooleanField(default = False)
 
     is_owner = models.BooleanField(default = False)
 

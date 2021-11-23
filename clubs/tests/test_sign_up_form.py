@@ -12,28 +12,18 @@ class SignUpFormTestCase(TestCase):
         self.form_input = {
             'first_name':'Jane',
             'last_name' : 'Doe',
-            'username':'@janedoe',
+            'username':'janedoe',
             'email' : 'janedoe@example.com',
             'bio' : 'My bio',
             'new_password':'Password123',
             'password_confirmation': 'Password123',
-            'chess_experience_level': '1',
-        }
+            'chess_experience_level': '1'
+            }
+
 
     #Form accepts valid input data
     def test_valid_sign_up_form(self):
-        form_input = {
-            'first_name':'Jane',
-            'last_name' : 'Doe',
-            'username':'@janedoe',
-            'email' : 'janedoe@example.com',
-            'bio' : 'My bio',
-            'new_password':'Password123',
-            'password_confirmation': 'Password123',
-            'chess_experience_level': '1',
-
-        }
-        form = SignUpForm(data = form_input)
+        form=SignUpForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
     #Form has the necessary fields
@@ -56,11 +46,39 @@ class SignUpFormTestCase(TestCase):
         form.save()
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count+1)
-        user = User.objects.get(username = '@janedoe')
+        user = User.objects.get(username = 'janedoe')
         self.assertEqual(user.first_name, 'Jane')
         self.assertEqual(user.last_name, 'Doe')
         self.assertEqual(user.email, 'janedoe@example.com')
         self.assertEqual(user.bio, 'My bio')
-        self.assertEqual(user.chess_experience_level,'1')
+        self.assertEqual(user.chess_experience_level,1)
         is_password_correct = check_password('Password123', user.password)
         self.assertTrue(is_password_correct)
+
+    def test_form_uses_model_validation(self):
+        self.form_input['username'] = 'ba'
+        form = SignUpForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
+    def test_password_must_contain_uppercase_character(self):
+        self.form_input['new_password'] = 'password123'
+        self.form_input['password_confirmation'] = 'password123'
+        form = SignUpForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
+    def test_password_must_contain_lowercase_character(self):
+        self.form_input['new_password'] = 'PASSWORD123'
+        self.form_input['password_confirmation'] = 'PASSWORD123'
+        form = SignUpForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
+    def test_password_must_contain_number(self):
+        self.form_input['new_password'] = 'PasswordABC'
+        self.form_input['password_confirmation'] = 'PasswordABC'
+        form = SignUpForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
+    def test_new_password_and_password_confirmation_are_identical(self):
+        self.form_input['password_confirmation'] = 'WrongPassword123'
+        form = SignUpForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
