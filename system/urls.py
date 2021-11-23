@@ -23,5 +23,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('log_out/', views.log_out, name='log_out'),
     path('applicants/',views.applicants_list,name='applicants_list'),
-]
+    path('accept_applicant/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
+    path('reject_applicant/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
 
+]

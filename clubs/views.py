@@ -33,5 +33,28 @@ def profile(request):
 
 #@login_required
 def applicants_list(request):
-    applicants = User.objects.all().filter(is_member=False)
+    applicants = User.objects.all().filter(is_applicant=True)
     return render(request,'applicants_list.html', {'applicants':applicants})
+
+def accept_applicant(request,user_id):
+    if request.method == 'POST':
+        try:
+            applicant = User.objects.get(id=user_id)
+            applicant.toggle_member()
+            applicant.is_applicant = False
+            applicant.save()
+            return redirect('applicants_list')
+
+        except ObjectDoesNotExist:
+            return redirect('applicants_list')
+
+def reject_applicant(request,user_id):
+    if request.method == 'POST':
+        try:
+            applicant = User.objects.get(id=user_id)
+            applicant.is_applicant = False
+            applicant.save()
+            return redirect('applicants_list')
+
+        except ObjectDoesNotExist:
+            return redirect('applicants_list')

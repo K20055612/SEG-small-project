@@ -45,6 +45,7 @@ class OfficerFeedTestCase(TestCase):
                 password='Password123',
                 bio=f'Bio {user_id}',
                 chess_experience_level = 1,
+                is_applicant = True,
                 is_member = False,
                 is_officer = False,
                 is_owner = False,
