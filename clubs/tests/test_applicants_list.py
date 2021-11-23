@@ -1,11 +1,11 @@
-"""Unit tests for the officer feed view"""
+"""Unit tests for the applicant list view"""
 from django.test import TestCase
 from clubs.models import User
 from django.urls import reverse
 
 
-class OfficerFeedTestCase(TestCase):
-    """Unit tests for the officer feed."""
+class ApplicantListFeedTestCase(TestCase):
+    """Unit tests for the applicant list."""
 
     fixtures = ['clubs/tests/fixtures/officer_user.json']
 
@@ -13,10 +13,10 @@ class OfficerFeedTestCase(TestCase):
         self.url = reverse('applicants_list')
         self.user = User.objects.get(username='johndoe')
 
-    def test_main_officer_feed_url(self):
+    def test_applicant_list_url(self):
         self.assertEqual(self.url,'/applicants/')
 
-    def test_officer_get_feed(self):
+    def test_get_applicant_list(self):
         self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
