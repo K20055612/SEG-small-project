@@ -4,12 +4,13 @@ from .models import User
 from django.contrib import messages
 from .forms import LogInForm
 from django.contrib.auth.decorators import login_required
+from .helpers import login_prohibited
 
 
 def home(request):
     return render(request, 'home.html')
 
-<<<<<<< HEAD
+@login_prohibited
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
@@ -36,7 +37,7 @@ def profile(request):
 def applicants_list(request):
     applicants = User.objects.all().filter(is_member=False)
     return render(request,'applicants_list.html', {'applicants':applicants})
-=======
+
 def login_prohibited(view_function):
     def modified_view_funtion(request):
         if request.user.is_authenticated:
@@ -56,4 +57,3 @@ def sign_up(request):
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
->>>>>>> sign-up

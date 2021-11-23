@@ -48,10 +48,9 @@ class User(AbstractUser):
             return
         elif user.is_member == False:
             user.is_member == True
-<<<<<<< HEAD
+
     is_officer = models.BooleanField(default = False)
-=======
->>>>>>> sign-up
+
 
     is_officer = models.BooleanField(default = False)
 
@@ -65,7 +64,7 @@ class User(AbstractUser):
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
-        
+
     def gravatar(self, size=120):
         """Return a URL to the user's gravatar."""
         gravatar_object = Gravatar(self.email)
