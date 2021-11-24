@@ -168,7 +168,7 @@ class UserModelTestCase(TestCase):
         owner_user.toggle_officer()
         after = owner_user.is_officer
         self.assertEqual(before,after)
-        
+
     def test_visitor_must_not_have_a_role_in_club(self):
         visitor_user = User.objects.get(username='josedoe')
         self.assertFalse(visitor_user.is_applicant)
@@ -184,19 +184,11 @@ class UserModelTestCase(TestCase):
 
     def test_owner_must_be_member(self):
         owner_user = User.objects.get(username='janedoe')
-        before = owner_user.is_member
-        owner_user.toggle_officer()
-        after = owner_user.is_officer
-        self.assertEqual(before,after)
         self.assertTrue(owner_user.is_member)
         self._assert_user_is_valid()
 
     def test_officer_must_be_member(self):
         officer_user = User.objects.get(username='johndoe')
-        before = officer_user.is_member
-        officer_user.toggle_member()
-        after = officer_user.is_member
-        self.assertEqual(before,after)
         self.assertTrue(officer_user.is_member)
         self._assert_user_is_valid()
 
