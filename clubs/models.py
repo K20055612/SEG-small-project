@@ -51,45 +51,6 @@ class User(AbstractUser):
     def get_Chess_Experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
-    is_applicant = models.BooleanField(default = False)
-    
-    def toggle_applicant(user):
-        if user.is_applicant == True:
-            user.is_applicant = False
-            user.save()
-            return
-        elif user.is_applicant == False:
-            user.is_applicant = True
-            user.save()
-
-    is_member = models.BooleanField(default = False)
-
-    def toggle_member(user):
-        if user.is_member == True:
-            user.is_member = False
-            user.save()
-            return
-        elif user.is_member == False:
-            user.is_applicant = False
-            user.is_member = True
-            user.save()
-
-
-    is_officer = models.BooleanField(default = False)
-    
-    def toggle_officer(user):
-        if user.is_officer == True:
-            user.is_officer = False
-            user.save()
-            return
-        elif user.is_officer == False:
-            user.is_officer = True
-            user.save()
-    
-
-    is_owner = models.BooleanField(default = False)
-
- 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
@@ -104,3 +65,10 @@ class User(AbstractUser):
         gravatar_object = Gravatar(self.email)
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
+
+    class UserRoles(AbstractUser):
+        ROLES = [
+        (APPLICANT,'Applicant'),
+        (MEMBER,'Member'),
+        ()
+        ]
