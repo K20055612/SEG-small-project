@@ -1,11 +1,20 @@
+<<<<<<< HEAD
 """Unit tests for the officer feed view"""
+=======
+"""Unit tests for the applicant list view"""
+>>>>>>> applicant-list
 from django.test import TestCase
 from clubs.models import User
 from django.urls import reverse
 
 
+<<<<<<< HEAD
 class OfficerFeedTestCase(TestCase):
     """Unit tests for the officer feed."""
+=======
+class ApplicantListFeedTestCase(TestCase):
+    """Unit tests for the applicant list."""
+>>>>>>> applicant-list
 
     fixtures = ['clubs/tests/fixtures/officer_user.json']
 
@@ -13,17 +22,29 @@ class OfficerFeedTestCase(TestCase):
         self.url = reverse('applicants_list')
         self.user = User.objects.get(username='johndoe')
 
+<<<<<<< HEAD
     def test_main_officer_feed_url(self):
         self.assertEqual(self.url,'/applicants/')
 
     def test_officer_get_feed(self):
         self.client.login(username=self.user.username, password='Password123')
+=======
+    def test_applicant_list_url(self):
+        self.assertEqual(self.url,'/applicants/')
+
+    def test_get_applicant_list(self):
+        self.client.login(username=self.user.email, password='Password123')
+>>>>>>> applicant-list
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
 
     def test_get_applicant_list(self):
+<<<<<<< HEAD
         self.client.login(username=self.user.username, password='Password123')
+=======
+        self.client.login(username=self.user.email, password='Password123')
+>>>>>>> applicant-list
         self._create_test_applicants(15-1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -45,6 +66,10 @@ class OfficerFeedTestCase(TestCase):
                 password='Password123',
                 bio=f'Bio {user_id}',
                 chess_experience_level = 1,
+<<<<<<< HEAD
+=======
+                is_applicant = True,
+>>>>>>> applicant-list
                 is_member = False,
                 is_officer = False,
                 is_owner = False,

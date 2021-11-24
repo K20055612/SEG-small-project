@@ -9,6 +9,10 @@
       "email": "alicedoe@example.org",
       "bio": "Hello, I am Alice Doe.",
       "chess_experience_level": 1,
+<<<<<<< HEAD
+=======
+      "is_applicant": true,
+>>>>>>> applicant-list
       "is_member" : false,
       "is_officer": false,
       "is_owner": false,

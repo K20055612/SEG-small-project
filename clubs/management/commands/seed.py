@@ -27,7 +27,12 @@ class Command(BaseCommand):
         email = self._email(first_name, last_name)
         username = self._username(first_name, last_name)
         bio = self.faker.text(max_nb_chars=520)
+<<<<<<< HEAD
         chess_experience_level=self.faker.pyint(min_value=0,max_value=5)
+=======
+        chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
+        is_applicant=self.faker.boolean()
+>>>>>>> applicant-list
         is_member=self.faker.boolean()
         is_officer=self.faker.boolean()
         is_owner=self.faker.boolean()
@@ -40,6 +45,10 @@ class Command(BaseCommand):
             password=Command.PASSWORD,
             bio=bio,
             chess_experience_level=chess_experience_level,
+<<<<<<< HEAD
+=======
+            is_applicant=is_applicant,
+>>>>>>> applicant-list
             is_member=is_member,
             is_officer=is_officer,
             is_owner=is_owner,
