@@ -65,6 +65,11 @@ def applicants_list(request):
     return render(request,'applicants_list.html', {'applicants':applicants})
 
 @login_required
+def member_list(request):
+    members = User.objects.all().filter(is_member=True)
+    return render(request,'member_list.html', {'members':members})
+
+@login_required
 def accept_applicant(request,user_id):
         try:
             applicant = User.objects.get(id=user_id)
