@@ -9,6 +9,7 @@
       "email": "bobdoe@example.org",
       "bio": "Hello, I am Bob Doe.",
       "chess_experience_level": 2,
+      "is_applicant": false,
       "is_member" : true,
       "is_officer": false,
       "is_owner": false,

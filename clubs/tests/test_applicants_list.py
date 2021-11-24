@@ -17,13 +17,13 @@ class ApplicantListFeedTestCase(TestCase):
         self.assertEqual(self.url,'/applicants/')
 
     def test_get_applicant_list(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(username=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
 
     def test_get_applicant_list(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(username=self.user.email, password='Password123')
         self._create_test_applicants(15-1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)

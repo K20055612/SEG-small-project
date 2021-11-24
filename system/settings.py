@@ -134,4 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # User model for authentication purposes
 AUTH_USER_MODEL = 'clubs.User'
 
+# Login URL for redirecting users.
+LOGIN_URL = 'log_in'
+
 AUTHENTICATION_BACKENDS = ('clubs.backend.CustomBackend',)
