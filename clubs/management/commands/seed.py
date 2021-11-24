@@ -28,10 +28,20 @@ class Command(BaseCommand):
         username = self._username(first_name, last_name)
         bio = self.faker.text(max_nb_chars=520)
         chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
+
         is_applicant=self.faker.boolean()
-        is_member=self.faker.boolean()
-        is_officer=self.faker.boolean()
-        is_owner=self.faker.boolean()
+        if is_applicant:
+            is_member=self.faker.boolean()
+        else:
+            is_member=False
+        if is_member:
+            is_officer=self.faker.boolean()
+        else:
+            is_officer=False
+        if is_officer:
+            is_owner=self.faker.boolean()
+        else:
+            is_owner=False
 
         User.objects.create_user(
             username,
@@ -53,5 +63,5 @@ class Command(BaseCommand):
         return email
 
     def _username(self, first_name, last_name):
-        username = f'@{first_name}{last_name}'
+        username = f'{first_name}{last_name}'
         return username
