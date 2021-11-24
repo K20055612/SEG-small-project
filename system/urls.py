@@ -19,6 +19,7 @@ from clubs import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('sign_up/', views.sign_up, name='sign_up'),
     path('log_in/', views.log_in, name='log_in'),
     path('profile/', views.profile, name='profile'),
     path('log_out/', views.log_out, name='log_out'),
@@ -26,9 +27,3 @@ urlpatterns = [
     path('accept/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
     path('reject/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
 ]
-
-
-   
-
-
-

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
 from .models import User
 from django.contrib import messages
-from .forms import LogInForm
+from .forms import LogInForm,SignUpForm
 from django.contrib.auth.decorators import login_required
 from .helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
@@ -89,4 +89,3 @@ def reject_applicant(request,user_id):
         else:
             applicants = User.objects.all().filter(is_applicant=True)
             return render(request,'applicants_list.html', {'applicants':applicants})
-
