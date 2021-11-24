@@ -4,21 +4,15 @@ from .models import User
 from django.contrib import messages
 from .forms import LogInForm
 from django.contrib.auth.decorators import login_required
-<<<<<<< HEAD
 from .helpers import login_prohibited
-=======
 from django.core.exceptions import ObjectDoesNotExist
-
->>>>>>> applicant-list
 
 
 def home(request):
     return render(request, 'home.html')
 
-<<<<<<< HEAD
+
 @login_prohibited
-=======
->>>>>>> applicant-list
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
@@ -26,22 +20,17 @@ def log_in(request):
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-<<<<<<< HEAD
-=======
             redirect_url = request.POST.get('next') or 'profile'
->>>>>>> applicant-list
             if user is not None:
                 if user.is_active:
                     login(request, user)
                     return redirect('profile')
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
-<<<<<<< HEAD
     return render(request, 'log_in.html', {'form': form})
-=======
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
->>>>>>> applicant-list
+
 
 def log_out(request):
     logout(request)
@@ -49,12 +38,6 @@ def log_out(request):
 
 def profile(request):
     return render(request, 'profile.html')
-
-<<<<<<< HEAD
-#@login_required
-def applicants_list(request):
-    applicants = User.objects.all().filter(is_member=False)
-    return render(request,'applicants_list.html', {'applicants':applicants})
 
 def login_prohibited(view_function):
     def modified_view_funtion(request):
@@ -75,7 +58,7 @@ def sign_up(request):
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
-=======
+
 @login_required
 def applicants_list(request):
     applicants = User.objects.all().filter(is_applicant=True)
@@ -106,4 +89,4 @@ def reject_applicant(request,user_id):
         else:
             applicants = User.objects.all().filter(is_applicant=True)
             return render(request,'applicants_list.html', {'applicants':applicants})
->>>>>>> applicant-list
+
