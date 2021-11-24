@@ -56,6 +56,8 @@ class User(AbstractUser):
     is_applicant = models.BooleanField(default = False)
     def toggle_applicant(user):
         if user.is_applicant == True:
+            user.is_applicant = False
+            user.save()
             return
         elif user.is_applicant == False:
             user.is_applicant = True
@@ -65,8 +67,11 @@ class User(AbstractUser):
 
     def toggle_member(user):
         if user.is_member == True:
+            user.is_member = False
+            user.save()
             return
         elif user.is_member == False:
+            user.is_applicant = False
             user.is_member = True
             user.save()
 
@@ -76,7 +81,9 @@ class User(AbstractUser):
     is_owner = models.BooleanField(default = False)
 
     def toggle_officer(user):
-        if user.is_owner == True:
+        if user.is_officer == True:
+            user.is_officer = False
+            user.save()
             return
         elif user.is_officer == False:
             user.is_officer = True

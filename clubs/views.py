@@ -45,7 +45,6 @@ def accept_applicant(request,user_id):
         try:
             applicant = User.objects.get(id=user_id)
             applicant.toggle_member()
-            applicant.is_applicant = False
             applicant.save()
         except ObjectDoesNotExist:
             return redirect('applicants_list')
@@ -55,14 +54,14 @@ def accept_applicant(request,user_id):
             return render(request,'applicants_list.html', {'applicants':applicants})
 
 
-
+@login_required
 def reject_applicant(request,user_id):
-    if request.method == 'POST':
         try:
             applicant = User.objects.get(id=user_id)
-            applicant.is_applicant = False
+            applicant.toggle_applicant()
             applicant.save()
-            return redirect('applicants_list')
-
         except ObjectDoesNotExist:
             return redirect('applicants_list')
+        else:
+            applicants = User.objects.all().filter(is_applicant=True)
+            return render(request,'applicants_list.html', {'applicants':applicants})
