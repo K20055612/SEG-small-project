@@ -7,10 +7,8 @@ class UserModelTestCase(TestCase):
     """Unit tests for the User model."""
 
     fixtures = [
-<<<<<<< HEAD
-=======
+
         'clubs/tests/fixtures/default_user.json',
->>>>>>> applicant-list
         'clubs/tests/fixtures/member_user.json',
         'clubs/tests/fixtures/officer_user.json',
         'clubs/tests/fixtures/owner_user.json',
@@ -136,25 +134,14 @@ class UserModelTestCase(TestCase):
         self.user.bio = 'x' * 521
         self._assert_user_is_invalid()
 
-<<<<<<< HEAD
-    def test_chess_experience_level_must_not_be_less_than_0(self):
-        self.user.chess_experience_level = -1
-=======
     def test_chess_experience_level_must_not_be_less_than_1(self):
         self.user.chess_experience_level = 0
->>>>>>> applicant-list
         self._assert_user_is_invalid()
 
     def test_chess_experience_level_must_not_be_greater_than_5(self):
         self.user.chess_experience_level = 6
         self._assert_user_is_invalid()
 
-<<<<<<< HEAD
-    def test_chess_experience_level_may_be_greater_or_equal_to_0_and_less_or_equal_to_5(self):
-        self.user.chess_experience_level = 3
-        self._assert_user_is_valid()
-
-=======
     def test_chess_experience_level_may_be_greater_or_equal_to_1_and_less_or_equal_to_5(self):
         self.user.chess_experience_level = 3
         self._assert_user_is_valid()
@@ -167,7 +154,6 @@ class UserModelTestCase(TestCase):
         self.user.is_member = ''
         self._assert_user_is_invalid()
 
->>>>>>> applicant-list
     def test_is_officer_cannot_be_blank(self):
         self.user.is_officer = ''
         self._assert_user_is_invalid()
@@ -176,14 +162,13 @@ class UserModelTestCase(TestCase):
         self.user.is_owner = ''
         self._assert_user_is_invalid()
 
-<<<<<<< HEAD
     def test_owner_must_be_officer(self):
         owner_user = User.objects.get(username='janedoe')
         before = owner_user.is_officer
         owner_user.toggle_officer()
         after = owner_user.is_officer
         self.assertEqual(before,after)
-=======
+        
     def test_visitor_must_not_have_a_role_in_club(self):
         visitor_user = User.objects.get(username='josedoe')
         self.assertFalse(visitor_user.is_applicant)
@@ -195,31 +180,24 @@ class UserModelTestCase(TestCase):
     def test_owner_must_be_officer(self):
         owner_user = User.objects.get(username='janedoe')
         self.assertTrue(owner_user.is_officer)
->>>>>>> applicant-list
         self._assert_user_is_valid()
 
     def test_owner_must_be_member(self):
         owner_user = User.objects.get(username='janedoe')
-<<<<<<< HEAD
         before = owner_user.is_member
         owner_user.toggle_officer()
         after = owner_user.is_officer
         self.assertEqual(before,after)
-=======
         self.assertTrue(owner_user.is_member)
->>>>>>> applicant-list
         self._assert_user_is_valid()
 
     def test_officer_must_be_member(self):
         officer_user = User.objects.get(username='johndoe')
-<<<<<<< HEAD
         before = officer_user.is_member
         officer_user.toggle_member()
         after = officer_user.is_member
         self.assertEqual(before,after)
-=======
         self.assertTrue(officer_user.is_member)
->>>>>>> applicant-list
         self._assert_user_is_valid()
 
     def test_applicant_must_not_be_member(self):
@@ -238,7 +216,6 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_valid()
 
     def test_member_must_not_be_officer(self):
-<<<<<<< HEAD
         applicant_user = User.objects.get(username='bobdoe')
         self.assertFalse(applicant_user.is_officer)
         self._assert_user_is_valid()
@@ -252,8 +229,6 @@ class UserModelTestCase(TestCase):
         applicant_user = User.objects.get(username='johndoe')
         self.assertFalse(applicant_user.is_owner)
         self._assert_user_is_valid()
-
-=======
         member_user = User.objects.get(username='bobdoe')
         self.assertFalse(member_user.is_officer)
         self._assert_user_is_valid()
@@ -325,8 +300,6 @@ class UserModelTestCase(TestCase):
     #     member_user.toggle_member()
     #     self.assertFalse(member_user.is_member)
 
-
->>>>>>> applicant-list
     def _assert_user_is_valid(self):
         try:
             self.user.full_clean()
