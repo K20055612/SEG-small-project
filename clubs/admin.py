@@ -6,5 +6,5 @@ from .models import User
 class UserAdmin(admin.ModelAdmin):
     '''Configuration of the administrative interface for users'''
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active',
+        'username', 'first_name', 'last_name', 'email', 'is_member', 'is_officer','is_active',
     ]
