@@ -55,7 +55,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request,user)
-            return redirect('home')
+            return redirect('profile')
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
