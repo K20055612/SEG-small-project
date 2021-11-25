@@ -1,4 +1,3 @@
-
 from django.urls import reverse
 
 def reverse_with_next(url_name, next_url):
