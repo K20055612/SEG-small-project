@@ -52,7 +52,7 @@ class User(AbstractUser):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
     is_applicant = models.BooleanField(default = False)
-    
+
     def toggle_applicant(user):
         if user.is_applicant == True:
             user.is_applicant = False
@@ -76,7 +76,7 @@ class User(AbstractUser):
 
 
     is_officer = models.BooleanField(default = False)
-    
+
     def toggle_officer(user):
         if user.is_officer == True:
             user.is_officer = False
@@ -85,11 +85,11 @@ class User(AbstractUser):
         elif user.is_officer == False:
             user.is_officer = True
             user.save()
-    
+
 
     is_owner = models.BooleanField(default = False)
 
- 
+
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
