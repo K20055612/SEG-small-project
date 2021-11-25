@@ -36,6 +36,7 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
+@login_required
 def profile(request):
     return render(request, 'profile.html')
 
