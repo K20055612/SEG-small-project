@@ -66,9 +66,45 @@ class User(AbstractUser):
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
 
-    class UserRoles(AbstractUser):
-        ROLES = [
-        (APPLICANT,'Applicant'),
-        (MEMBER,'Member'),
-        ()
-        ]
+
+class Club(models.Model):
+    club_name = models.CharField(
+    max_length=50,
+    blank=False
+    )
+    location = models.CharField(
+        max_length=100,
+        blank=False
+        )
+
+    description = models.CharField(
+        max_length=520,
+        blank=False
+        )
+
+    club_members = models.ManyToManyField(User,through='UserRoles')
+
+class UserRoles(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+
+    class Roles(models.TextChoices):
+        APPLICANT = 'APP', _('Applicant')
+        MEMBER = 'MEM', _('Member')
+        OFFICER = 'OFF', _('Officer')
+        OWNER = 'OWN', _('Owner')
+
+    club_role = models.CharField(
+        max_length = 3,
+        choices = Roles.choices,
+        default = Roles.APPLICANT,
+        )
+
+    def get_club_role(self):
+        return self.Roles(self.club_role).name.title()
+
+    def toggle_member(self):
+        self.club_role = 'MEM'
+        self.save()
+        return
