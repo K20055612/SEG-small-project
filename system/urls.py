@@ -23,7 +23,7 @@ urlpatterns = [
     path('log_in/', views.log_in, name='log_in'),
     path('profile/', views.profile, name='profile'),
     path('log_out/', views.log_out, name='log_out'),
-    path('applicants/',views.applicants_list,name='applicants_list'),
-    path('accept/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
-    path('reject/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
+    path('applicants/<int:club_id>/',views.applicants_list,name='applicants_list'),
+    path('applicants/<int:club_id>/accept/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
+    path('applicants/<int:club_id>/reject/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
 ]

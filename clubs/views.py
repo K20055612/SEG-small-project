@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
-from .models import User
+from .models import User,Club,Role
 from django.contrib import messages
 from .forms import LogInForm,SignUpForm
 from django.contrib.auth.decorators import login_required
@@ -59,23 +59,29 @@ def sign_up(request):
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
 
-@login_required
-def applicants_list(request):
-    applicants = User.objects.all().filter(is_applicant=True)
-    return render(request,'applicants_list.html', {'applicants':applicants})
+#@login_required
+def applicants_list(request,club_id):
+    currentClub = Club.objects.get(id=club_id)
+    applicants = User.objects.all().filter(
+    club__club_name=currentClub.club_name,
+    role__club_role='APP'
+    )
+    return render(request,'applicants_list.html', {'applicants':applicants, 'currentClub':currentClub})
 
-@login_required
-def accept_applicant(request,user_id):
+def accept_applicant(request,club_id,user_id):
+        currentClub = Club.objects.get(id=club_id)
         try:
-            applicant = User.objects.get(id=user_id)
-            applicant.toggle_member()
-            applicant.save()
-        except ObjectDoesNotExist:
+            applicant = User.objects.get(id=user_id,
+            club__club_name=currentClub.club_name,
+            role__club_role='APP'
+            )
+            role = Role.objects.get(user=applicant,club=currentClub,club_role='APP')
+            role.toggle_member()
+        except (ObjectDoesNotExist):
             return redirect('applicants_list')
 
         else:
-            applicants = User.objects.all().filter(is_applicant=True)
-            return render(request,'applicants_list.html', {'applicants':applicants})
+            return applicants_list(request,club_id)
 
 
 @login_required

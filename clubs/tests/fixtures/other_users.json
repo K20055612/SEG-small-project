@@ -1,0 +1,48 @@
+[
+  {
+    "model": "clubs.user",
+    "pk": 2,
+    "fields": {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "username": "janedoe",
+      "email": "janedoe@example.org",
+      "bio": "Hello, I am Jane Doe.",
+      "chess_experience_level": 3,
+      "password": "pbkdf2_sha256$260000$yDZBw4kf3nAnQYdQalYx6O$5LdileskbYcuqf3ROUMV8DKuR9hKBSeNPOQM3TTKN/w=",
+      "is_active": true
+
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 3,
+    "fields": {
+      "first_name": "Bob",
+      "last_name": "Doe",
+      "username": "bobdoe",
+      "email": "bobdoe@example.org",
+      "bio": "Hello, I am Bob Doe.",
+      "chess_experience_level": 4,
+      "password": "pbkdf2_sha256$260000$yDZBw4kf3nAnQYdQalYx6O$5LdileskbYcuqf3ROUMV8DKuR9hKBSeNPOQM3TTKN/w=",
+      "is_active": true
+
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 4,
+    "fields": {
+      "first_name": "Alice",
+      "last_name": "Doe",
+      "username": "alicedoe",
+      "email": "alicedoe@example.org",
+      "bio": "Hello, I am Alice Doe.",
+      "chess_experience_level": 5,
+      "password": "pbkdf2_sha256$260000$yDZBw4kf3nAnQYdQalYx6O$5LdileskbYcuqf3ROUMV8DKuR9hKBSeNPOQM3TTKN/w=",
+      "is_active": true
+
+    }
+  }
+
+]

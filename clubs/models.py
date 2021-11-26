@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 class User(AbstractUser):
     username = models.CharField(
+        blank = False,
         max_length=30,
         unique=True,
         validators=[
@@ -48,7 +49,7 @@ class User(AbstractUser):
         choices = ChessExperience.choices
     )
 
-    def get_Chess_Experience(self):
+    def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
     def full_name(self):
@@ -69,8 +70,15 @@ class User(AbstractUser):
 
 class Club(models.Model):
     club_name = models.CharField(
+    unique=True,
     max_length=50,
-    blank=False
+    blank=False,
+    validators=[
+        RegexValidator(
+            regex=r'^\w{5,}$',
+            message='Club name must consist of at least five alphanumericals'
+            )
+        ]
     )
     location = models.CharField(
         max_length=100,
@@ -82,14 +90,13 @@ class Club(models.Model):
         blank=False
         )
 
-    club_members = models.ManyToManyField(User,through='UserRoles')
+    club_members = models.ManyToManyField(User,through='Role')
 
-class UserRoles(models.Model):
+class Role(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
 
-
-    class Roles(models.TextChoices):
+    class RoleOptions(models.TextChoices):
         APPLICANT = 'APP', _('Applicant')
         MEMBER = 'MEM', _('Member')
         OFFICER = 'OFF', _('Officer')
@@ -97,14 +104,32 @@ class UserRoles(models.Model):
 
     club_role = models.CharField(
         max_length = 3,
-        choices = Roles.choices,
-        default = Roles.APPLICANT,
+        choices = RoleOptions.choices,
+        default = RoleOptions.APPLICANT,
         )
 
     def get_club_role(self):
-        return self.Roles(self.club_role).name.title()
+        return self.RoleOptions(self.club_role).name.title()
 
     def toggle_member(self):
         self.club_role = 'MEM'
         self.save()
         return
+
+    def toggle_officer(self):
+        if self.club_role == 'APP':
+            return
+        else:
+            self.club_role = 'OFF'
+            self.save()
+            return
+
+    def transfer_ownership(self,new_owner):
+        if new_owner.club_role == 'OFF':
+            new_owner.club_role = 'OWN'
+            new_owner.save()
+            self.club_role = 'OFF'
+            self.save()
+            return
+        else:
+            return

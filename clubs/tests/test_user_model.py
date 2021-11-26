@@ -9,14 +9,12 @@ class UserModelTestCase(TestCase):
     fixtures = [
 
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/member_user.json',
-        'clubs/tests/fixtures/officer_user.json',
-        'clubs/tests/fixtures/owner_user.json',
-        'clubs/tests/fixtures/applicant_user.json'
+        'clubs/tests/fixtures/other_users.json',
+
         ]
 
     def setUp(self):
-        self.user = User.objects.get(username='bobdoe')
+        self.user = User.objects.get(username='johndoe')
 
     def test_valid_user(self):
         self._assert_user_is_valid()
@@ -57,7 +55,7 @@ class UserModelTestCase(TestCase):
 
     def test_first_name_need_not_be_unique(self):
         second_user = User.objects.get(username='janedoe')
-        self.user.first_name = User.objects.get(username='janedoe')
+        self.user.first_name = second_user.first_name
         self._assert_user_is_valid()
 
     def test_first_name_may_contain_50_characters(self):
@@ -146,151 +144,11 @@ class UserModelTestCase(TestCase):
         self.user.chess_experience_level = 3
         self._assert_user_is_valid()
 
-    def test_is_applicant_cannot_be_blank(self):
-        self.user.is_applicant = ''
-        self._assert_user_is_invalid()
+    def test_get_chess_experience_level(self):
+        self.assertEqual(self.user.get_chess_experience(),'Beginner')
 
-    def test_is_member_cannot_be_blank(self):
-        self.user.is_member = ''
-        self._assert_user_is_invalid()
-
-    def test_is_officer_cannot_be_blank(self):
-        self.user.is_officer = ''
-        self._assert_user_is_invalid()
-
-    def test_is_owner_cannot_be_blank(self):
-        self.user.is_owner = ''
-        self._assert_user_is_invalid()
-
-    def test_owner_must_be_officer(self):
-        owner_user = User.objects.get(username='janedoe')
-        before = owner_user.is_officer
-        owner_user.toggle_officer()
-        after = owner_user.is_officer
-        self.assertEqual(before,after)
-
-    def test_visitor_must_not_have_a_role_in_club(self):
-        visitor_user = User.objects.get(username='josedoe')
-        self.assertFalse(visitor_user.is_applicant)
-        self.assertFalse(visitor_user.is_member)
-        self.assertFalse(visitor_user.is_officer)
-        self.assertFalse(visitor_user.is_owner)
-        self._assert_user_is_valid()
-
-    def test_owner_must_be_officer(self):
-        owner_user = User.objects.get(username='janedoe')
-        self.assertTrue(owner_user.is_officer)
-        self._assert_user_is_valid()
-
-    def test_owner_must_be_member(self):
-        owner_user = User.objects.get(username='janedoe')
-        self.assertTrue(owner_user.is_member)
-        self._assert_user_is_valid()
-
-    def test_officer_must_be_member(self):
-        officer_user = User.objects.get(username='johndoe')
-        self.assertTrue(officer_user.is_member)
-        self._assert_user_is_valid()
-
-    def test_applicant_must_not_be_member(self):
-        applicant_user = User.objects.get(username='alicedoe')
-        self.assertFalse(applicant_user.is_member)
-        self._assert_user_is_valid()
-
-    def test_applicant_must_not_be_officer(self):
-        applicant_user = User.objects.get(username='alicedoe')
-        self.assertFalse(applicant_user.is_officer)
-        self._assert_user_is_valid()
-
-    def test_applicant_must_not_be_owner(self):
-        applicant_user = User.objects.get(username='alicedoe')
-        self.assertFalse(applicant_user.is_owner)
-        self._assert_user_is_valid()
-
-    def test_member_must_not_be_officer(self):
-        applicant_user = User.objects.get(username='bobdoe')
-        self.assertFalse(applicant_user.is_officer)
-        self._assert_user_is_valid()
-
-    def test_member_must_not_be_owner(self):
-        applicant_user = User.objects.get(username='bobdoe')
-        self.assertFalse(applicant_user.is_owner)
-        self._assert_user_is_valid()
-
-    def test_officer_must_not_be_owner(self):
-        applicant_user = User.objects.get(username='johndoe')
-        self.assertFalse(applicant_user.is_owner)
-        self._assert_user_is_valid()
-        member_user = User.objects.get(username='bobdoe')
-        self.assertFalse(member_user.is_officer)
-        self._assert_user_is_valid()
-
-    def test_member_must_not_be_applicant(self):
-        member_user = User.objects.get(username='bobdoe')
-        self.assertFalse(member_user.is_applicant)
-        self._assert_user_is_valid()
-
-    def test_officer_must_not_be_applicant(self):
-        officer_user = User.objects.get(username='johndoe')
-        self.assertFalse(officer_user.is_applicant)
-        self._assert_user_is_valid()
-
-    def test_owner_must_not_be_applicant(self):
-        owner_user = User.objects.get(username='janedoe')
-        self.assertFalse(owner_user.is_applicant)
-        self._assert_user_is_valid()
-
-    def test_member_must_not_be_owner(self):
-        member_user = User.objects.get(username='bobdoe')
-        self.assertFalse(member_user.is_owner)
-        self._assert_user_is_valid()
-
-    def test_officer_must_not_be_owner(self):
-        officer_user = User.objects.get(username='johndoe')
-        self.assertFalse(officer_user.is_owner)
-        self._assert_user_is_valid()
-
-    def test_toggle_applicant(self):
-        visitor_user = User.objects.get(username='josedoe')
-        self.assertFalse(visitor_user.is_applicant)
-        visitor_user.toggle_applicant()
-        self.assertTrue(visitor_user.is_applicant)
-        applicant_user = User.objects.get(username='alicedoe')
-        self.assertTrue(applicant_user.is_applicant)
-        applicant_user.toggle_applicant()
-        self.assertFalse(applicant_user.is_applicant)
-
-    def test_toggle_member(self):
-        applicant_user = User.objects.get(username='alicedoe')
-        self.assertFalse(applicant_user.is_member)
-        self.assertTrue(applicant_user.is_applicant)
-        applicant_user.toggle_member()
-        self.assertTrue(applicant_user.is_member)
-        self.assertFalse(applicant_user.is_applicant)
-        member_user = User.objects.get(username='bobdoe')
-        self.assertTrue(member_user.is_member)
-        member_user.toggle_member()
-        self.assertFalse(member_user.is_member)
-
-    def test_toggle_officer(self):
-        member_user = User.objects.get(username='bobdoe')
-        self.assertFalse(member_user.is_officer)
-        member_user.toggle_officer()
-        self.assertTrue(member_user.is_officer)
-        officer_user = User.objects.get(username='johndoe')
-        self.assertTrue(member_user.is_officer)
-        officer_user.toggle_officer()
-        self.assertFalse(officer_user.is_officer)
-
-    # def test_toggle_owner(self):
-    #     applicant_user = User.objects.get(username='alicedoe')
-    #     self.assertFalse(applicant_user.is_member)
-    #     applicant_user.toggle_member()
-    #     self.assertTrue(applicant_user.is_member)
-    #     member_user = User.objects.get(username='bobdoe')
-    #     self.assertTrue(member_user.is_member)
-    #     member_user.toggle_member()
-    #     self.assertFalse(member_user.is_member)
+    def test_get_full_name(self):
+        self.assertEqual(self.user.full_name(),'John Doe')
 
     def _assert_user_is_valid(self):
         try:
