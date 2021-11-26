@@ -5,7 +5,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User.objects.filter(email__contains='@fake.seed').delete()
         User.objects.filter(email__contains='@example.org').delete()
-        Club.objects.filter(location__contains='L').delete()
+        Club.objects.filter(location__contains='Test').delete()
         Role.objects.filter(club_role__contains='APP').delete()
         Role.objects.filter(club_role__contains='OFF').delete()
         Role.objects.filter(club_role__contains='MEM').delete()

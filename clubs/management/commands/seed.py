@@ -89,7 +89,7 @@ class Command(BaseCommand):
         billie = User.objects.create(username="billie",first_name="Billie",last_name="Kerman",
         email="billie@example.org",bio="Hi guys",chess_experience_level=4)
 
-        kerbal_club = Club.objects.create(club_name="KerbalChessClub",location="Test",description="Welcome to the Kerbals!")
+        kerbal_club = Club.objects.create(club_name="Kerbal Chess Club",location="Test",description="Welcome to the Kerbals!")
 
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'APP'})
         kerbal_club.club_members.add(valentina,through_defaults={'club_role':'APP'})

@@ -60,16 +60,17 @@ def sign_up(request):
     return render(request, 'sign_up.html', {'form': form})
 
 #@login_required
-def applicants_list(request,club_id):
-    currentClub = Club.objects.get(id=club_id)
+def applicants_list(request,club_name):
+    currentClub = Club.objects.get(club_name=club_name)
     applicants = User.objects.all().filter(
     club__club_name=currentClub.club_name,
     role__club_role='APP'
     )
     return render(request,'applicants_list.html', {'applicants':applicants, 'currentClub':currentClub})
 
-def accept_applicant(request,club_id,user_id):
-        currentClub = Club.objects.get(id=club_id)
+#@login_required
+def accept_applicant(request,club_name,user_id):
+        currentClub = Club.objects.get(club_name=club_name)
         try:
             applicant = User.objects.get(id=user_id,
             club__club_name=currentClub.club_name,
@@ -81,17 +82,19 @@ def accept_applicant(request,club_id,user_id):
             return redirect('applicants_list')
 
         else:
-            return applicants_list(request,club_id)
+            return applicants_list(request,club_name)
 
 
-@login_required
-def reject_applicant(request,user_id):
+#@login_required
+def reject_applicant(request,club_name,user_id):
+        currentClub = Club.objects.get(club_name=club_name)
         try:
-            applicant = User.objects.get(id=user_id)
-            applicant.toggle_applicant()
-            applicant.save()
+            applicant = User.objects.get(id=user_id,
+            club__club_name=currentClub.club_name,
+            role__club_role='APP'
+            )
+            Role.objects.get(user=applicant,club=currentClub,club_role='APP').delete()
         except ObjectDoesNotExist:
             return redirect('applicants_list')
         else:
-            applicants = User.objects.all().filter(is_applicant=True)
-            return render(request,'applicants_list.html', {'applicants':applicants})
+            return applicants_list(request,club_name)
