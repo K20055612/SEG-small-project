@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
 from .models import User
 from django.contrib import messages
-from .forms import LogInForm,SignUpForm,UserForm
+from .forms import LogInForm,SignUpForm,UserForm,PasswordForm
 from django.contrib.auth.decorators import login_required
 from .helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.hashers import check_password
 
 
 def home(request):
@@ -72,6 +73,23 @@ def profile(request):
     else:
         form = UserForm(instance=current_user)
     return render(request, 'profile.html', {'form': form})
+
+@login_required
+def password(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = PasswordForm(data=request.POST)
+        if form.is_valid():
+            password = form.cleaned_data.get('password')
+            if check_password(password, current_user.password):
+                new_password = form.cleaned_data.get('new_password')
+                current_user.set_password(new_password)
+                current_user.save()
+                login(request, current_user)
+                messages.add_message(request, messages.SUCCESS, "Password updated!")
+                return redirect('feed')
+    form = PasswordForm()
+    return render(request, 'password.html', {'form': form})
 
 @login_required
 def applicants_list(request):
