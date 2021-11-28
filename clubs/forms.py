@@ -50,3 +50,13 @@ class SignUpForm(forms.ModelForm):
 class LogInForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
+
+class UserForm(forms.ModelForm):
+    """Form to update user profiles."""
+
+    class Meta:
+        """Form options."""
+
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'bio', 'chess_experience_level']
+        widgets = { 'bio': forms.Textarea() }

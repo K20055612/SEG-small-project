@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
 from .models import User
 from django.contrib import messages
-from .forms import LogInForm,SignUpForm
+from .forms import LogInForm,SignUpForm,UserForm
 from django.contrib.auth.decorators import login_required
 from .helpers import login_prohibited
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,11 +20,11 @@ def log_in(request):
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            redirect_url = request.POST.get('next') or 'profile'
+            redirect_url = request.POST.get('next') or 'feed'
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('profile')
+                    return redirect('feed')
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
     return render(request, 'log_in.html', {'form': form})
@@ -37,8 +37,8 @@ def log_out(request):
     return redirect('home')
 
 @login_required
-def profile(request):
-    return render(request, 'profile.html')
+def feed(request):
+    return render(request, 'feed.html')
 
 def login_prohibited(view_function):
     def modified_view_funtion(request):
@@ -59,6 +59,19 @@ def sign_up(request):
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
+
+@login_required
+def profile(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = UserForm(instance=current_user, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Profile updated!")
+            form.save()
+            return redirect('feed')
+    else:
+        form = UserForm(instance=current_user)
+    return render(request, 'profile.html', {'form': form})
 
 @login_required
 def applicants_list(request):
