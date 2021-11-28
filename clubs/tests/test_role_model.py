@@ -44,7 +44,7 @@ class RoleModelTestCase(TestCase):
 
 
     def test_transfer_ownership_must_promote_officers(self):
-        owner_user = User.objects.get(username='alicedoe')
+        owner_user = User.objects.get(username='robertdoe')
         owner_role = Role(user = owner_user, club=self.club,club_role='OWN')
         self.assertEqual(owner_role.club_role,'OWN')
         officer_user = User.objects.get(username='bobdoe')
@@ -56,7 +56,7 @@ class RoleModelTestCase(TestCase):
 
 
     def test_transfer_ownership_must_not_promote_non_officers(self):
-        owner_user = User.objects.get(username='alicedoe')
+        owner_user = User.objects.get(username='robertdoe')
         owner_role = Role(user = owner_user, club=self.club,club_role='OWN')
         self.assertEqual(owner_role.club_role,'OWN')
         self.assertEqual(self.role.club_role,'MEM')

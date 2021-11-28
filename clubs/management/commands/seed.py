@@ -81,16 +81,16 @@ class Command(BaseCommand):
     def _create_test_data(self):
 
         jebediah = User.objects.create(username="jebediah",first_name="Jebebiah",last_name="Kerman",
-        email="jeb@example.org",bio="Hi guys",chess_experience_level=4)
+        email="jeb@example.org",bio="Hi guys",chess_experience_level=4,password=Command.PASSWORD)
 
         valentina = User.objects.create(username="valentina",first_name="Valentina",last_name="Kerman",
-        email="val@example.org",bio="Hi guys",chess_experience_level=2)
+        email="val@example.org",bio="Hi guys",chess_experience_level=2,password=Command.PASSWORD)
 
         billie = User.objects.create(username="billie",first_name="Billie",last_name="Kerman",
-        email="billie@example.org",bio="Hi guys",chess_experience_level=4)
+        email="billie@example.org",bio="Hi guys",chess_experience_level=4,password=Command.PASSWORD)
 
         kerbal_club = Club.objects.create(club_name="Kerbal Chess Club",location="Test",description="Welcome to the Kerbals!")
 
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'APP'})
         kerbal_club.club_members.add(valentina,through_defaults={'club_role':'APP'})
-        kerbal_club.club_members.add(billie,through_defaults={'club_role':'APP'})
+        kerbal_club.club_members.add(billie,through_defaults={'club_role':'OFF'})

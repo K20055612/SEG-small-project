@@ -16,11 +16,7 @@ class LogOutViewTestCase(TestCase, LogInTester):
             email='alicedoe@example.org',
             bio='Hello, I am Alice Doe.',
             chess_experience_level=1,
-            is_member=False,
-            is_officer=False,
-            is_owner=False,
-            password='Password123',
-            is_active=True,
+            password = 'Password123'
         )
 
     def test_log_out_url(self):

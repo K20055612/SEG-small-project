@@ -11,15 +11,12 @@ class LogInViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.url = reverse('log_in')
-        self.user = User.objects.create_user('@alicedoe',
+        self.user = User.objects.create_user('alicedoe',
             first_name='Alice',
             last_name='Doe',
             email='alicedoe@example.org',
             bio='Hello, I am Alice Doe.',
             chess_experience_level=1,
-            is_member=False,
-            is_officer=False,
-            is_owner=False,
             password='Password123',
             is_active=True,
         )

@@ -22,23 +22,20 @@
           <td class="align-middle"> {{user.email}}</td>
           <td class="align-middle"> {{user.get_chess_experience}}</td>
           <td class="align-middle">
-            <form action = "{% url 'accept_applicant' currentClub.club_name user.id %}" method="post">
+            <form action = "{% url 'accept_applicant' current_club.club_name user.id %}" method="post">
               {% csrf_token %}
               <input type="submit" class="btn btn-success" value="Accept" name="accept-btn"/>
             </form>
           </td>
           <td class="align-middle">
-          <form action = "{% url 'reject_applicant' currentClub.club_name user.id %}" method="post">
+          <form action = "{% url 'reject_applicant' current_club.club_name user.id %}" method="post">
             {% csrf_token %}
             <input type="submit" class="btn btn-danger" value="Reject" name="reject-btn"/>
           </form>
           </td>
-
-
         </tr>
         {%endfor%}
       </table>
-
     </div>
   </div>
 </div>

@@ -31,11 +31,11 @@ def log_in(request):
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
 
-
 def log_out(request):
     logout(request)
     return redirect('home')
 
+@login_required
 def profile(request):
     return render(request, 'profile.html')
 
@@ -59,42 +59,49 @@ def sign_up(request):
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
 
-#@login_required
+@login_required
+#@officer_required
 def applicants_list(request,club_name):
-    currentClub = Club.objects.get(club_name=club_name)
-    applicants = User.objects.all().filter(
-    club__club_name=currentClub.club_name,
-    role__club_role='APP'
-    )
-    return render(request,'applicants_list.html', {'applicants':applicants, 'currentClub':currentClub})
+    try:
+        current_club = Club.objects.get(club_name=club_name)
+        applicants = User.objects.all().filter(
+        club__club_name=current_club.club_name,
+        role__club_role='APP')
+    except (ObjectDoesNotExist):
+        return redirect('profile')
+    else:
+        return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
-#@login_required
+@login_required
+#@officer_required
 def accept_applicant(request,club_name,user_id):
-        currentClub = Club.objects.get(club_name=club_name)
+        current_club = Club.objects.get(club_name=club_name)
         try:
             applicant = User.objects.get(id=user_id,
-            club__club_name=currentClub.club_name,
+            club__club_name=current_club.club_name,
             role__club_role='APP'
             )
-            role = Role.objects.get(user=applicant,club=currentClub,club_role='APP')
+            role = Role.objects.get(user=applicant,club=current_club,club_role='APP')
             role.toggle_member()
         except (ObjectDoesNotExist):
-            return redirect('applicants_list')
+            return redirect('applicants_list', club_name=current_club.club_name)
 
         else:
-            return applicants_list(request,club_name)
+            return applicants_list(request,current_club.club_name)
 
 
-#@login_required
+@login_required
+#@officer_required
 def reject_applicant(request,club_name,user_id):
-        currentClub = Club.objects.get(club_name=club_name)
+        current_club = Club.objects.get(club_name=club_name)
         try:
             applicant = User.objects.get(id=user_id,
-            club__club_name=currentClub.club_name,
+            club__club_name=current_club.club_name,
             role__club_role='APP'
             )
-            Role.objects.get(user=applicant,club=currentClub,club_role='APP').delete()
+            Role.objects.get(user=applicant,club=current_club,club_role='APP').delete()
+
         except ObjectDoesNotExist:
-            return redirect('applicants_list')
+            return redirect('applicants_list', club_name=current_club.club_name)
         else:
-            return applicants_list(request,club_name)
+            return applicants_list(request,current_club.club_name)
