@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import PasswordForm
 from clubs.models import User
-#from microblogs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next
 
 class PasswordViewTest(TestCase):
     """Test suite for the password view."""
@@ -34,10 +34,10 @@ class PasswordViewTest(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, PasswordForm))
 
-#    def test_get_password_redirects_when_not_logged_in(self):
-#        redirect_url = reverse_with_next('log_in', self.url)
-#        response = self.client.get(self.url)
-#        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    def test_get_password_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_succesful_password_change(self):
         self.client.login(username=self.user.email, password='Password123')
@@ -73,9 +73,9 @@ class PasswordViewTest(TestCase):
         is_password_correct = check_password('Password123', self.user.password)
         self.assertTrue(is_password_correct)
 
-#    def test_post_profile_redirects_when_not_logged_in(self):
-#        redirect_url = reverse_with_next('log_in', self.url)
-#        response = self.client.post(self.url, self.form_input)
-#        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-#        is_password_correct = check_password('Password123', self.user.password)
-#        self.assertTrue(is_password_correct)
+    def test_post_profile_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.post(self.url, self.form_input)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        is_password_correct = check_password('Password123', self.user.password)
+        self.assertTrue(is_password_correct)

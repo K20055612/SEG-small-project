@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import UserForm
 from clubs.models import User
+from clubs.tests.helpers import reverse_with_next
 
 class ProfileViewTest(TestCase):
     """Test suite for the profile view."""
@@ -37,10 +38,10 @@ class ProfileViewTest(TestCase):
         self.assertTrue(isinstance(form, UserForm))
         self.assertEqual(form.instance, self.user)
 
-#    def test_get_profile_redirects_when_not_logged_in(self):
-#        redirect_url = reverse_with_next('log_in', self.url)
-#        response = self.client.get(self.url)
-#        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    def test_get_profile_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_unsuccesful_profile_update(self):
         self.client.login(username=self.user.email, password='Password123')
@@ -102,7 +103,7 @@ class ProfileViewTest(TestCase):
         self.assertEqual(self.user.bio, 'New bio')
         self.assertEqual(self.user.chess_experience_level, 3)
 
-#    def test_post_profile_redirects_when_not_logged_in(self):
-#        redirect_url = reverse_with_next('log_in', self.url)
-#        response = self.client.post(self.url, self.form_input)
-#        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    def test_post_profile_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.post(self.url, self.form_input)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

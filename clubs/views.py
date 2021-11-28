@@ -12,26 +12,25 @@ from django.contrib.auth.hashers import check_password
 def home(request):
     return render(request, 'home.html')
 
-
 @login_prohibited
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
+        next = request.POST.get('next') or ''
         if form.is_valid():
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            redirect_url = request.POST.get('next') or 'feed'
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('feed')
+                    redirect_url = next or 'feed'
+                    return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+    else:
+        next = request.GET.get('next') or ''
     form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
-    next = request.GET.get('next') or ''
-    return render(request, 'log_in.html', {'form': form , 'next':next})
-
+    return render(request, 'log_in.html', {'form': form, 'next': next})
 
 def log_out(request):
     logout(request)
