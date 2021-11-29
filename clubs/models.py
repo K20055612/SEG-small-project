@@ -43,48 +43,7 @@ class User(AbstractUser):
     def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
-<<<<<<< HEAD
-    is_applicant = models.BooleanField(default = False)
 
-    def toggle_applicant(user):
-        if user.is_applicant == True:
-            user.is_applicant = False
-            user.save()
-            return
-        elif user.is_applicant == False:
-            user.is_applicant = True
-            user.save()
-
-    is_member = models.BooleanField(default = False)
-
-    def toggle_member(user):
-        if user.is_member == True:
-            user.is_member = False
-            user.save()
-            return
-        elif user.is_member == False:
-            user.is_applicant = False
-            user.is_member = True
-            user.save()
-
-
-    is_officer = models.BooleanField(default = False)
-
-    def toggle_officer(user):
-        if user.is_officer == True:
-            user.is_officer = False
-            user.save()
-            return
-        elif user.is_officer == False:
-            user.is_officer = True
-            user.save()
-
-
-    is_owner = models.BooleanField(default = False)
-
-
-=======
->>>>>>> user-model-2
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
