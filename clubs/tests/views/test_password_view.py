@@ -15,7 +15,7 @@ class PasswordViewTest(TestCase):
     ]
 
     def setUp(self):
-        self.user = User.objects.get(username='josedoe')
+        self.user = User.objects.get(username='johndoe@example.org')
         self.url = reverse('password')
         self.form_input = {
             'password': 'Password123',
@@ -27,7 +27,7 @@ class PasswordViewTest(TestCase):
         self.assertEqual(self.url, '/password/')
 
     def test_get_password(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'password.html')
@@ -40,7 +40,7 @@ class PasswordViewTest(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_succesful_password_change(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         response = self.client.post(self.url, self.form_input, follow=True)
         response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
@@ -50,7 +50,7 @@ class PasswordViewTest(TestCase):
         self.assertTrue(is_password_correct)
 
     def test_password_change_unsuccesful_without_correct_old_password(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         self.form_input['password'] = 'WrongPassword123'
         response = self.client.post(self.url, self.form_input, follow=True)
         self.assertEqual(response.status_code, 200)
@@ -62,7 +62,7 @@ class PasswordViewTest(TestCase):
         self.assertTrue(is_password_correct)
 
     def test_password_change_unsuccesful_without_password_confirmation(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         self.form_input['password_confirmation'] = 'WrongPassword123'
         response = self.client.post(self.url, self.form_input, follow=True)
         self.assertEqual(response.status_code, 200)

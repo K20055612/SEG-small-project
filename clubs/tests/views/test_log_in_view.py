@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import LogInForm
 from clubs.models import User
-from .helpers import LogInTester, reverse_with_next
+from clubs.tests.helpers import LogInTester, reverse_with_next
 
 class LogInViewTestCase(TestCase, LogInTester):
     """Tests of the log in view."""

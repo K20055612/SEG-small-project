@@ -24,7 +24,7 @@ def log_in(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    redirect_url = request.POST.get('next') or 'profile'
+                    redirect_url = request.POST.get('next') or 'feed'
                     return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     else:
@@ -33,7 +33,6 @@ def log_in(request):
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
 
-@login_required
 def log_out(request):
     logout(request)
     return redirect('home')
@@ -49,7 +48,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request,user)
-            return redirect('profile')
+            return redirect('feed')
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
@@ -62,7 +61,7 @@ def profile(request):
         if form.is_valid():
             messages.add_message(request, messages.SUCCESS, "Profile updated!")
             form.save()
-            return redirect('feed')
+            return redirect('profile')
     else:
         form = UserForm(instance=current_user)
     return render(request, 'profile.html', {'form': form})
@@ -84,6 +83,7 @@ def password(request):
     form = PasswordForm()
     return render(request, 'password.html', {'form': form})
 
+@login_required
 @management_login_required_applicant_list
 def applicants_list(request,club_name):
         current_club = Club.objects.get(club_name=club_name)
@@ -103,7 +103,8 @@ def member_list(request,club_name):
         return redirect('feed')
     else:
         return render(request,'member_list.html', {'members':members, 'current_club':current_club})
-
+        
+@login_required
 @management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)

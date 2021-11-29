@@ -4,7 +4,7 @@
 from django.test import TestCase
 from clubs.models import User,Club,Role
 from django.urls import reverse
-from .helpers import LogInTester,reverse_with_next
+from clubs.tests.helpers import LogInTester,reverse_with_next
 
 
 class ApplicantListViewTestCase(TestCase,LogInTester):
@@ -41,9 +41,9 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.assertTrue(self._is_logged_in())
         url = reverse('applicants_list', kwargs={'club_name':'Wrong Club'})
         response = self.client.get(url, follow=True)
-        response_url = reverse('profile')
+        response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'profile.html')
+        self.assertTemplateUsed(response, 'feed.html')
 
     def test_applicant_list_user_does_not_have_permission(self):
         invalid_permission_user = User.objects.get(username='janedoe@example.org')
@@ -51,9 +51,9 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.client.login(username=invalid_permission_user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
-        response_url = reverse('profile')
+        response_url = reverse('feed')
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
-        self.assertTemplateUsed(response,'profile.html')
+        self.assertTemplateUsed(response,'feed.html')
 
 
     def _create_test_applicants(self, user_count=10):

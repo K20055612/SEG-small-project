@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User,Club,Role
-from .helpers import reverse_with_next,LogInTester
+from clubs.tests.helpers import reverse_with_next,LogInTester
 
 class MemberListTestCase(TestCase,LogInTester):
     """Unit tests for the member list."""

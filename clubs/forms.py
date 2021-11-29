@@ -9,7 +9,7 @@ class SignUpForm(forms.ModelForm):
         """Form options."""
 
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio','chess_experience_level']
+        fields = ['first_name', 'last_name', 'username', 'bio','chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
 
     new_password = forms.CharField(
@@ -38,7 +38,7 @@ class SignUpForm(forms.ModelForm):
         user = User.objects.create_user(
             first_name=self.cleaned_data.get('first_name'),
             last_name=self.cleaned_data.get('last_name'),
-            username=self.cleaned_data.get('email'),
+            username=self.cleaned_data.get('username'),
             bio=self.cleaned_data.get('bio'),
             password=self.cleaned_data.get('new_password'),
             chess_experience_level = self.cleaned_data.get('chess_experience_level'),
@@ -57,7 +57,7 @@ class UserForm(forms.ModelForm):
         """Form options."""
 
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'bio', 'chess_experience_level']
+        fields = ['first_name', 'last_name','username', 'bio', 'chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
 
 class PasswordForm(forms.Form):

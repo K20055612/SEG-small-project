@@ -42,7 +42,7 @@ class Command(BaseCommand):
         chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
 
         User.objects.create_user(
-            username,
+            username = username,
             first_name=first_name,
             last_name=last_name,
             password=Command.PASSWORD,

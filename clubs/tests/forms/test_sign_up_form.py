@@ -6,13 +6,13 @@ from django import forms
 from django.contrib.auth.hashers import check_password
 
 class SignUpFormTestCase(TestCase):
-    """Unit tests of sign up form."""
+    """Unit tests of sign upusername."""
 
     def setUp(self):
         self.form_input = {
             'first_name':'Jane',
             'last_name' : 'Doe',
-            'email' : 'janedoe@example.org',
+            'username' : 'janedoe@example.org',
             'bio' : 'My bio',
             'new_password':'Password123',
             'password_confirmation': 'Password123',
@@ -28,8 +28,8 @@ class SignUpFormTestCase(TestCase):
         form = SignUpForm()
         self.assertIn('first_name', form.fields)
         self.assertIn('last_name', form.fields)
-        self.assertIn('email', form.fields)
-        email_field = form.fields['email']
+        self.assertIn('username', form.fields)
+        email_field = form.fields['username']
         self.assertTrue(isinstance(email_field, forms.EmailField))
         self.assertIn('bio', form.fields)
         self.assertIn('new_password', form.fields)
@@ -51,7 +51,7 @@ class SignUpFormTestCase(TestCase):
         self.assertTrue(is_password_correct)
 
     def test_form_uses_model_validation(self):
-        self.form_input['email'] = 'bademail'
+        self.form_input['username'] = 'bademail'
         form = SignUpForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 

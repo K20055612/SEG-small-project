@@ -15,7 +15,7 @@ def setUp(self):
     self.form_input = {
         'first_name':'Jane',
         'last_name' : 'Doe',
-        'email' : 'janedoe@example.com',
+        'username' : 'janedoe@example.com',
         'bio' : 'My bio',
         'new_password':'Password123',
         'password_confirmation': 'Password123',
@@ -36,7 +36,7 @@ def setUp(self):
         self.assertFalse(form.is_bound)
 
     def test_unsuccessful_sign_up(self):
-        self.form_input['email'] = 'bademail'
+        self.form_input['username'] = 'bademail'
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
         after_count = User.objects.count()

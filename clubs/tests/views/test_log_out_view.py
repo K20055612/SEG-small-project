@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User
-from .helpers import LogInTester
+from clubs.tests.helpers import LogInTester
 from clubs.forms import LogInForm
 
 class LogOutViewTestCase(TestCase, LogInTester):

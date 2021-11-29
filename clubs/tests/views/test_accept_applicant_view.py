@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User,Club,Role
-from .helpers import LogInTester,reverse_with_next
+from clubs.tests.helpers import LogInTester,reverse_with_next
 
 
 class AcceptApplicantViewTestCase(TestCase,LogInTester):
