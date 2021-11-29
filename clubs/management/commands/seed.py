@@ -41,23 +41,6 @@ class Command(BaseCommand):
         bio = self.faker.text(max_nb_chars=520)
         chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
 
-<<<<<<< HEAD
-        is_applicant=self.faker.boolean()
-        if is_applicant:
-            is_member=self.faker.boolean()
-        else:
-            is_member=False
-        if is_member:
-            is_officer=self.faker.boolean()
-        else:
-            is_officer=False
-        if is_officer:
-            is_owner=self.faker.boolean()
-        else:
-            is_owner=False
-=======
->>>>>>> user-model-2
-
         User.objects.create_user(
             username,
             first_name=first_name,
@@ -65,25 +48,12 @@ class Command(BaseCommand):
             password=Command.PASSWORD,
             bio=bio,
             chess_experience_level=chess_experience_level,
-<<<<<<< HEAD
-            is_applicant=is_applicant,
-            is_member=is_member,
-            is_officer=is_officer,
-            is_owner=is_owner,
-
-=======
->>>>>>> user-model-2
         )
 
     def _email(self, first_name, last_name):
         email = f'{first_name}.{last_name}@fake.seed'
         return email
 
-<<<<<<< HEAD
-    def _username(self, first_name, last_name):
-        username = f'{first_name}{last_name}'
-        return username
-=======
     def _create_club(self):
         club_name = self.faker.first_name()
         location = 'Test'
@@ -116,4 +86,3 @@ class Command(BaseCommand):
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'APP'})
         kerbal_club.club_members.add(valentina,through_defaults={'club_role':'APP'})
         kerbal_club.club_members.add(billie,through_defaults={'club_role':'OFF'})
->>>>>>> user-model-2
