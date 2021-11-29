@@ -39,7 +39,14 @@ def log_out(request):
 
 @login_required
 def feed(request):
-    return render(request, 'feed.html')
+    clubs= Club.objects.all()
+
+    current_user= request.user
+
+    user_clubs = Club.objects.all().filter(
+    club_members__username=current_user.username)
+
+    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs})
 
 @login_prohibited
 def sign_up(request):
@@ -103,7 +110,7 @@ def member_list(request,club_name):
         return redirect('feed')
     else:
         return render(request,'member_list.html', {'members':members, 'current_club':current_club})
-        
+
 @login_required
 @management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
