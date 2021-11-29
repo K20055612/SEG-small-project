@@ -1,19 +1,14 @@
 [
   {
     "model": "clubs.user",
-    "pk": 5,
+    "pk": 1,
     "fields": {
-      "first_name": "Jose",
+      "first_name": "John",
       "last_name": "Doe",
-      "username": "josedoe",
-      "email": "josedoe@example.org",
-      "bio": "Hello, I am Jose Doe.",
+      "username": "johndoe@example.org",
+      "bio": "Hello, I am John Doe.",
       "chess_experience_level": 1,
-      "is_applicant": false,
-      "is_member" : false,
-      "is_officer": false,
-      "is_owner": false,
-      "password": "pbkdf2_sha256$260000$yDZBw4kf3nAnQYdQalYx6O$5LdileskbYcuqf3ROUMV8DKuR9hKBSeNPOQM3TTKN/w=",
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
       "is_active": true
 
     }

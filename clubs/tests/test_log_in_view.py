@@ -11,15 +11,12 @@ class LogInViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.url = reverse('log_in')
-        self.user = User.objects.create_user('@alicedoe',
+        self.user = User.objects.create_user(
             first_name='Alice',
             last_name='Doe',
-            email='alicedoe@example.org',
+            username='alicedoe@example.org',
             bio='Hello, I am Alice Doe.',
             chess_experience_level=1,
-            is_member=False,
-            is_officer=False,
-            is_owner=False,
             password='Password123',
             is_active=True,
         )
@@ -89,14 +86,14 @@ class LogInViewTestCase(TestCase, LogInTester):
 
 
     def test_get_log_in_redirects_when_logged_in(self):
-        self.client.login(username=self.user.email,password="Password123")
+        self.client.login(username=self.user.username,password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('profile')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'profile.html')
 
     def test_post_log_in_redirects_when_logged_in(self):
-        self.client.login(username=self.user.email,password="Password123")
+        self.client.login(username=self.user.username,password="Password123")
         form_input = { 'username': '@wronguser', 'password': 'WrongPassword123' }
         response = self.client.post(self.url, form_input, follow=True)
         redirect_url = reverse('profile')

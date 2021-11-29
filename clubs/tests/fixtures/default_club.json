@@ -1,0 +1,11 @@
+[
+  {
+    "model": "clubs.club",
+    "pk": 1,
+    "fields": {
+      "club_name":"Beatles",
+      "location":"London",
+      "description":"Best chess club in town!"
+    }
+  }
+]

@@ -9,16 +9,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        max_length=30,
+    username = models.EmailField(
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^\w{3,}$',
-                message='Username must consist of at least three alphanumericals'
-                )
-            ]
-    )
+        blank=False
+        )
+
     first_name = models.CharField(
         max_length=50,
         blank=False
@@ -27,10 +22,7 @@ class User(AbstractUser):
         max_length=50,
         blank=False
     )
-    email = models.EmailField(
-        unique=True,
-        blank=False
-    )
+
     bio = models.CharField(
         max_length=520,
         blank=True
@@ -48,9 +40,10 @@ class User(AbstractUser):
         choices = ChessExperience.choices
     )
 
-    def get_Chess_Experience(self):
+    def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
+<<<<<<< HEAD
     is_applicant = models.BooleanField(default = False)
 
     def toggle_applicant(user):
@@ -90,6 +83,8 @@ class User(AbstractUser):
     is_owner = models.BooleanField(default = False)
 
 
+=======
+>>>>>>> user-model-2
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
@@ -104,3 +99,70 @@ class User(AbstractUser):
         gravatar_object = Gravatar(self.email)
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
+
+
+class Club(models.Model):
+    club_name = models.CharField(
+    unique=True,
+    max_length=50,
+    blank=False,
+    validators=[
+        RegexValidator(
+            regex=r'^\w{5,}$',
+            message='Club name must consist of at least five alphanumericals'
+            )
+        ]
+    )
+    location = models.CharField(
+        max_length=100,
+        blank=False
+        )
+
+    description = models.CharField(
+        max_length=520,
+        blank=False
+        )
+
+    club_members = models.ManyToManyField(User,through='Role')
+
+class Role(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    class RoleOptions(models.TextChoices):
+        APPLICANT = 'APP', _('Applicant')
+        MEMBER = 'MEM', _('Member')
+        OFFICER = 'OFF', _('Officer')
+        OWNER = 'OWN', _('Owner')
+
+    club_role = models.CharField(
+        max_length = 3,
+        choices = RoleOptions.choices,
+        default = RoleOptions.APPLICANT,
+        )
+
+    def get_club_role(self):
+        return self.RoleOptions(self.club_role).name.title()
+
+    def toggle_member(self):
+        self.club_role = 'MEM'
+        self.save()
+        return
+
+    def toggle_officer(self):
+        if self.club_role == 'APP':
+            return
+        else:
+            self.club_role = 'OFF'
+            self.save()
+            return
+
+    def transfer_ownership(self,new_owner):
+        if new_owner.club_role == 'OFF':
+            new_owner.club_role = 'OWN'
+            new_owner.save()
+            self.club_role = 'OFF'
+            self.save()
+            return
+        else:
+            return

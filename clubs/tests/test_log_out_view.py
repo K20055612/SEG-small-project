@@ -10,17 +10,13 @@ class LogOutViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.url = reverse('log_out')
-        self.user = User.objects.create_user('@alicedoe',
+        self.user = User.objects.create_user(
             first_name='Alice',
             last_name='Doe',
-            email='alicedoe@example.org',
+            username='alicedoe@example.org',
             bio='Hello, I am Alice Doe.',
             chess_experience_level=1,
-            is_member=False,
-            is_officer=False,
-            is_owner=False,
-            password='Password123',
-            is_active=True,
+            password = 'Password123'
         )
 
     def test_log_out_url(self):

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
-from .models import User
+from .models import User,Club,Role
 from django.contrib import messages
 from .forms import LogInForm,SignUpForm
 from django.contrib.auth.decorators import login_required
-from .helpers import login_prohibited
+from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -20,17 +20,15 @@ def log_in(request):
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            redirect_url = request.POST.get('next') or 'profile'
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('profile')
+                    redirect_url = request.POST.get('next') or 'profile'
+                    return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
-
 
 def log_out(request):
     logout(request)
@@ -40,13 +38,6 @@ def log_out(request):
 def profile(request):
     return render(request, 'profile.html')
 
-def login_prohibited(view_function):
-    def modified_view_funtion(request):
-        if request.user.is_authenticated:
-            return redirect('home')
-        else:
-            return view_function(request)
-    return modified_view_funtion
 
 @login_prohibited
 def sign_up(request):
@@ -61,37 +52,48 @@ def sign_up(request):
     return render(request, 'sign_up.html', {'form': form})
 
 @login_required
-def applicants_list(request):
-    applicants = User.objects.all().filter(is_applicant=True)
-    return render(request,'applicants_list.html', {'applicants':applicants})
+@management_login_required_applicant_list
+def applicants_list(request,club_name):
+        current_club = Club.objects.get(club_name=club_name)
+        applicants = User.objects.all().filter(
+        club__club_name=current_club.club_name,
+        role__club_role='APP')
+        return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
 def member_list(request):
     members = User.objects.all().filter(is_member=True)
     return render(request,'member_list.html', {'members':members})
 
-@login_required
-def accept_applicant(request,user_id):
+    
+@management_login_required_accept_reject
+def accept_applicant(request,club_name,user_id):
+        current_club = Club.objects.get(club_name=club_name)
         try:
-            applicant = User.objects.get(id=user_id)
-            applicant.toggle_member()
-            applicant.save()
-        except ObjectDoesNotExist:
-            return redirect('applicants_list')
+            applicant = User.objects.get(id=user_id,
+            club__club_name=current_club.club_name,
+            role__club_role='APP'
+            )
+            role = Role.objects.get(user=applicant,club=current_club,club_role='APP')
+            role.toggle_member()
+        except (ObjectDoesNotExist):
+            return redirect('applicants_list', club_name=current_club.club_name)
 
         else:
-            applicants = User.objects.all().filter(is_applicant=True)
-            return render(request,'applicants_list.html', {'applicants':applicants})
-
+            return applicants_list(request,current_club.club_name)
 
 @login_required
-def reject_applicant(request,user_id):
+@management_login_required_accept_reject
+def reject_applicant(request,club_name,user_id):
+        current_club = Club.objects.get(club_name=club_name)
         try:
-            applicant = User.objects.get(id=user_id)
-            applicant.toggle_applicant()
-            applicant.save()
+            applicant = User.objects.get(id=user_id,
+            club__club_name=current_club.club_name,
+            role__club_role='APP'
+            )
+            Role.objects.get(user=applicant,club=current_club,club_role='APP').delete()
+
         except ObjectDoesNotExist:
-            return redirect('applicants_list')
+            return redirect('applicants_list', club_name=current_club.club_name)
         else:
-            applicants = User.objects.all().filter(is_applicant=True)
-            return render(request,'applicants_list.html', {'applicants':applicants})
+            return applicants_list(request,current_club.club_name)
