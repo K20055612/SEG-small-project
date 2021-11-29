@@ -9,17 +9,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        blank = False,
-        max_length=30,
+    username = models.EmailField(
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^\w{3,}$',
-                message='Username must consist of at least three alphanumericals'
-                )
-            ]
-    )
+        blank=False
+        )
+
     first_name = models.CharField(
         max_length=50,
         blank=False
@@ -28,10 +22,7 @@ class User(AbstractUser):
         max_length=50,
         blank=False
     )
-    email = models.EmailField(
-        unique=True,
-        blank=False
-    )
+
     bio = models.CharField(
         max_length=520,
         blank=True

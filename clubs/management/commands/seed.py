@@ -14,20 +14,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         user_count = 0
         club_count = 0
-
-
+        self._create_test_data()
         while club_count < Command.CLUB_COUNT:
             print(f'Seeding club {club_count}',  end='\r')
-            if club_count == 0:
-                self._create_test_data()
-                club_count+=1
+            try:
+                self._create_club()
+            except (django.db.utils.IntegrityError):
                 continue
-            else:
-                try:
-                    self._create_club()
-                except (django.db.utils.IntegrityError):
-                    continue
-                club_count += 1
+            club_count += 1
 
         print('Club seeding complete')
 
@@ -43,8 +37,7 @@ class Command(BaseCommand):
     def _create_user(self):
         first_name = self.faker.first_name()
         last_name = self.faker.last_name()
-        email = self._email(first_name, last_name)
-        username = self._username(first_name, last_name)
+        username = self._email(first_name, last_name)
         bio = self.faker.text(max_nb_chars=520)
         chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
 
@@ -53,7 +46,6 @@ class Command(BaseCommand):
             username,
             first_name=first_name,
             last_name=last_name,
-            email=email,
             password=Command.PASSWORD,
             bio=bio,
             chess_experience_level=chess_experience_level,
@@ -62,10 +54,6 @@ class Command(BaseCommand):
     def _email(self, first_name, last_name):
         email = f'{first_name}.{last_name}@fake.seed'
         return email
-
-    def _username(self, first_name, last_name):
-        username = f'@{first_name}{last_name}'
-        return username
 
     def _create_club(self):
         club_name = self.faker.first_name()
@@ -80,16 +68,21 @@ class Command(BaseCommand):
 
     def _create_test_data(self):
 
-        jebediah = User.objects.create(username="jebediah",first_name="Jebebiah",last_name="Kerman",
-        email="jeb@example.org",bio="Hi guys",chess_experience_level=4,password=Command.PASSWORD)
+        jebediah = User.objects.create(username="jeb@example.org",first_name="Jebebiah",last_name="Kerman",
+        password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=',bio="Hi guys",chess_experience_level=4)
 
-        valentina = User.objects.create(username="valentina",first_name="Valentina",last_name="Kerman",
-        email="val@example.org",bio="Hi guys",chess_experience_level=2,password=Command.PASSWORD)
 
-        billie = User.objects.create(username="billie",first_name="Billie",last_name="Kerman",
-        email="billie@example.org",bio="Hi guys",chess_experience_level=4,password=Command.PASSWORD)
+        valentina = User.objects.create(username="val@example.org",first_name="Valentina",last_name="Kerman",
+        bio="Hi guys",chess_experience_level=2,password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=')
+
+        billie = User.objects.create(username="billie@example.org",first_name="Billie",last_name="Kerman",
+        password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=',bio="Hi guys",chess_experience_level=4)
 
         kerbal_club = Club.objects.create(club_name="Kerbal Chess Club",location="Test",description="Welcome to the Kerbals!")
+        atlantis_club = Club.objects.create(club_name="Atlantis",location="Test",description="Welcome to the Atlantis!")
+
+        atlantis_club.club_members.add(billie,through_defaults={'club_role':'APP'})
+        atlantis_club.club_members.add(valentina,through_defaults={'club_role':'OFF'})
 
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'APP'})
         kerbal_club.club_members.add(valentina,through_defaults={'club_role':'APP'})

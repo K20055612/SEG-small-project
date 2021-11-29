@@ -19,7 +19,7 @@
             <img src="{{ user.mini_gravatar }}" alt="Gravatar of {{ user.username }}" class="rounded-circle" >
           </td>
           <td class="align-middle"> {{user.full_name}}</td>
-          <td class="align-middle"> {{user.email}}</td>
+          <td class="align-middle"> {{user.username}}</td>
           <td class="align-middle"> {{user.get_chess_experience}}</td>
           <td class="align-middle">
             <form action = "{% url 'accept_applicant' current_club.club_name user.id %}" method="post">

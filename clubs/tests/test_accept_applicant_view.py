@@ -14,19 +14,18 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
                 'clubs/tests/fixtures/other_users.json']
 
     def setUp(self):
-        self.user = User.objects.get(username='johndoe')
-        self.applicant = User.objects.get(username='janedoe')
+        self.user = User.objects.get(username='johndoe@example.org')
+        self.applicant = User.objects.get(username='janedoe@example.org')
         self.club = Club.objects.get(club_name='Beatles')
         self.club.club_members.add(self.user,through_defaults={'club_role':'OFF'})
         self.club.club_members.add(self.applicant,through_defaults={'club_role':'APP'})
         self.url = reverse('accept_applicant',kwargs={'club_name': self.club.club_name,'user_id':self.applicant.id})
 
-
     def test_accept_applicant_url(self):
         self.assertEqual(self.url,f'/applicants/{self.club.club_name}/accept/{self.applicant.id}/')
 
     def test_accept_applicant_with_valid_id(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         before = Role.objects.all().filter(club=self.club,club_role='APP').count()
         response = self.client.get(self.url)
@@ -37,10 +36,10 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
         self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe")
+        self.assertNotContains(response, "janedoe@example.org")
 
     def test_accept_applicant_with_invalid_id(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         before = Role.objects.all().filter(club=self.club,club_role='APP').count()
         url = reverse('accept_applicant', kwargs={'club_name':self.club.club_name,'user_id': self.applicant.id+9999})

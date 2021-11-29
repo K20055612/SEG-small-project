@@ -4,7 +4,7 @@ from .models import User,Club,Role
 from django.contrib import messages
 from .forms import LogInForm,SignUpForm
 from django.contrib.auth.decorators import login_required
-from .helpers import login_prohibited
+from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -20,14 +20,13 @@ def log_in(request):
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            redirect_url = request.POST.get('next') or 'profile'
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect('profile')
+                    redirect_url = request.POST.get('next') or 'profile'
+                    return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
 
@@ -39,13 +38,6 @@ def log_out(request):
 def profile(request):
     return render(request, 'profile.html')
 
-def login_prohibited(view_function):
-    def modified_view_funtion(request):
-        if request.user.is_authenticated:
-            return redirect('home')
-        else:
-            return view_function(request)
-    return modified_view_funtion
 
 @login_prohibited
 def sign_up(request):
@@ -60,20 +52,16 @@ def sign_up(request):
     return render(request, 'sign_up.html', {'form': form})
 
 @login_required
-#@officer_required
+@management_login_required_applicant_list
 def applicants_list(request,club_name):
-    try:
         current_club = Club.objects.get(club_name=club_name)
         applicants = User.objects.all().filter(
         club__club_name=current_club.club_name,
         role__club_role='APP')
-    except (ObjectDoesNotExist):
-        return redirect('profile')
-    else:
         return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
-#@officer_required
+@management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
@@ -89,9 +77,8 @@ def accept_applicant(request,club_name,user_id):
         else:
             return applicants_list(request,current_club.club_name)
 
-
 @login_required
-#@officer_required
+@management_login_required_accept_reject
 def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:

@@ -14,7 +14,7 @@ class RoleModelTestCase(TestCase):
         ]
 
     def setUp(self):
-        self.user = User.objects.get(username='johndoe')
+        self.user = User.objects.get(username='johndoe@example.org')
         self.club = Club.objects.get(club_name='Beatles')
         self.role = Role(user = self.user, club = self.club, club_role = 'MEM')
 
@@ -31,7 +31,7 @@ class RoleModelTestCase(TestCase):
         self._assert_role_is_invalid()
 
     def test_toggle_member(self):
-        applicant_user = User.objects.get(username='janedoe')
+        applicant_user = User.objects.get(username='janedoe@example.org')
         janerole = Role(user = applicant_user, club=self.club,club_role='OFF')
         self.assertEqual(janerole.club_role,'OFF')
         janerole.toggle_member()
@@ -44,10 +44,10 @@ class RoleModelTestCase(TestCase):
 
 
     def test_transfer_ownership_must_promote_officers(self):
-        owner_user = User.objects.get(username='robertdoe')
+        owner_user = User.objects.get(username='robertdoe@example.org')
         owner_role = Role(user = owner_user, club=self.club,club_role='OWN')
         self.assertEqual(owner_role.club_role,'OWN')
-        officer_user = User.objects.get(username='bobdoe')
+        officer_user = User.objects.get(username='bobdoe@example.org')
         officer_role = Role(user = officer_user, club=self.club,club_role='OFF')
         self.assertEqual(officer_role.club_role,'OFF')
         owner_role.transfer_ownership(officer_role)
@@ -56,7 +56,7 @@ class RoleModelTestCase(TestCase):
 
 
     def test_transfer_ownership_must_not_promote_non_officers(self):
-        owner_user = User.objects.get(username='robertdoe')
+        owner_user = User.objects.get(username='robertdoe@example.org')
         owner_role = Role(user = owner_user, club=self.club,club_role='OWN')
         self.assertEqual(owner_role.club_role,'OWN')
         self.assertEqual(self.role.club_role,'MEM')
@@ -65,7 +65,7 @@ class RoleModelTestCase(TestCase):
         self.assertEqual(self.role.club_role,'MEM')
 
     def test_toggle_member(self):
-        applicant_user = User.objects.get(username='bobdoe')
+        applicant_user = User.objects.get(username='bobdoe@example.org')
         applicant_role = Role(user = applicant_user, club=self.club,club_role='APP')
         self.assertEqual(applicant_role.club_role,'APP')
         applicant_role.toggle_member()
@@ -79,7 +79,7 @@ class RoleModelTestCase(TestCase):
 
 
     def test_toggle_officer_must_not_be_applicant(self):
-        applicant_user = User.objects.get(username='bobdoe')
+        applicant_user = User.objects.get(username='bobdoe@example.org')
         applicant_role = Role(user = applicant_user, club=self.club,club_role='APP')
         self.assertEqual(applicant_role.club_role,'APP')
         applicant_role.toggle_officer()
