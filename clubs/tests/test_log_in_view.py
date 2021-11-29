@@ -11,11 +11,7 @@ class LogInViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.url = reverse('log_in')
-<<<<<<< HEAD
         self.user = User.objects.create_user(
-=======
-        self.user = User.objects.create_user('alicedoe',
->>>>>>> 72b1a52a9bb1c5ba3ea442a348f7cbabee32d4f8
             first_name='Alice',
             last_name='Doe',
             username='alicedoe@example.org',
@@ -124,13 +120,8 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertTemplateUsed(response, 'feed.html')
 
     def test_post_log_in_redirects_when_logged_in(self):
-<<<<<<< HEAD
         self.client.login(username=self.user.username,password="Password123")
-        form_input = { 'username': '@wronguser', 'password': 'WrongPassword123' }
-=======
-        self.client.login(username=self.user.email,password="Password123")
-        form_input = { 'username': 'wronguser', 'password': 'WrongPassword123' }
->>>>>>> 72b1a52a9bb1c5ba3ea442a348f7cbabee32d4f8
+        form_input = { 'email': 'wrong@wronguser', 'password': 'WrongPassword123' }
         response = self.client.post(self.url, form_input, follow=True)
         redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
