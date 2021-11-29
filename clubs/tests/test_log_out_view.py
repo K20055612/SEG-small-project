@@ -10,7 +10,11 @@ class LogOutViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.url = reverse('log_out')
+<<<<<<< HEAD
         self.user = User.objects.create_user(
+=======
+        self.user = User.objects.create_user('alicedoe',
+>>>>>>> 72b1a52a9bb1c5ba3ea442a348f7cbabee32d4f8
             first_name='Alice',
             last_name='Doe',
             username='alicedoe@example.org',

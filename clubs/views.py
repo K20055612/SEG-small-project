@@ -2,20 +2,21 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
 from .models import User,Club,Role
 from django.contrib import messages
-from .forms import LogInForm,SignUpForm
+from .forms import LogInForm,SignUpForm,UserForm,PasswordForm
 from django.contrib.auth.decorators import login_required
 from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.hashers import check_password
 
 
 def home(request):
     return render(request, 'home.html')
 
-
 @login_prohibited
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
+        next = request.POST.get('next') or ''
         if form.is_valid():
             username = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
@@ -26,6 +27,8 @@ def log_in(request):
                     redirect_url = request.POST.get('next') or 'profile'
                     return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+    else:
+        next = request.GET.get('next') or ''
     form = LogInForm()
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
@@ -35,8 +38,8 @@ def log_out(request):
     return redirect('home')
 
 @login_required
-def profile(request):
-    return render(request, 'profile.html')
+def feed(request):
+    return render(request, 'feed.html')
 
 
 @login_prohibited
@@ -52,6 +55,35 @@ def sign_up(request):
     return render(request, 'sign_up.html', {'form': form})
 
 @login_required
+def profile(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = UserForm(instance=current_user, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Profile updated!")
+            form.save()
+            return redirect('feed')
+    else:
+        form = UserForm(instance=current_user)
+    return render(request, 'profile.html', {'form': form})
+
+@login_required
+def password(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = PasswordForm(data=request.POST)
+        if form.is_valid():
+            password = form.cleaned_data.get('password')
+            if check_password(password, current_user.password):
+                new_password = form.cleaned_data.get('new_password')
+                current_user.set_password(new_password)
+                current_user.save()
+                login(request, current_user)
+                messages.add_message(request, messages.SUCCESS, "Password updated!")
+                return redirect('feed')
+    form = PasswordForm()
+    return render(request, 'password.html', {'form': form})
+
 @management_login_required_applicant_list
 def applicants_list(request,club_name):
         current_club = Club.objects.get(club_name=club_name)
@@ -65,7 +97,7 @@ def member_list(request):
     members = User.objects.all().filter(is_member=True)
     return render(request,'member_list.html', {'members':members})
 
-    
+
 @management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
