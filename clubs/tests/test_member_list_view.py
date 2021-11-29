@@ -2,25 +2,30 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import User
-from .helpers import reverse_with_next
+from clubs.models import User,Club,Role
+from .helpers import reverse_with_next,LogInTester
 
-class MemberListTestCase(TestCase):
+class MemberListTestCase(TestCase,LogInTester):
     """Unit tests for the member list."""
 
     fixtures = [
-        'clubs/tests/fixtures/member_user.json',
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/other_users.json'
     ]
 
     def setUp(self):
-        self.url = reverse('member_list')
-        self.user = User.objects.get(username='bobdoe')
+            self.user = User.objects.get(username='johndoe@example.org')
+            self.club = Club.objects.get(club_name='Beatles')
+            self.club.club_members.add(self.user,through_defaults={'club_role':'MEM'})
+            self.url = reverse('member_list',kwargs={'club_name': self.club.club_name})
 
     def test_member_list_url(self):
-        self.assertEqual(self.url,'/members/')
+        self.assertEqual(self.url,f'/members/{self.club.club_name}/')
 
     def test_get_member_list(self):
-        self.client.login(username=self.user.email, password='Password123')
+        self.client.login(username=self.user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
         self._create_test_members(15-1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -38,16 +43,13 @@ class MemberListTestCase(TestCase):
 
     def _create_test_members(self, user_count=10):
         for user_id in range(user_count):
-            User.objects.create_user(
+            user = User.objects.create_user(
                 first_name=f'First{user_id}',
                 last_name=f'Last{user_id}',
-                email=f'user{user_id}@test.org',
-                username = f'user{user_id}',
+                username=f'user{user_id}@test.org',
                 password='Password123',
                 bio=f'Bio {user_id}',
                 chess_experience_level = 1,
-                is_applicant = True,
-                is_member = True,
-                is_officer = False,
-                is_owner = False,
+
             )
+            self.club.club_members.add(user,through_defaults={'club_role':'MEM'})

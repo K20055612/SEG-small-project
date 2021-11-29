@@ -1,17 +1,13 @@
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'applicants_list' current_club.club_name %}">Users</a>
-      <a class="nav-link" href="{% url 'feed' %}">Feed</a>
-      
-    </li>
+
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        More Information
+        Club Management
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="{% url 'applicants_list' current_club.club_name %}">Applicants</a></li>
-        <li><a class="dropdown-item" href="{% url 'member_list' %}">Members</a></li>
+        <li><a class="dropdown-item" href="{% url 'applicants_list' current_club.club_name %}">Check applicants</a></li>
+        <li><a class="dropdown-item" href="{% url 'member_list' current_club.club_name %}">Members</a></li>
         <li><a class="dropdown-item" href="#">Officers</a></li>
       </ul>
     </li>

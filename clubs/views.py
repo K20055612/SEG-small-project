@@ -33,6 +33,7 @@ def log_in(request):
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
 
+@login_required
 def log_out(request):
     logout(request)
     return redirect('home')
@@ -40,7 +41,6 @@ def log_out(request):
 @login_required
 def feed(request):
     return render(request, 'feed.html')
-
 
 @login_prohibited
 def sign_up(request):
@@ -93,10 +93,16 @@ def applicants_list(request,club_name):
         return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
-def member_list(request):
-    members = User.objects.all().filter(is_member=True)
-    return render(request,'member_list.html', {'members':members})
-
+def member_list(request,club_name):
+    try:
+        current_club = Club.objects.get(club_name=club_name)
+        members = User.objects.all().filter(
+        club__club_name=current_club.club_name,
+        role__club_role='MEM')
+    except (ObjectDoesNotExist):
+        return redirect('feed')
+    else:
+        return render(request,'member_list.html', {'members':members, 'current_club':current_club})
 
 @management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
