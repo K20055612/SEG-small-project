@@ -112,6 +112,16 @@ def member_list(request,club_name):
         return render(request,'member_list.html', {'members':members, 'current_club':current_club})
 
 @login_required
+def club_feed(request,club_name):
+    club = Club.objects.get(club_name=club_name)
+    user = request.user
+    members = User.objects.all().filter(
+        club__club_name=club_name,
+        role__club_role='MEM')
+
+    return render(request,'club_feed.html', {'club':club, 'user':user, 'members':members})
+
+@login_required
 @management_login_required_accept_reject
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)

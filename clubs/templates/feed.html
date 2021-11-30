@@ -17,7 +17,7 @@
             {% for club in user_clubs %}
             <tr>
               <td>
-                <button type="button" class="btn btn-dark">{{club.club_name}}</button>
+                <a class="btn btn-dark" href='{% url 'club_feed' club.club_name %}' role="button">{{club.club_name}}</a>
               </td>
             </tr>
             {%endfor%}
@@ -37,7 +37,7 @@
             {% for club in clubs %}
             <tr>
               <td>
-                <button type="button" class="btn btn-dark">{{club.club_name}}</button>
+                <a class="btn btn-dark" href='{% url 'club_feed' club.club_name %}' role="button">{{club.club_name}}</a>
               </td>
             </tr>
             {%endfor%}
