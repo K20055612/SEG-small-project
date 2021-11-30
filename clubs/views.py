@@ -120,7 +120,14 @@ def club_feed(request,club_name):
         club__club_name=club_name,
         role__club_role='MEM')
 
-    return render(request,'club_feed.html', {'club':club, 'user':user, 'members':members})
+    is_officer = False
+    try:
+        role = user.role_set.get(club=club)
+        is_officer=role.club_role == 'OFF'
+    except ObjectDoesNotExist:
+        is_officer = False
+
+    return render(request,'club_feed.html', {'club':club, 'user':user, 'members':members, 'is_officer':is_officer})
 
 @login_required
 def club_welcome(request,club_name):
