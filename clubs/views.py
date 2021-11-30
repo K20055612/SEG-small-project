@@ -8,7 +8,6 @@ from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
 
-
 def home(request):
     return render(request, 'home.html')
 
@@ -43,10 +42,14 @@ def feed(request):
 
     current_user= request.user
 
-    user_clubs = Club.objects.all().filter(
-    club_members__username=current_user.username)
+    user_applicant_clubs = Club.objects.all().filter(
+        club_members__username=current_user.username,
+        role__club_role='APP')
 
-    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs})
+    user_clubs = Club.objects.all().filter(
+        club_members__username=current_user.username).difference(user_applicant_clubs)
+
+    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
 
 @login_prohibited
 def sign_up(request):
