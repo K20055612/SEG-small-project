@@ -1,0 +1,29 @@
+{% extends 'base_content.html' %}
+{% block title %}
+{% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class="jumbotron">
+    <h1 class="display-4">{{club.club_name}}</h1>
+    <p class="lead">This is a placeholder for the owner of the club</p>
+    <hr class="my-4">
+    <p>This is a placeholder for the description of the club</p>
+    <p class="lead">
+      {% if is_applicant %}
+      <a href="#" class="btn btn-primary btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
+      <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Whoops!</h4>
+        <p>It looks like you have already applied to join this club.</p>
+        <hr>
+        <p class="mb-0">Hang tight while a club officer reviews your application.</p>
+      </div>
+      {% else %}
+      <a href="#" class="btn btn-primary btn-lg" role="button">Apply for membership</a>
+    {% endif %}
+    </p>
+  </div>
+</div>
+
+
+{% endblock %}

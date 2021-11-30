@@ -38,3 +38,17 @@ def management_login_required_accept_reject(view_function):
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
     return modified_view_function
+
+def member_required(view_function):
+    def modified_view_function(request,club_name):
+        try:
+            club = Club.objects.get(club_name=club_name)
+            role = request.user.role_set.get(club=club)
+        except ObjectDoesNotExist:
+            return redirect('club_welcome', club_name=club_name)
+        else:
+            if role.club_role == 'MEM' or role.club_role == 'OFF' or role.club_role == 'OWN':
+                return view_function(request,club_name)
+            else:
+                return redirect('club_welcome', club_name=club_name)
+    return modified_view_function
