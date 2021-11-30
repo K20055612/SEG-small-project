@@ -84,7 +84,7 @@ def password(request):
     return render(request, 'password.html', {'form': form})
 
 @login_required
-@management_login_required_applicant_list
+@management_required
 def applicants_list(request,club_name):
         current_club = Club.objects.get(club_name=club_name)
         applicants = User.objects.all().filter(
@@ -103,9 +103,9 @@ def member_list(request,club_name):
         return redirect('feed')
     else:
         return render(request,'member_list.html', {'members':members, 'current_club':current_club})
-        
+
 @login_required
-@management_login_required_accept_reject
+@management_required
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
@@ -122,7 +122,7 @@ def accept_applicant(request,club_name,user_id):
             return applicants_list(request,current_club.club_name)
 
 @login_required
-@management_login_required_accept_reject
+@management_required
 def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
@@ -136,3 +136,12 @@ def reject_applicant(request,club_name,user_id):
             return redirect('applicants_list', club_name=current_club.club_name)
         else:
             return applicants_list(request,current_club.club_name)
+
+@login_required
+@management_required
+def officer_list(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    officers = User.objects.all().filter(
+    club__club_name=current_club.club_name,
+    role__club_role='OFF')
+    return render(request,'applicants_list.html', {'officers':officers, 'current_club':current_club})

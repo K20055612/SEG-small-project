@@ -29,4 +29,5 @@ urlpatterns = [
     path('applicants/<str:club_name>/accept/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
     path('applicants/<str:club_name>/reject/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
     path('applicants/<str:club_name>/',views.applicants_list,name='applicants_list'),
+    path('officers/<str:club_name>/',views.officer_list,name='officer_list'),
 ]

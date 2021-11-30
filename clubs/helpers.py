@@ -12,8 +12,8 @@ def login_prohibited(view_function):
             return view_function(request)
     return modified_view_function
 
-def management_login_required_applicant_list(view_function):
-    def modified_view_function(request,club_name):
+def management_required(view_function):
+    def modified_view_function(request,club_name,*args,**kwargs):
         try:
             club = Club.objects.get(club_name=club_name)
             role = request.user.role_set.get(club=club)
@@ -21,20 +21,7 @@ def management_login_required_applicant_list(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             if role.club_role == 'OFF' or role.club_role == 'OWN':
-                return view_function(request,club_name)
+                return view_function(request,club_name,*args,**kwargs)
             else:
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-    return modified_view_function
-
-
-def management_login_required_accept_reject(view_function):
-    def modified_view_function(request,club_name,user_id):
-
-            club = Club.objects.get(club_name=club_name)
-            role = request.user.role_set.get(club=club)
-            if role.club_role == 'OFF' or role.club_role == 'OWN':
-                return view_function(request,club_name,user_id)
-            else:
-                return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-
     return modified_view_function
