@@ -41,6 +41,34 @@ class MemberListTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
+    def test_member_list_invalid_club(self):
+        self.client.login(username=self.user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        url = reverse('member_list', kwargs={'club_name':'WRONG CLUB'})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
+
+    def test_member_list_user_does_not_have_permission_is_applicant(self):
+        applicant = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(applicant,through_defaults={'club_role':'APP'})
+        self.client.login(username=applicant.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+    def test_member_list_user_does_not_have_permission_is_visitor(self):
+        visitor_user = User.objects.get(username='robertdoe@example.org')
+        self.client.login(username=visitor_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
     def _create_test_members(self, user_count=10):
         for user_id in range(user_count):
             user = User.objects.create_user(

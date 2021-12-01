@@ -93,6 +93,7 @@ def applicants_list(request,club_name):
         return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
+@membership_required
 def member_list(request,club_name):
     try:
         current_club = Club.objects.get(club_name=club_name)
@@ -131,7 +132,6 @@ def reject_applicant(request,club_name,user_id):
             role__club_role='APP'
             )
             Role.objects.get(user=applicant,club=current_club,club_role='APP').delete()
-
         except ObjectDoesNotExist:
             return redirect('feed')
         else:
@@ -145,3 +145,20 @@ def officer_list(request,club_name):
     club__club_name=current_club.club_name,
     role__club_role='OFF')
     return render(request,'officer_list.html', {'officers':officers, 'current_club':current_club})
+
+@login_required
+@owner_required
+def transfer_ownership(request,club_name,user_id):
+    current_club = Club.objects.get(club_name=club_name)
+    try:
+        officer = User.objects.get(id=user_id,
+        club__club_name=current_club.club_name,
+        role__club_role='OFF')
+        new_owner_role = Role.objects.get(user=officer,club=current_club,club_role='OFF')
+        old_owner_role = Role.objects.get(user=request.user,club=current_club,club_role='OWN')
+        old_owner_role.transfer_ownership(new_owner_role)
+    except (ObjectDoesNotExist):
+        return redirect('feed')
+
+    else:
+        return officer_list(request,current_club.club_name)

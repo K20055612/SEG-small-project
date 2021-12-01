@@ -68,6 +68,15 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
 
+    def test_accept_applicant_invalid_club(self):
+        self.client.login(username=self.user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        url = reverse('accept_applicant', kwargs={'club_name':'WRONG CLUB','user_id': self.applicant.id})
+        response = self.client.get(url, follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
+
     def test_accept_applicant_user_does_not_have_permission_is_member(self):
         member = User.objects.get(username='robertdoe@example.org')
         self.club.club_members.add(member,through_defaults={'club_role':'MEM'})

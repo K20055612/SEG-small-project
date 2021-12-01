@@ -23,13 +23,13 @@
           <td class="align-middle">
             <form action = "{% url 'accept_applicant' current_club.club_name user.id %}" method="post">
               {% csrf_token %}
-              <input type="submit" class="btn btn-success" value="Accept" name="accept-btn"/>
+              <input type="submit" class="btn btn-outline-success" value="Accept" name="accept-btn"/>
             </form>
           </td>
           <td class="align-middle">
           <form action = "{% url 'reject_applicant' current_club.club_name user.id %}" method="post">
             {% csrf_token %}
-            <input type="submit" class="btn btn-danger" value="Reject" name="reject-btn"/>
+            <input type="submit" class="btn btn-outline-danger" value="Reject" name="reject-btn"/>
           </form>
           </td>
         </tr>
