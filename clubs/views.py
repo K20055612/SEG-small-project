@@ -162,3 +162,17 @@ def transfer_ownership(request,club_name,user_id):
 
     else:
         return officer_list(request,current_club.club_name)
+@login_required
+@owner_required
+def demote_officer(request,club_name,user_id):
+    current_club = Club.objects.get(club_name=club_name)
+    try:
+        officer = User.objects.get(id=user_id,
+        club__club_name=current_club.club_name,
+        role__club_role='OFF')
+        role = Role.objects.get(user=officer,club=current_club,club_role='OFF')
+        role.toggle_member()
+    except (ObjectDoesNotExist):
+        return redirect('feed')
+    else:
+        return officer_list(request,current_club.club_name)

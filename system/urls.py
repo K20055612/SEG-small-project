@@ -31,5 +31,7 @@ urlpatterns = [
     path('applicants/<str:club_name>/',views.applicants_list,name='applicants_list'),
     path('officers/<str:club_name>/',views.officer_list,name='officer_list'),
     path('officers/<str:club_name>/new_owner/<int:user_id>/', views.transfer_ownership,name='transfer_ownership'),
+    path('officers/<str:club_name>/demote_officer/<int:user_id>/', views.demote_officer,name='demote_officer'),
+
 
 ]
