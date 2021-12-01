@@ -138,7 +138,7 @@ def reject_applicant(request,club_name,user_id):
             return applicants_list(request,current_club.club_name)
 
 @login_required
-@management_required
+@owner_required
 def officer_list(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     officers = User.objects.all().filter(

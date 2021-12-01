@@ -36,6 +36,20 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
             self.assertContains(response, f'First{user_id}')
             self.assertContains(response, f'Last{user_id}')
 
+    def test_get_applicant_list_as_owner(self):
+        owner = User.objects.get(username='bobdoe@example.org')
+        self.club.club_members.add(owner,through_defaults={'club_role':'OWN'})
+        self.client.login(username=owner.username, password='Password123')
+        self._create_test_applicants(15-1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'applicants_list.html')
+        self.assertEqual(len(response.context['applicants']), 14)
+        for user_id in range(15-1):
+            self.assertContains(response, f'user{user_id}')
+            self.assertContains(response, f'First{user_id}')
+            self.assertContains(response, f'Last{user_id}')
+
     def test_applicant_list_invalid_club(self):
         self.client.login(username=self.user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
@@ -46,20 +60,19 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'feed.html')
 
     def test_applicant_list_user_does_not_have_permission_is_member(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'MEM'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        member = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(member,through_defaults={'club_role':'MEM'})
+        self.client.login(username=member.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
         self.assertTemplateUsed(response,'feed.html')
 
-
     def test_applicant_list_user_does_not_have_permission_is_applicant(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'APP'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        applicant = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(applicant,through_defaults={'club_role':'APP'})
+        self.client.login(username=applicant.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')

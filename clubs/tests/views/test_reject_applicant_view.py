@@ -35,7 +35,21 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
         self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe")
+        self.assertNotContains(response, "janedoe@example.org")
+
+    def test_reject_applcant_as_owner(self):
+        owner = User.objects.get(username='bobdoe@example.org')
+        self.club.club_members.add(owner,through_defaults={'club_role':'OWN'})
+        self.client.login(username=owner.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        before = Role.objects.all().filter(club=self.club,club_role='APP').count()
+        response = self.client.get(self.url)
+        after =  Role.objects.all().filter(club=self.club,club_role='APP').count()
+        self.assertEqual(before,after+1)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'applicants_list.html')
+        self.assertNotContains(response, "Jane Doe")
+        self.assertNotContains(response, "janedoe@example.org")
 
     def test_reject_applicant_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -50,9 +64,9 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'feed.html')
 
     def test_reject_applicant_user_does_not_have_permission_is_member(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'MEM'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        member = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(member,through_defaults={'club_role':'MEM'})
+        self.client.login(username=member.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')
@@ -61,9 +75,9 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
 
 
     def test_reject_applicant_user_does_not_have_permission_is_applicant(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'APP'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        member = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(member,through_defaults={'club_role':'APP'})
+        self.client.login(username=member.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')
@@ -71,7 +85,7 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response,'feed.html')
 
     def test_reject_applicant_user_does_not_have_permission_is_visitor(self):
-        visitor_user = User.objects.get(username='janedoe@example.org')
+        visitor_user = User.objects.get(username='robertdoe@example.org')
         self.client.login(username=visitor_user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)

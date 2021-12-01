@@ -44,10 +44,20 @@ class OfficerListViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
 
+    def test_officer_list_user_does_not_have_permission_is_officer(self):
+        officer = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(officer,through_defaults={'club_role':'OFF'})
+        self.client.login(username=officer.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
     def test_officer_list_user_does_not_have_permission_is_member(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'MEM'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        member = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(member,through_defaults={'club_role':'MEM'})
+        self.client.login(username=member.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')
@@ -55,9 +65,9 @@ class OfficerListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response,'feed.html')
 
     def test_officer_list_user_does_not_have_permission_is_applicant(self):
-        invalid_permission_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'APP'})
-        self.client.login(username=invalid_permission_user.username, password='Password123')
+        applicant = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(applicant,through_defaults={'club_role':'APP'})
+        self.client.login(username=applicant.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')
