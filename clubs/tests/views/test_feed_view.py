@@ -17,7 +17,9 @@ class FeedTestCase(TestCase,LogInTester):
     def setUp(self):
             self.user = User.objects.get(username='johndoe@example.org')
             self.club = Club.objects.get(club_name='Beatles')
+            self.applied_to_club = Club.objects.get(club_name='EliteChess')
             self.club.club_members.add(self.user,through_defaults={'club_role':'MEM'})
+            self.applied_to_club.club_members.add(self.user,through_defaults={'club_role':'APP'})
             self.url = reverse('feed')
 
     def test_feed_url(self):
@@ -31,3 +33,4 @@ class FeedTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'feed.html')
         self.assertEqual(len(response.context['clubs']), 3)
         self.assertEqual(len(response.context['user_clubs']), 1)
+        self.assertEqual(len(response.context['user_applicant_clubs']), 1)
