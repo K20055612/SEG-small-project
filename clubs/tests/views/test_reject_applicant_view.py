@@ -45,9 +45,39 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         after = Role.objects.all().filter(club=self.club,club_role='APP').count()
         self.assertEqual(before,after)
         response = self.client.get(url, follow=True)
-        response_url = reverse('applicants_list', kwargs={'club_name':self.club.club_name})
+        response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'applicants_list.html')
+        self.assertTemplateUsed(response, 'feed.html')
+
+    def test_reject_applicant_user_does_not_have_permission_is_member(self):
+        invalid_permission_user = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'MEM'})
+        self.client.login(username=invalid_permission_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+
+    def test_reject_applicant_user_does_not_have_permission_is_applicant(self):
+        invalid_permission_user = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'APP'})
+        self.client.login(username=invalid_permission_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+    def test_reject_applicant_user_does_not_have_permission_is_visitor(self):
+        visitor_user = User.objects.get(username='janedoe@example.org')
+        self.client.login(username=visitor_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
 
     def test_reject_applicant_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)

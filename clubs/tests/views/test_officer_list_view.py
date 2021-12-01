@@ -54,6 +54,30 @@ class OfficerListViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
         self.assertTemplateUsed(response,'feed.html')
 
+    def test_officer_list_user_does_not_have_permission_is_applicant(self):
+        invalid_permission_user = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(invalid_permission_user,through_defaults={'club_role':'APP'})
+        self.client.login(username=invalid_permission_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+    def test_officer_list_user_does_not_have_permission_is_visitor(self):
+        visitor_user = User.objects.get(username='janedoe@example.org')
+        self.client.login(username=visitor_user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+    def test_officer_list_user_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in',self.url)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
     def _create_test_officers(self, user_count=10):
         for user_id in range(user_count):
             user = User.objects.create_user(

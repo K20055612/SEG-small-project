@@ -116,7 +116,7 @@ def accept_applicant(request,club_name,user_id):
             role = Role.objects.get(user=applicant,club=current_club,club_role='APP')
             role.toggle_member()
         except (ObjectDoesNotExist):
-            return redirect('applicants_list', club_name=current_club.club_name)
+            return redirect('feed')
 
         else:
             return applicants_list(request,current_club.club_name)
@@ -133,7 +133,7 @@ def reject_applicant(request,club_name,user_id):
             Role.objects.get(user=applicant,club=current_club,club_role='APP').delete()
 
         except ObjectDoesNotExist:
-            return redirect('applicants_list', club_name=current_club.club_name)
+            return redirect('feed')
         else:
             return applicants_list(request,current_club.club_name)
 
@@ -144,4 +144,4 @@ def officer_list(request,club_name):
     officers = User.objects.all().filter(
     club__club_name=current_club.club_name,
     role__club_role='OFF')
-    return render(request,'applicants_list.html', {'officers':officers, 'current_club':current_club})
+    return render(request,'officer_list.html', {'officers':officers, 'current_club':current_club})
