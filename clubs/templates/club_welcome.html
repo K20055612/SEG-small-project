@@ -10,7 +10,7 @@
     <hr class="my-4">
     <p>This is a placeholder for the description of the club</p>
     <p class="lead">
-      {% if is_applicant %}
+      {% if is_applicant%}
       <a href="#" class="btn btn-primary btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Whoops!</h4>
@@ -18,8 +18,12 @@
         <hr>
         <p class="mb-0">Hang tight while a club officer reviews your application.</p>
       </div>
-      {% else %}
-      <a href="#" class="btn btn-primary btn-lg" role="button">Apply for membership</a>
+      {%endif%}
+      {% if is_member %}
+      <a href="#" class="btn btn-primary btn-lg" role="button">Go to club</a>
+      {%endif%}
+      {%if is_member == False and is_applicant == False%}
+      <a href="#" class="btn btn-primary btn-lg" role="button">Apply!</a>
     {% endif %}
     </p>
   </div>

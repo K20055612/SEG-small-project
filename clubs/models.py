@@ -119,8 +119,7 @@ class Club(models.Model):
 
     def get_members(self):
         return User.objects.all().filter(
-            club__club_name = self.club_name,
-            role__club_role='MEM')
+            club__club_name = self.club_name)
 
     def get_officers(self):
         return User.objects.all().filter(
