@@ -84,5 +84,5 @@ class Command(BaseCommand):
         atlantis_club.club_members.add(valentina,through_defaults={'club_role':'OFF'})
 
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'OFF'})
-        kerbal_club.club_members.add(valentina,through_defaults={'club_role':'OWN'})
-        kerbal_club.club_members.add(billie,through_defaults={'club_role':'OFF'})
+        kerbal_club.club_members.add(valentina,through_defaults={'club_role':'MEM'})
+        kerbal_club.club_members.add(billie,through_defaults={'club_role':'OWN'})

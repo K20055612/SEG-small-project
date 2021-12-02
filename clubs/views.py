@@ -39,16 +39,12 @@ def log_out(request):
 @login_required
 def feed(request):
     clubs= Club.objects.all()
-
     current_user= request.user
-
     user_applicant_clubs = Club.objects.all().filter(
         club_members__username=current_user.username,
         role__club_role='APP')
-
     user_clubs = Club.objects.all().filter(
         club_members__username=current_user.username).difference(user_applicant_clubs)
-
     return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
 
 @login_prohibited
@@ -94,6 +90,7 @@ def password(request):
     return render(request, 'password.html', {'form': form})
 
 @login_required
+@club_exists
 def apply_to_club(request,club_name):
     try:
         club = Club.objects.get(club_name=club_name)
@@ -109,6 +106,7 @@ def apply_to_club(request,club_name):
             return redirect('feed')
 
 @login_required
+@club_exists
 @management_required
 def applicants_list(request,club_name):
         current_club = Club.objects.get(club_name=club_name)
@@ -116,48 +114,41 @@ def applicants_list(request,club_name):
         return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
-@member_required
+@club_exists
+@membership_required
 def club_feed(request,club_name):
-    club = Club.objects.get(club_name=club_name)
-    user = request.user
-    members = User.objects.all().filter(
-        club__club_name=club_name,
-        role__club_role='MEM')
-
     is_officer = False
-    try:
-        role = user.role_set.get(club=club)
-        is_officer=role.club_role == 'OFF'
-    except ObjectDoesNotExist:
-        is_officer = False
-
-    return render(request,'club_feed.html', {'club':club, 'user':user, 'members':members, 'is_officer':is_officer})
+    is_owner = False
+    current_club = Club.objects.get(club_name=club_name)
+    club_role = current_club.get_club_role(request.user)
+    members = current_club.get_members()
+    number_of_applicants = current_club.get_applicants().count()
+    if club_role == 'OWN':
+        is_owner = True
+    elif club_role == 'OFF':
+        is_officer = True
+    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'number_of_applicants':number_of_applicants})
 
 @login_required
+@club_exists
 def club_welcome(request,club_name):
+    is_applicant = False
+    is_member = False
     club = Club.objects.get(club_name=club_name)
     user = request.user
-
-    is_applicant = False
     try:
-        role = user.role_set.get(club=club)
-        is_applicant=role.club_role == 'APP'
-    except ObjectDoesNotExist:
-        is_applicant = False
-
-    return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant})
-
-def member_list(request,club_name):
-    try:
-        current_club = Club.objects.get(club_name=club_name)
-        members = current_club.get_members()
-    except (ObjectDoesNotExist):
-        return redirect('feed')
+        club_role = club.get_club_role(user)
+    except Role.DoesNotExist:
+        return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member})
     else:
-        return render(request,'member_list.html', {'members':members, 'current_club':current_club})
-
+        if club_role == 'APP':
+            is_applicant = True
+        elif club_role ==  'MEM' or club_role ==  'OWN' or club_role ==  'OFF':
+            is_member = True
+    return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member})
 
 @login_required
+@club_exists
 @management_required
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
@@ -171,6 +162,7 @@ def accept_applicant(request,club_name,user_id):
             return applicants_list(request,current_club.club_name)
 
 @login_required
+@club_exists
 @management_required
 def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
@@ -183,6 +175,7 @@ def reject_applicant(request,club_name,user_id):
             return applicants_list(request,current_club.club_name)
 
 @login_required
+@club_exists
 @owner_required
 def officer_list(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
@@ -190,6 +183,7 @@ def officer_list(request,club_name):
     return render(request,'officer_list.html', {'officers':officers, 'current_club':current_club})
 
 @login_required
+@club_exists
 @owner_required
 def transfer_ownership(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
@@ -198,10 +192,11 @@ def transfer_ownership(request,club_name,user_id):
         current_club.transfer_ownership(request.user,officer)
     except (ObjectDoesNotExist):
         return redirect('feed')
-
     else:
         return officer_list(request,current_club.club_name)
+
 @login_required
+@club_exists
 @owner_required
 def demote_officer(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
