@@ -116,7 +116,6 @@ def applicants_list(request,club_name):
         return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
 
 @login_required
-<<<<<<< HEAD
 @member_required
 def club_feed(request,club_name):
     club = Club.objects.get(club_name=club_name)
@@ -147,8 +146,7 @@ def club_welcome(request,club_name):
         is_applicant = False
 
     return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant})
-=======
-@membership_required
+
 def member_list(request,club_name):
     try:
         current_club = Club.objects.get(club_name=club_name)
@@ -157,7 +155,7 @@ def member_list(request,club_name):
         return redirect('feed')
     else:
         return render(request,'member_list.html', {'members':members, 'current_club':current_club})
->>>>>>> apply-to-club
+
 
 @login_required
 @management_required
