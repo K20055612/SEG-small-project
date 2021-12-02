@@ -103,8 +103,6 @@ class DemoteOfficerViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
         self.assertTemplateUsed(response,'feed.html')
 
-
-
     def test_demote_officer_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.get(self.url)

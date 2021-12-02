@@ -40,6 +40,19 @@
       "is_active": true
 
     }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 5,
+    "fields": {
+      "first_name": "Patrick",
+      "last_name": "Doe",
+      "username": "patrickdoe@example.org",
+      "bio": "Hello, I am Patrick Doe.",
+      "chess_experience_level": 1,
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+    }
   }
 
 ]
