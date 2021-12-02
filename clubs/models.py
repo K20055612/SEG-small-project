@@ -42,7 +42,6 @@ class User(AbstractUser):
     def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 
-
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
@@ -81,7 +80,57 @@ class Club(models.Model):
         blank=False
         )
 
+
     club_members = models.ManyToManyField(User,through='Role')
+
+    def get_club_role(self,user):
+        return Role.objects.get(club = self, user = user).club_role
+
+    def toggle_member(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.club_role = 'MEM'
+        role.save()
+
+    def toggle_officer(self,user):
+        role = Role.objects.get(club=self,user=user)
+        if role.club_role == 'APP':
+            return
+        else:
+            role.club_role = 'OFF'
+            role.save()
+            return
+
+    def transfer_ownership(self,old_owner,new_owner):
+        new_owner_role = Role.objects.get(club=self,user=new_owner)
+        old_owner_role = Role.objects.get(club=self,user=old_owner)
+        if new_owner_role.club_role == 'OFF':
+            new_owner_role.club_role = 'OWN'
+            new_owner_role.save()
+            old_owner_role.club_role = 'OFF'
+            old_owner_role.save()
+            return
+        else:
+            return
+
+    def get_applicants(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='APP')
+
+    def get_members(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='MEM')
+
+    def get_officers(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='OFF')
+
+    def remove_user_from_club(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.delete()
+
 
 class Role(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -101,26 +150,3 @@ class Role(models.Model):
 
     def get_club_role(self):
         return self.RoleOptions(self.club_role).name.title()
-
-    def toggle_member(self):
-        self.club_role = 'MEM'
-        self.save()
-        return
-
-    def toggle_officer(self):
-        if self.club_role == 'APP':
-            return
-        else:
-            self.club_role = 'OFF'
-            self.save()
-            return
-
-    def transfer_ownership(self,new_owner):
-        if new_owner.club_role == 'OFF':
-            new_owner.club_role = 'OWN'
-            new_owner.save()
-            self.club_role = 'OFF'
-            self.save()
-            return
-        else:
-            return
