@@ -9,20 +9,21 @@
       {%if is_owner%}
       <form action = "{% url 'officer_list' club.club_name%}" method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">
-          <i class="bi bi-gear-fill"></i> Settings
+        <button type="submit" class="btn btn-warning">
+          <i class="bi bi-people-fill"></i> Officer management
         </button>
       </form>
       {%endif%}
       {%if is_owner == True or is_officer == True%}
       <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
         {% csrf_token %}
-        <input type="submit" class="btn btn-success" value="{{number_of_applicants}} applicants" name="accept-btn"/>
+        <button type="submit" class="btn btn-primary">
+          Applicants <span class="badge alert-light">{{number_of_applicants}}</span>
+        </button>
       </form>
       {%endif%}
     </h1>
     <p>Your fellow members:</p>
-
   </div>
 </div>
 <div class="container">

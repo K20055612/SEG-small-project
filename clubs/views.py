@@ -114,6 +114,7 @@ def apply_to_club(request,club_name):
             club.get_club_role(request.user)
         except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
+            club.save()
             return feed(request)
         else:
             return redirect('feed')

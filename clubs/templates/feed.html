@@ -5,6 +5,12 @@
 
 <div class="container">
   <div class="float-none">
+    <form action = "{% url 'create_club'%}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">
+        Create club <i class="bi bi-plus-circle-fill"></i>
+      </button>
+    </form>
   </div><br>
   <div class="accordion" id="accordionExample">
     <div class="accordion-item">

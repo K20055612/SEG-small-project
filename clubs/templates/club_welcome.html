@@ -20,14 +20,22 @@
       </div>
       {%endif%}
       {% if is_member %}
-      <a href="#" class="btn btn-primary btn-lg" role="button">Go to club</a>
-      {%endif%}
-      {%if is_member == False and is_applicant == False%}
-      <a href="#" class="btn btn-primary btn-lg" role="button">Apply!</a>
-    {% endif %}
-    </p>
-  </div>
-</div>
+      <form action = "{% url 'club_feed' club.club_name%}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+          Go to club
+        </button>
+        {%endif%}
+        {%if is_member == False and is_applicant == False%}
+        <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">
+            Apply!
+          </button>
+          {% endif %}
+        </p>
+      </div>
+    </div>
 
 
-{% endblock %}
+    {% endblock %}
