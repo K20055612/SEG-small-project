@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import RegexValidator
-from .models import User
+from .models import User,Club
 
 class SignUpForm(forms.ModelForm):
     """Form enabling unregistered users to sign up."""
@@ -9,8 +9,12 @@ class SignUpForm(forms.ModelForm):
         """Form options."""
 
         model = User
-        fields = ['first_name', 'last_name', 'username', 'bio','chess_experience_level']
+        labels = {
+        "username": "Email:"}
+        fields = ['first_name', 'last_name','username','bio','chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
+
+
 
     new_password = forms.CharField(
         label='Password',
@@ -50,13 +54,36 @@ class LogInForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
+class NewClubForm(forms.ModelForm):
+    class Meta:
+
+        model = Club
+        fields = ['club_name', 'location','description']
+        widgets = { 'description': forms.Textarea() }
+
+    def clean(self):
+        """Clean the data and generate messages for any errors."""
+
+        super().clean()
+
+    def save(self):
+        """Create a new club."""
+        super().save(commit=False)
+        club = Club.objects.create(
+            club_name=self.cleaned_data.get('club_name'),
+            location=self.cleaned_data.get('location'),
+            description=self.cleaned_data.get('description'),
+        )
+        return club
+
 class UserForm(forms.ModelForm):
     """Form to update user profiles."""
 
     class Meta:
         """Form options."""
-
         model = User
+        labels = {
+        "username": "Email:"}
         fields = ['first_name', 'last_name','username', 'bio', 'chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
 

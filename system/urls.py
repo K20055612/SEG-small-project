@@ -34,6 +34,9 @@ urlpatterns = [
     path('officers/<str:club_name>/new_owner/<int:user_id>/', views.transfer_ownership,name='transfer_ownership'),
     path('officers/<str:club_name>/demote_officer/<int:user_id>/', views.demote_officer,name='demote_officer'),
     path('apply/<str:club_name>/', views.apply_to_club,name='apply_to_club'),
+    path('create_club/', views.create_club,name='create_club'),
+
+
 
 
 

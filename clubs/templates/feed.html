@@ -4,6 +4,8 @@
 {% block content %}
 
 <div class="container">
+  <div class="float-none">
+  </div><br>
   <div class="accordion" id="accordionExample">
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOne">
@@ -14,25 +16,27 @@
       <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
         <div class="accordion-body">
           <div class="d-grid gap-2">
-
             <tr>
               <td>
                 <div class="row">
-                  <div class="col-sm-6">
                     {% for club in user_clubs %}
-                    <div class="card">
-                      <div class="card-body">
-                        <h5 class="card-title">{{club.club_name}}</h5>
-                        <p class="card-text">{{club.description}}</p>
-                        <a class="btn btn-primary" href='{% url 'club_feed' club.club_name %}' role="button">Select</a>
-                      </div>
+                    <div class="col-sm-6">
+                      <tr>
+                        <td>
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">{{club.club_name}}</h5>
+                              <a class="btn btn-primary" href='{% url 'club_feed' club.club_name %}' role="button">Select</a>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
                     </div>
                     {%endfor%}
-                  </div>
+                </div>
                 </div>
               </td>
             </tr>
-
           </div>
         </div>
       </div>
@@ -54,7 +58,6 @@
                     <div class="card">
                       <div class="card-body">
                         <h5 class="card-title">{{club.club_name}}</h5>
-                        <p class="card-text">{{club.description}}</p>
                         <a class="btn btn-primary" href='{% url 'club_welcome' club.club_name %}' role="button">Learn more</a>
                       </div>
                     </div>

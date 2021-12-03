@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
 from .models import User,Club,Role
 from django.contrib import messages
-from .forms import LogInForm,SignUpForm,UserForm,PasswordForm
+from .forms import LogInForm,SignUpForm,UserForm,PasswordForm,NewClubForm
 from django.contrib.auth.decorators import login_required
 from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
@@ -58,6 +58,19 @@ def sign_up(request):
     else:
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
+
+@login_required
+def create_club(request):
+    if request.method =='POST':
+        form = NewClubForm(request.POST)
+        if form.is_valid():
+            club = form.save()
+            club.club_members.add(request.user,through_defaults={'club_role':'OWN'})
+            return redirect('feed')
+    else:
+        form = NewClubForm()
+    return render(request,'new_club.html',{'form':form})
+
 
 @login_required
 def profile(request):

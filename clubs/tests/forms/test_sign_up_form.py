@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.hashers import check_password
 
 class SignUpFormTestCase(TestCase):
-    """Unit tests of sign upusername."""
+    """Unit tests of sign up form."""
 
     def setUp(self):
         self.form_input = {

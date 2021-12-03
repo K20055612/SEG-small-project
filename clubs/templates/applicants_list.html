@@ -17,6 +17,7 @@
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Experience Level</th>
+            <th scope="col">Statement</th>
           </tr>
         </thead>
         {% for user in applicants %}
@@ -27,6 +28,7 @@
           <td class="align-middle"> {{user.full_name}}</td>
           <td class="align-middle"> {{user.username}}</td>
           <td class="align-middle"> {{user.get_chess_experience}}</td>
+          <td class="align-middle"> {{user.bio}}</td>
           <td class="align-middle">
             <form action = "{% url 'accept_applicant' current_club.club_name user.id %}" method="post">
               {% csrf_token %}

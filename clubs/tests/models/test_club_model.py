@@ -25,12 +25,12 @@ class ClubModelTestCase(TestCase):
         self.club.club_name = ''
         self._assert_club_is_invalid()
 
-    def test_club_name_can_be_50_characters_long(self):
-        self.club.club_name = 'x' * 50
+    def test_club_name_can_be_20_characters_long(self):
+        self.club.club_name = 'x' * 20
         self._assert_club_is_valid()
 
-    def test_club_name_cannot_be_over_50_characters_long(self):
-        self.club.club_name = 'x' * 51
+    def test_club_name_cannot_be_over_20_characters_long(self):
+        self.club.club_name = 'x' * 21
         self._assert_club_is_invalid()
 
     def test_club_name_must_be_unique(self):

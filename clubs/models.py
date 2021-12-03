@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     username = models.EmailField(
         unique=True,
-        blank=False
+        blank=False,
         )
 
     first_name = models.CharField(
@@ -61,12 +61,12 @@ class User(AbstractUser):
 class Club(models.Model):
     club_name = models.CharField(
     unique=True,
-    max_length=50,
+    max_length=20,
     blank=False,
     validators=[
         RegexValidator(
-            regex=r'^\w{5,}$',
-            message='Club name must consist of at least five alphanumericals'
+            regex=r'^\w{4,}.*$',
+            message='Club name must consist of at least four alphanumericals in first word'
             )
         ]
     )
@@ -119,7 +119,7 @@ class Club(models.Model):
 
     def get_members(self):
         return User.objects.all().filter(
-            club__club_name = self.club_name)
+            club__club_name = self.club_name).exclude(role__club_role = 'APP')
 
     def get_officers(self):
         return User.objects.all().filter(
