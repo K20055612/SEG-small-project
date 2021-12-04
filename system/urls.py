@@ -21,10 +21,23 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('sign_up/', views.sign_up, name='sign_up'),
     path('log_in/', views.log_in, name='log_in'),
+    path('feed/', views.feed, name='feed'),
     path('profile/', views.profile, name='profile'),
+    path('password/', views.password, name='password'),
     path('log_out/', views.log_out, name='log_out'),
-    path('applicants/', views.applicants_list, name='applicants_list'),
-    path('members/', views.member_list, name='member_list'),
-    path('accept/<int:user_id>/', views.accept_applicant, name='accept_applicant'),
-    path('reject/<int:user_id>/', views.reject_applicant, name='reject_applicant'),
+    path('club/<str:club_name>/feed/', views.club_feed ,name='club_feed'),
+    path('club/<str:club_name>/', views.club_welcome ,name='club_welcome'),
+    path('applicants/<str:club_name>/accept/<int:user_id>/', views.accept_applicant,name='accept_applicant'),
+    path('applicants/<str:club_name>/reject/<int:user_id>/', views.reject_applicant,name='reject_applicant'),
+    path('applicants/<str:club_name>/',views.applicants_list,name='applicants_list'),
+    path('officers/<str:club_name>/',views.officer_list,name='officer_list'),
+    path('officers/<str:club_name>/new_owner/<int:user_id>/', views.transfer_ownership,name='transfer_ownership'),
+    path('officers/<str:club_name>/demote_officer/<int:user_id>/', views.demote_officer,name='demote_officer'),
+    path('apply/<str:club_name>/', views.apply_to_club,name='apply_to_club'),
+    path('create_club/', views.create_club,name='create_club'),
+
+
+
+
+
 ]

@@ -136,7 +136,7 @@ AUTH_USER_MODEL = 'clubs.User'
 
 
 # URL where @login_prohibited redirects to
-REDIRECT_URL_WHEN_LOGGED_IN = 'profile'
+REDIRECT_URL_WHEN_LOGGED_IN = 'feed'
 
 # Login URL for redirecting users.
 LOGIN_URL = 'log_in'

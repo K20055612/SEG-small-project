@@ -9,26 +9,17 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        max_length=30,
+    username = models.EmailField(
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^\w{3,}$',
-                message='Username must consist of at least three alphanumericals'
-                )
-            ]
-    )
+        blank=False,
+        )
+
     first_name = models.CharField(
         max_length=50,
         blank=False
     )
     last_name = models.CharField(
         max_length=50,
-        blank=False
-    )
-    email = models.EmailField(
-        unique=True,
         blank=False
     )
     bio = models.CharField(
@@ -48,47 +39,8 @@ class User(AbstractUser):
         choices = ChessExperience.choices
     )
 
-    def get_Chess_Experience(self):
+    def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
-
-    is_applicant = models.BooleanField(default = False)
-
-    def toggle_applicant(user):
-        if user.is_applicant == True:
-            user.is_applicant = False
-            user.save()
-            return
-        elif user.is_applicant == False:
-            user.is_applicant = True
-            user.save()
-
-    is_member = models.BooleanField(default = False)
-
-    def toggle_member(user):
-        if user.is_member == True:
-            user.is_member = False
-            user.save()
-            return
-        elif user.is_member == False:
-            user.is_applicant = False
-            user.is_member = True
-            user.save()
-
-
-    is_officer = models.BooleanField(default = False)
-
-    def toggle_officer(user):
-        if user.is_officer == True:
-            user.is_officer = False
-            user.save()
-            return
-        elif user.is_officer == False:
-            user.is_officer = True
-            user.save()
-
-
-    is_owner = models.BooleanField(default = False)
-
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -104,3 +56,99 @@ class User(AbstractUser):
         gravatar_object = Gravatar(self.email)
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
+
+
+class Club(models.Model):
+    club_name = models.CharField(
+    unique=True,
+    max_length=20,
+    blank=False,
+    validators=[
+        RegexValidator(
+            regex=r'^\w{4,}.*$',
+            message='Club name must consist of at least four alphanumericals in first word'
+            )
+        ]
+    )
+    location = models.CharField(
+        max_length=100,
+        blank=False
+        )
+
+    description = models.CharField(
+        max_length=520,
+        blank=False
+        )
+
+
+    club_members = models.ManyToManyField(User,through='Role')
+
+    def get_club_role(self,user):
+        return Role.objects.get(club = self, user = user).club_role
+
+    def toggle_member(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.club_role = 'MEM'
+        role.save()
+
+    def toggle_officer(self,user):
+        role = Role.objects.get(club=self,user=user)
+        if role.club_role == 'APP':
+            return
+        else:
+            role.club_role = 'OFF'
+            role.save()
+            return
+
+    def transfer_ownership(self,old_owner,new_owner):
+        new_owner_role = Role.objects.get(club=self,user=new_owner)
+        old_owner_role = Role.objects.get(club=self,user=old_owner)
+        if new_owner_role.club_role == 'OFF':
+            new_owner_role.club_role = 'OWN'
+            new_owner_role.save()
+            old_owner_role.club_role = 'OFF'
+            old_owner_role.save()
+            return
+        else:
+            return
+
+    def get_applicants(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='APP')
+
+    def get_members(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name, role__club_role = 'MEM') | User.objects.all().filter(
+                club__club_name = self.club_name, role__club_role = 'OFF') | User.objects.all().filter(
+                    club__club_name = self.club_name, role__club_role = 'OWN')
+
+
+    def get_officers(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='OFF')
+
+    def remove_user_from_club(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.delete()
+
+
+class Role(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    class RoleOptions(models.TextChoices):
+        APPLICANT = 'APP', _('Applicant')
+        MEMBER = 'MEM', _('Member')
+        OFFICER = 'OFF', _('Officer')
+        OWNER = 'OWN', _('Owner')
+
+    club_role = models.CharField(
+        max_length = 3,
+        choices = RoleOptions.choices,
+        default = RoleOptions.APPLICANT,
+        )
+
+    def get_club_role(self):
+        return self.RoleOptions(self.club_role).name.title()

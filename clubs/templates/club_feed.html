@@ -1,0 +1,62 @@
+{% extends 'base_content.html' %}
+{% block title %}
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row justify-content-between">
+    <h1 class="col-5">
+      {{club.club_name}}
+      {%if is_owner%}
+      <form action = "{% url 'officer_list' club.club_name%}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+          <i class="bi bi-people-fill"></i> Officer management
+        </button>
+      </form>
+      {%endif%}
+      {%if is_owner == True or is_officer == True%}
+      <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+          Applicants <span class="badge alert-light">{{number_of_applicants}}</span>
+        </button>
+      </form>
+      {%endif%}
+    </h1>
+    <p>Your fellow members:</p>
+  </div>
+</div>
+<div class="container">
+
+  <div class="row">
+    <div class="col-10">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Name</th>
+            {%if is_owner == True or is_officer == True%}
+            <th scope="col">Email</th>
+            <th scope="col">Experience level</th>
+            {%endif%}
+            <th scope="col">Statement</th>
+          </tr>
+        </thead>
+        {% for member in members %}
+        <tr>
+          <td>
+            <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle" >
+          </td>
+          <td class="align-middle"> {{member.full_name}}</td>
+          {%if is_owner == True or is_officer == True%}
+          <td class="align-middle"> {{member.username}}</td>
+          <td class="align-middle"> {{member.get_chess_experience}}</td>
+          {%endif%}
+          <td class="align-middle"> {{member.bio}}</td>
+        </tr>
+        {%endfor%}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

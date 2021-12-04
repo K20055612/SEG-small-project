@@ -1,0 +1,22 @@
+[
+  {
+    "model": "clubs.club",
+    "pk": 2,
+    "fields": {
+      "club_name":"ADCD",
+      "location":"Sydney",
+      "description":"Best chess club in town!"
+
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 3,
+    "fields": {
+      "club_name":"EliteChess",
+      "location":"Paris",
+      "description":"Best chess club in town!"
+    }
+  }
+
+]
