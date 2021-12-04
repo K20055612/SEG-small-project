@@ -25,8 +25,6 @@ class ShowUserTest(TestCase):
         self.assertTemplateUsed(response, 'show_user.html')
         self.assertContains(response, "Jane Doe")
         self.assertContains(response, "janedoe@example.org")
-        #followable = response.context['followable']
-        #self.assertTrue(followable)
 
     def test_get_show_user_with_own_id(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -36,8 +34,6 @@ class ShowUserTest(TestCase):
         self.assertTemplateUsed(response, 'show_user.html')
         self.assertContains(response, "John Doe")
         self.assertContains(response, "johndoe@example.org")
-        #followable = response.context['followable']
-        #self.assertFalse(followable)
 
     def test_get_show_user_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')
