@@ -3,16 +3,18 @@
 Sign Up
 {% endblock %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 col-md-6 offset-md-3">
-      <h1>Edit profile</h1>
-      <form action="{% url 'profile' %}" method="post">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Update" class="btn btn-primary">
-      </form>
+<div id="profile-row" class="row justify-content-center align-items-center">
+    <div id="profile-column" class="col-md-6">
+        <div id="profile-box" class="col-md-12">
+        <div class="card cover-card offset-sm-8 offset-md-12 offset-lg-1">
+            <h1 class="cover-heading">Edit Profile</h1>
+            <form action="{% url 'profile' %}" method="post" class="text-dark">
+              {% csrf_token %}
+              {% include 'partials/bootstrap_form.html' with form=form %}
+              <input type="submit" value="Update" class="btn btn-dark">
+            </form>
+            <p><a href="{% url 'feed' %}" class="text-dark">Don't want to make changes anymore? Click here to cancel</a></p>
+          </div>
+        </div>
     </div>
-  </div>
-</div>
 {% endblock %}

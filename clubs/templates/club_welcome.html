@@ -11,7 +11,7 @@
     <p>This is a placeholder for the description of the club</p>
     <p class="lead">
       {% if is_applicant%}
-      <a href="#" class="btn btn-primary btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
+      <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Whoops!</h4>
         <p>It looks like you have already applied to join this club.</p>
@@ -22,14 +22,14 @@
       {% if is_member %}
       <form action = "{% url 'club_feed' club.club_name%}" method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-dark">
           Go to club
         </button>
         {%endif%}
         {%if is_member == False and is_applicant == False%}
         <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-dark">
             Apply!
           </button>
           {% endif %}
