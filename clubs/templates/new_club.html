@@ -10,7 +10,7 @@ Create new club
        <form action="{% url 'create_club' %}" method="post">
          {% csrf_token %}
          {% include 'partials/bootstrap_form.html' with form=form %}
-         <input type="submit" value="Create club!" class="btn btn-primary">
+         <input type="submit" value="Create club!" class="btn btn-dark">
        </form>
      </div>
    </div>
