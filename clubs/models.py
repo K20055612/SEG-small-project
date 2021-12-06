@@ -39,6 +39,16 @@ class User(AbstractUser):
         choices = ChessExperience.choices
     )
 
+    def get_user_clubs(self):
+        clubs = Club.objects.all()
+        current_user = self
+        user_applicant_clubs = Club.objects.all().filter(
+            club_members__username = current_user.username,
+            role__club_role='APP')
+        user_clubs = Club.objects.all().filter(
+            club_members__username=current_user.username).difference(user_applicant_clubs)
+        return user_clubs
+
     def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
 

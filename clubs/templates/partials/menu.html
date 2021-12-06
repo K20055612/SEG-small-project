@@ -15,8 +15,8 @@
       My clubs
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-      {% for club in user_clubs %}
-          <li> <a class="dropdown-item" href="{% url 'club_feed' club.club_name %}"> {{club.club_name}} </a> </li>
+      {% for club in user.get_user_clubs %}
+        <li> <a class="dropdown-item" href="{% url 'club_feed' club.club_name %}"> {{club.club_name}} </a> </li>
       {%endfor%}
       <li><hr class="dropdown-divider"></li>
       <li><a class="dropdown-item" href='{% url 'create_club' %}'>Create club</a></li>
