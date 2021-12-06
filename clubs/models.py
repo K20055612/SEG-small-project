@@ -83,9 +83,14 @@ class Club(models.Model):
 
     club_members = models.ManyToManyField(User,through='Role')
 
+    club_tournaments = models.ManyToManyField('Tournament',related_name='tournament_at_club')
+
 
     def get_club_role(self,user):
         return Role.objects.get(club = self, user = user).club_role
+
+    def get_tournaments(self):
+        return self.club_tournaments.all()
 
     def toggle_member(self,user):
         role = Role.objects.get(club=self,user=user)
@@ -135,7 +140,8 @@ class Club(models.Model):
         role.delete()
 
 class Tournament(models.Model):
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club,on_delete=models.CASCADE)
+    organiser = models.ManyToManyField(User,related_name='organising_officers')
     enter_by_deadline = models.DateTimeField(auto_now=False)
     tournament_name = models.CharField(
     unique=True,
@@ -149,28 +155,13 @@ class Tournament(models.Model):
         blank=False
         )
 
-    tournament_participants = models.ManyToManyField(User, through='TournamentRole')
+    tournament_participants = models.ManyToManyField(User, through='Player')
 
     def get_deadline(self):
         return datetime.now() > self.enter_by_deadline
 
-class TournamentRole(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete = models.CASCADE)
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
-
-    class TournamentRoleOptions(models.TextChoices):
-            ORGANISER = 'ORG', _('Organiser')
-            PLAYER = 'PLA', _('Player')
-
-    tournament_role = models.CharField(
-        max_length = 3,
-            choices = TournamentRoleOptions.choices,
-            default = TournamentRoleOptions.PLAYER,
-            )
-
-    def get_tournament_role(self):
-        return self.TournamentRoleOptions(self.tournament_role).name.title()
-
+    def get_organisers(self):
+        return self.organiser.all()
 
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

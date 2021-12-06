@@ -222,7 +222,9 @@ def demote_officer(request,club_name,user_id):
         return redirect('feed')
     else:
         return officer_list(request,current_club.club_name)
-
+@login_required
+@club_exists
+@management_required
 def create_tournament(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     if request.method == 'POST':
@@ -231,8 +233,18 @@ def create_tournament(request,club_name):
             tournament = form.save()
             tournament.club = current_club
             tournament.save()
-            tournament.tournament_participants.add(request.user,through_defaults={'tournament_role':'ORG'})
+            current_club.club_tournaments.add(tournament)
+            tournament.organiser.add(request.user)
             return redirect ('feed')
     else:
         form = CreateTournamentForm()
     return render(request,'create_tournament.html',{'form':form, 'current_club':current_club})
+
+@login_required
+@club_exists
+@membership_required
+def tournament_list(request,club_name):
+    user = request.user
+    current_club = Club.objects.get(club_name = club_name)
+    tournaments = current_club.get_tournaments()
+    return render(request,'tournament_list.html',{'tournaments':tournaments, 'user':user})

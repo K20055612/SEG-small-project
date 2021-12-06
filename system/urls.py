@@ -36,6 +36,9 @@ urlpatterns = [
     path('apply/<str:club_name>/', views.apply_to_club,name='apply_to_club'),
     path('create_club/', views.create_club,name='create_club'),
     path('create_tournament/<str:club_name>/', views.create_tournament,name='create_tournament'),
+    path('tournaments/<str:club_name>/', views.tournament_list,name='tournament_list'),
+
+
 
 
 
