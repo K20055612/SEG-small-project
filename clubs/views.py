@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
+from django.views import View
+from django.utils.decorators import method_decorator
+from django.conf import settings
 
 def home(request):
     return render(request, 'home.html')
@@ -31,6 +34,39 @@ def log_in(request):
     form = LogInForm()
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
+
+class LogInView(View):
+    """View that handles log in."""
+
+    http_method_names = ['get', 'post']
+
+    @method_decorator(login_prohibited)
+    def dispatch(self, request):
+        return super().dispatch(request)
+
+    def get(self, request):
+        """Display log in template."""
+
+        self.next = request.GET.get('next') or ''
+        return self.render()
+
+    def post(self, request):
+        """Handle log in attempt."""
+        form = LogInForm(request.POST)
+        self.next = request.POST.get('next') or settings.REDIRECT_URL_WHEN_LOGGED_IN
+        user = form.get_user()
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect(self.next)
+        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+        return self.render()
+
+    def render(self):
+        """Render log in template with blank log in form."""
+
+        form = LogInForm()
+        return render(self.request, 'log_in.html', {'form': form, 'next': self.next})
 
 def log_out(request):
     logout(request)
