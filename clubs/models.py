@@ -83,6 +83,7 @@ class Club(models.Model):
 
     club_members = models.ManyToManyField(User,through='Role')
 
+
     def get_club_role(self,user):
         return Role.objects.get(club = self, user = user).club_role
 
@@ -133,6 +134,55 @@ class Club(models.Model):
         role = Role.objects.get(club=self,user=user)
         role.delete()
 
+class Tournament(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    enter_by_deadline = models.DateTimeField(auto_now=False)
+    tournament_name = models.CharField(
+    unique=True,
+    max_length=20,
+    blank=False,)
+    tournament_capacity = models.IntegerField(
+    validators=[MinValueValidator(2),MaxValueValidator(96)]
+    )
+    tournament_description = models.CharField(
+        max_length=520,
+        blank=False
+        )
+
+    tournament_participants = models.ManyToManyField(User, through='TournamentRole')
+
+    def get_deadline(self):
+        return datetime.now() > self.enter_by_deadline
+
+class TournamentRole(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+
+    class TournamentRoleOptions(models.TextChoices):
+            ORGANISER = 'ORG', _('Organiser')
+            PLAYER = 'PLA', _('Player')
+
+    tournament_role = models.CharField(
+        max_length = 3,
+            choices = TournamentRoleOptions.choices,
+            default = TournamentRoleOptions.PLAYER,
+            )
+
+    def get_tournament_role(self):
+        return self.TournamentRoleOptions(self.tournament_role).name.title()
+
+
+class Player(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    player_points = models.IntegerField()
+
+class Match(models.Model):
+    player1 = models.ForeignKey(Player,related_name = 'Opponent1',on_delete=models.CASCADE)
+
+    player2 = models.ForeignKey(Player, related_name = 'Opponent2',on_delete=models.CASCADE)
+
+    winner = models.ForeignKey(Player, related_name='match_winner',on_delete=models.CASCADE)
 
 class Role(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

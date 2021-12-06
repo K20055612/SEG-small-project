@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import RegexValidator
-from .models import User,Club
+from .models import User,Club,Tournament
 
 class SignUpForm(forms.ModelForm):
     """Form enabling unregistered users to sign up."""
@@ -110,3 +110,23 @@ class PasswordForm(forms.Form):
         password_confirmation = self.cleaned_data.get('password_confirmation')
         if new_password != password_confirmation:
             self.add_error('password_confirmation', 'Confirmation does not match password.')
+
+class CreateTournamentForm(forms.ModelForm):
+    class Meta:
+
+        model = Tournament
+        fields = ['tournament_name', 'tournament_capacity', 'tournament_description','enter_by_deadline']
+        widgets = {'tournament_description' : forms.Textarea(),'enter_by_deadline':forms.DateTimeInput()}
+
+    def clean(self):
+        super().clean()
+
+    def save(self):
+        super().save(commit=False)
+        tournament = Tournament(
+        tournament_name=self.cleaned_data.get('tournament_name'),
+        tournament_capacity = self.cleaned_data.get('tournament_capacity'),
+        tournament_description = self.cleaned_data.get('tournament_description'),
+        enter_by_deadline = self.cleaned_data.get('enter_by_deadline'),
+        )
+        return tournament

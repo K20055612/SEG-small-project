@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
-from .models import User,Club,Role
+from .models import User,Club,Role,Tournament
 from django.contrib import messages
-from .forms import LogInForm,SignUpForm,UserForm,PasswordForm,NewClubForm
+from .forms import LogInForm,SignUpForm,UserForm,PasswordForm,NewClubForm,CreateTournamentForm
 from django.contrib.auth.decorators import login_required
 from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
+from datetime import datetime
 
 def home(request):
     return render(request, 'home.html')
@@ -221,3 +222,17 @@ def demote_officer(request,club_name,user_id):
         return redirect('feed')
     else:
         return officer_list(request,current_club.club_name)
+
+def create_tournament(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    if request.method == 'POST':
+        form = CreateTournamentForm(request.POST)
+        if form.is_valid():
+            tournament = form.save()
+            tournament.club = current_club
+            tournament.save()
+            tournament.tournament_participants.add(request.user,through_defaults={'tournament_role':'ORG'})
+            return redirect ('feed')
+    else:
+        form = CreateTournamentForm()
+    return render(request,'create_tournament.html',{'form':form, 'current_club':current_club})
