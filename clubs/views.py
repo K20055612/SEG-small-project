@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import check_password
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.conf import settings
+from django.views.generic.detail import DetailView
+from django.http import HttpResponseForbidden, Http404
 
 def home(request):
     return render(request, 'home.html')
@@ -122,14 +124,34 @@ def profile(request):
     return render(request, 'profile.html', {'form': form})
 
 
-@login_required
-def show_user(request, user_id):
-    try:
-        user = User.objects.get(id=user_id)
-    except ObjectDoesNotExist:
-        return redirect('feed')
-    else:
-        return render(request, 'show_user.html', {'user': user})
+
+
+class ShowUserView(DetailView):
+    """View that shows individual user details."""
+    model = User
+    template_name = 'show_user.html'
+    context_object_name = "user"
+    pk_url_kwarg = 'user_id'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        """Generate content to be displayed in the template."""
+
+        context = super().get_context_data(*args, **kwargs)
+        user = self.get_object()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """Handle get request, and redirect to user_list if user_id invalid."""
+
+        try:
+            return super().get(request, *args, **kwargs)
+        except Http404:
+            return redirect('feed')
+
 
 
 @login_required
