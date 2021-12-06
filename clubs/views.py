@@ -85,6 +85,17 @@ def profile(request):
         form = UserForm(instance=current_user)
     return render(request, 'profile.html', {'form': form})
 
+
+@login_required
+def show_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except ObjectDoesNotExist:
+        return redirect('feed')
+    else:
+        return render(request, 'show_user.html', {'user': user})
+
+
 @login_required
 def password(request):
     current_user = request.user
