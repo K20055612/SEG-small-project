@@ -2,21 +2,30 @@
 {% block body %}
 <div id="cover-image">
   <div class="container vh-100">
+
     <div class="row vh-100">
       <div class="col-12 my-auto">
-        <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-7">
+
+        <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-4">
           <h1 class="cover-heading">Chess Island</h1>
           <p class="cover-text">Checkmate your way to the top.</p>
           <p>
-        <a href='{% url 'sign_up' %}' class="btn btn-lg btn-dark">
-          Sign up
-        </a>
-      </p>
-      <p>
-        <a href='{% url 'log_in' %}' class="btn btn-lg btn-dark">
-          Log in
-        </a>
-      </p>
+            <div class="mx-auto">
+              <a href='{% url 'sign_up' %}' class="btn btn-lg btn-primary">
+                Sign up
+              </a>
+            </div>
+          </p>
+
+          <p>
+            <div class="mx-auto">
+              <a href='{% url 'log_in' %}' class="btn btn-lg btn-primary">
+                Log in
+              </a>
+            </div>
+          </p>
+
+        </div`>
         </div>
       </div>
     </div>
