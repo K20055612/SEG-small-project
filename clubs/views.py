@@ -245,6 +245,12 @@ def create_tournament(request,club_name):
 @membership_required
 def tournament_list(request,club_name):
     user = request.user
+    is_not_organiser = True
     current_club = Club.objects.get(club_name = club_name)
     tournaments = current_club.get_tournaments()
-    return render(request,'tournament_list.html',{'tournaments':tournaments, 'user':user})
+
+    for tournament in tournaments:
+        for organiser in tournament.get_organisers():
+            if user == organiser:
+                is_not_organiser = False
+    return render(request,'tournament_list.html',{'tournaments':tournaments, 'user':user, 'is_not_organiser':is_not_organiser})
