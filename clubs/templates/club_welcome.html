@@ -11,7 +11,7 @@
     <p>This is a placeholder for the description of the club</p>
     <p class="lead">
       {% if is_applicant%}
-      <a href="#" class="btn btn-primary btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
+      <a href = "{% url 'withdraw_application' club.club_name user.id %}" class="btn btn-primary btn-lg" role="button" >Withdraw</a>
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Whoops!</h4>
         <p>It looks like you have already applied to join this club.</p>
@@ -36,6 +36,4 @@
         </p>
       </div>
     </div>
-
-
     {% endblock %}

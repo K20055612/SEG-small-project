@@ -46,7 +46,7 @@ class User(AbstractUser):
             club_members__username = current_user.username,
             role__club_role='APP')
         user_clubs = Club.objects.all().filter(
-            club_members__username=current_user.username).difference(user_applicant_clubs)
+            club_members__username = current_user.username).difference(user_applicant_clubs)
         return user_clubs
 
     def get_chess_experience(self):

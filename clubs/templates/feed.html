@@ -39,8 +39,8 @@
                       </tr>
                     </div>
                     {%endfor%}
-                </div>
-                </div>
+                 </div>
+               </div>
               </td>
             </tr>
           </div>
@@ -88,7 +88,7 @@
             {% for club in user_applicant_clubs %}
             <tr>
               <td>
-                <a class="btn btn-primary" href='{% url 'club_feed' club.club_name %}' role="button">{{club.club_name}}</a>
+                <a class="btn btn-primary" href='{% url 'club_welcome' club.club_name %}' role="button">{{club.club_name}}</a>
               </td>
             </tr>
             {%endfor%}

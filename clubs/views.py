@@ -201,6 +201,17 @@ def reject_applicant(request,club_name,user_id):
 
 @login_required
 @club_exists
+def withdraw_application(request, club_name, user_id):
+    current_club = Club.objects.get(club_name = club_name)
+    try:
+        applicant = User.objects.get(id = user_id)
+        current_club.remove_user_from_club(applicant)
+    except:
+        pass
+    return redirect('feed')
+
+@login_required
+@club_exists
 @owner_required
 def officer_list(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
