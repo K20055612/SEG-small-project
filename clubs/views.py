@@ -17,6 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.urls import reverse
+from django.views.generic.edit import UpdateView
 
 def home(request):
     return render(request, 'home.html')
@@ -122,18 +123,22 @@ def create_club(request):
     return render(request,'new_club.html',{'form':form})
 
 
-@login_required
-def profile(request):
-    current_user = request.user
-    if request.method == 'POST':
-        form = UserForm(instance=current_user, data=request.POST)
-        if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Profile updated!")
-            form.save()
-            return redirect('profile')
-    else:
-        form = UserForm(instance=current_user)
-    return render(request, 'profile.html', {'form': form})
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    """View to update logged-in user's profile."""
+
+    model = UserForm
+    template_name = "profile.html"
+    form_class = UserForm
+
+    def get_object(self):
+        """Return the object (user) to be updated."""
+        user = self.request.user
+        return user
+
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 @login_required
 def password(request):
