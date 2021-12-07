@@ -11,40 +11,47 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.generic.detail import DetailView
+from django.views.generic import ListView
 from django.http import HttpResponseForbidden, Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.views.generic.edit import FormView
+from django.urls import reverse
 
 def home(request):
     return render(request, 'home.html')
 
-@login_prohibited
-def log_in(request):
-    if request.method == 'POST':
-        form = LogInForm(request.POST)
-        next = request.POST.get('next') or ''
-        if form.is_valid():
-            username = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    redirect_url = request.POST.get('next') or 'feed'
-                    return redirect(redirect_url)
-        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
-    else:
-        next = request.GET.get('next') or ''
-    form = LogInForm()
-    next = request.GET.get('next') or ''
-    return render(request, 'log_in.html', {'form': form , 'next':next})
+class LoginProhibitedMixin:
+    """Mixin that redirects when a user is logged in."""
 
-class LogInView(View):
+    redirect_when_logged_in_url = None
+
+    def dispatch(self, *args, **kwargs):
+        """Redirect when logged in, or dispatch as normal otherwise."""
+        if self.request.user.is_authenticated:
+            return self.handle_already_logged_in(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
+
+    def handle_already_logged_in(self, *args, **kwargs):
+        url = self.get_redirect_when_logged_in_url()
+        return redirect(url)
+
+    def get_redirect_when_logged_in_url(self):
+        """Returns the url to redirect to when not logged in."""
+        if self.redirect_when_logged_in_url is None:
+            raise ImproperlyConfigured(
+                "LoginProhibitedMixin requires either a value for "
+                "'redirect_when_logged_in_url', or an implementation for "
+                "'get_redirect_when_logged_in_url()'."
+            )
+        else:
+            return self.redirect_when_logged_in_url
+
+class LogInView(LoginProhibitedMixin, View):
     """View that handles log in."""
 
     http_method_names = ['get', 'post']
-
-    @method_decorator(login_prohibited)
-    def dispatch(self, request):
-        return super().dispatch(request)
+    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def get(self, request):
         """Display log in template."""
@@ -74,6 +81,7 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
+
 @login_required
 def feed(request):
     clubs= Club.objects.all()
@@ -85,17 +93,21 @@ def feed(request):
         club_members__username=current_user.username).difference(user_applicant_clubs)
     return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
 
-@login_prohibited
-def sign_up(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request,user)
-            return redirect('feed')
-    else:
-        form = SignUpForm()
-    return render(request, 'sign_up.html', {'form': form})
+
+class SignUpView(LoginProhibitedMixin, FormView):
+    """View that signs up user."""
+
+    form_class = SignUpForm
+    template_name = "sign_up.html"
+    redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
+
+    def form_valid(self, form):
+        self.object = form.save()
+        login(self.request, self.object)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 @login_required
 def create_club(request):
@@ -123,37 +135,6 @@ def profile(request):
         form = UserForm(instance=current_user)
     return render(request, 'profile.html', {'form': form})
 
-
-
-
-class ShowUserView(DetailView):
-    """View that shows individual user details."""
-    model = User
-    template_name = 'show_user.html'
-    context_object_name = "user"
-    pk_url_kwarg = 'user_id'
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, *args, **kwargs):
-        """Generate content to be displayed in the template."""
-
-        context = super().get_context_data(*args, **kwargs)
-        user = self.get_object()
-        return context
-
-    def get(self, request, *args, **kwargs):
-        """Handle get request, and redirect to user_list if user_id invalid."""
-
-        try:
-            return super().get(request, *args, **kwargs)
-        except Http404:
-            return redirect('feed')
-
-
-
 @login_required
 def password(request):
     current_user = request.user
@@ -170,6 +151,29 @@ def password(request):
                 return redirect('feed')
     form = PasswordForm()
     return render(request, 'password.html', {'form': form})
+
+
+class ShowUserView(LoginRequiredMixin, DetailView):
+    """View that shows individual user details."""
+    model = User
+    template_name = 'show_user.html'
+    context_object_name = "user"
+    pk_url_kwarg = 'user_id'
+
+    def get_context_data(self, *args, **kwargs):
+        """Generate content to be displayed in the template."""
+
+        context = super().get_context_data(*args, **kwargs)
+        user = self.get_object()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """Handle get request, and redirect to user_list if user_id invalid."""
+
+        try:
+            return super().get(request, *args, **kwargs)
+        except Http404:
+            return redirect('feed')
 
 @login_required
 @club_exists
