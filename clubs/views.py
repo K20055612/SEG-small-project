@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import check_password
 def home(request):
     return render(request, 'home.html')
 
+"""only not login user can visit log in page"""
 @login_prohibited
 def log_in(request):
     if request.method == 'POST':
@@ -32,10 +33,12 @@ def log_in(request):
     next = request.GET.get('next') or ''
     return render(request, 'log_in.html', {'form': form , 'next':next})
 
+"""log out redirect to home page"""
 def log_out(request):
     logout(request)
     return redirect('home')
 
+"""only login user can visit feed page"""
 @login_required
 def feed(request):
     clubs= Club.objects.all()
@@ -47,6 +50,7 @@ def feed(request):
         club_members__username=current_user.username).difference(user_applicant_clubs)
     return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
 
+"""only not login user can sign up"""
 @login_prohibited
 def sign_up(request):
     if request.method == 'POST':
@@ -59,6 +63,7 @@ def sign_up(request):
         form = SignUpForm()
     return render(request, 'sign_up.html', {'form': form})
 
+"""only login user can create new club"""
 @login_required
 def create_club(request):
     if request.method =='POST':
@@ -71,7 +76,7 @@ def create_club(request):
         form = NewClubForm()
     return render(request,'new_club.html',{'form':form})
 
-
+"""only login user can modify profile infomation"""
 @login_required
 def profile(request):
     current_user = request.user
@@ -85,7 +90,7 @@ def profile(request):
         form = UserForm(instance=current_user)
     return render(request, 'profile.html', {'form': form})
 
-
+"""only login user can see other users' profiles"""
 @login_required
 def show_user(request, user_id):
     try:
@@ -95,7 +100,7 @@ def show_user(request, user_id):
     else:
         return render(request, 'show_user.html', {'user': user})
 
-
+"""only login user can change password"""
 @login_required
 def password(request):
     current_user = request.user
@@ -113,6 +118,7 @@ def password(request):
     form = PasswordForm()
     return render(request, 'password.html', {'form': form})
 
+"""only if the user is login and club exists can user apply to the club"""
 @login_required
 @club_exists
 def apply_to_club(request,club_name):

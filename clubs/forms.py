@@ -14,8 +14,6 @@ class SignUpForm(forms.ModelForm):
         fields = ['first_name', 'last_name','username','bio','chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
 
-
-
     new_password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(),
@@ -49,21 +47,20 @@ class SignUpForm(forms.ModelForm):
         )
         return user
 
-
+"""Form enabling registered users to log in"""
 class LogInForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
+"""Form enabling login users to create new club"""
 class NewClubForm(forms.ModelForm):
     class Meta:
-
         model = Club
         fields = ['club_name', 'location','description']
         widgets = { 'description': forms.Textarea() }
 
     def clean(self):
         """Clean the data and generate messages for any errors."""
-
         super().clean()
 
     def save(self):
