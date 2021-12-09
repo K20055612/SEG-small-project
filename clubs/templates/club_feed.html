@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
   <div class="row justify-content-between">
-    <h1 class="col-5">
+    <h1 class="col-7">
       {{club.club_name}}
       {%if is_owner%}
       <form action = "{% url 'officer_list' club.club_name%}" method="post">

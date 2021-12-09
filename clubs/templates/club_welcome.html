@@ -30,7 +30,7 @@
         {%if is_member == False and is_applicant == False%}
         <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-dark">
+          <button type="submit" class="btn btn-danger">
             Apply!
           </button>
           {% endif %}
