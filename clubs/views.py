@@ -8,6 +8,7 @@ from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
 from django.views import View
+from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.generic.detail import DetailView
@@ -316,8 +317,9 @@ def demote_officer(request,club_name,user_id):
 def search_member(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     members = current_club.get_members()
-    member_name = request.POST.get('member_name')
-    log(member_name)
+    member_name = request.GET.get('member_name')
+    if member_name == '':
+        member_name = 'None'
     queryset = members.annotate(search_name=Concat('first_name', Value(' '), 'last_name'))
     search_results = queryset.filter(search_name__contains=member_name)
 
