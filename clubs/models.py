@@ -110,6 +110,11 @@ class Club(models.Model):
             role.save()
             return
 
+    def toggle_banned_member(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.club_role = 'BAN'
+        role.save()
+
     def transfer_ownership(self,old_owner,new_owner):
         new_owner_role = Role.objects.get(club=self,user=new_owner)
         old_owner_role = Role.objects.get(club=self,user=old_owner)
