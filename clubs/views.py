@@ -18,6 +18,8 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
+from django.db.models import CharField, Value
+from django.db.models.functions import Concat
 
 def home(request):
     return render(request, 'home.html')
@@ -307,3 +309,16 @@ def demote_officer(request,club_name,user_id):
         return redirect('feed')
     else:
         return officer_list(request,current_club.club_name)
+
+@login_required
+@club_exists
+@membership_required
+def search_member(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    members = current_club.get_members()
+    member_name = request.POST.get('member_name')
+    log(member_name)
+    queryset = members.annotate(search_name=Concat('first_name', Value(' '), 'last_name'))
+    search_results = queryset.filter(search_name__contains=member_name)
+
+    return render(request,'search_member.html', {'club':current_club,'members':search_results})

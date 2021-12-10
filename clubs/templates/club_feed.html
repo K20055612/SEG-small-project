@@ -29,11 +29,10 @@
 
 <div class="container">
   <p>Search for a member:</p>
-  {# <form action="{% url 'search_member' club.club_name search_member_name%}" method="post"> #}
-  <form action="{% url 'applicants_list'  club.club_name  %}" method="post">
+  <form action="{% url 'search_member' club.club_name%}" method="post">
     {% csrf_token %}
     <div class="input-group mb-3">
-      <input type="text" class="form-control" aria-label="Member's username" aria-describedby="basic-addon2">
+      <input type="text" id="member_name" class="form-control" placeholder="Member's username" aria-label="Member's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button type="submit" class="btn btn-dark">
           Search
