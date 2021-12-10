@@ -201,6 +201,8 @@ def apply_to_club(request,club_name):
     else:
         try:
             club.get_club_role(request.user)
+            if club_role == 'BAN':
+                return redirect('feed')
         except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
             club.save()
