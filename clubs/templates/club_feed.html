@@ -7,7 +7,7 @@
     <h1 class="col-5">
       {{club.club_name}}
       {%if is_owner%}
-      <form action = "{% url 'officer_list' club.club_name%}" method="post">
+      <form action="{% url 'officer_list' club.club_name%}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-warning">
           <i class="bi bi-people-fill"></i> Officer management
@@ -15,17 +15,39 @@
       </form>
       {%endif%}
       {%if is_owner == True or is_officer == True%}
-      <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
+      <form action="{% url 'applicants_list'  club.club_name  %}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-dark">
           Applicants <span class="badge alert-light">{{number_of_applicants}}</span>
         </button>
       </form>
       {%endif%}
+
     </h1>
-    <p>Your fellow members:</p>
   </div>
 </div>
+
+<div class="container">
+  <p>Search for a member:</p>
+  {# <form action="{% url 'search_member' club.club_name search_member_name%}" method="post"> #}
+  <form action="{% url 'applicants_list'  club.club_name  %}" method="post">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" aria-label="Member's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-dark">
+          Search
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="container">
+  <p>Your fellow members:</p>
+</div>
+
+
 <div class="container">
 
   <div class="row">
@@ -45,7 +67,7 @@
         {% for member in members %}
         <tr>
           <td>
-            <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle" >
+            <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle">
           </td>
           <td class="align-middle"> <a href="{% url 'show_user' member.id %}">{{member.full_name}}</a></td>
           {%if is_owner == True or is_officer == True%}
