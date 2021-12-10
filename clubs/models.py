@@ -153,6 +153,7 @@ class Role(models.Model):
         MEMBER = 'MEM', _('Member')
         OFFICER = 'OFF', _('Officer')
         OWNER = 'OWN', _('Owner')
+        BANNED = 'BAN',_('BannedMember')
 
     club_role = models.CharField(
         max_length = 3,
