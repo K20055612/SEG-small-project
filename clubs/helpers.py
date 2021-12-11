@@ -3,7 +3,7 @@ from django.conf import settings
 from .models import User,Club,Role
 from django.core.exceptions import ObjectDoesNotExist
 
-
+"""check whether the user is login"""
 def login_prohibited(view_function):
     def modified_view_function(request):
         if request.user.is_authenticated:
@@ -12,6 +12,7 @@ def login_prohibited(view_function):
             return view_function(request)
     return modified_view_function
 
+"""check whether the user is an officer or an owner"""
 def management_required(view_function):
     def modified_view_function(request,club_name,*args,**kwargs):
         try:
@@ -26,6 +27,7 @@ def management_required(view_function):
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     return modified_view_function
 
+"""check whether the user is an owner"""
 def owner_required(view_function):
     def modified_view_function(request,club_name,*args,**kwargs):
         try:
@@ -40,6 +42,7 @@ def owner_required(view_function):
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     return modified_view_function
 
+"""check whether the user is a member"""
 def membership_required(view_function):
         def modified_view_function(request,club_name,*args,**kwargs):
             try:
@@ -54,6 +57,7 @@ def membership_required(view_function):
                     return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         return modified_view_function
 
+"""check whether the club exists"""
 def club_exists(view_function):
     def modified_view_function(request,club_name,*args,**kwargs):
         try:

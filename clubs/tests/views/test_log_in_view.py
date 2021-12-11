@@ -4,9 +4,9 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import LogInForm
 from clubs.models import User
-from clubs.tests.helpers import LogInTester, reverse_with_next
+from clubs.tests.helpers import LogInTester, reverse_with_next, MenuTesterMixin
 
-class LogInViewTestCase(TestCase, LogInTester):
+class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     """Tests of the log in view."""
 
     def setUp(self):
@@ -36,6 +36,7 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertFalse(next)
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 0)
+        self.assert_no_menu(response)
 
     def test_unsuccesful_log_in(self):
         form_input = { 'email': 'alicedoe@example.org', 'password': 'WrongPassword123' }
@@ -85,6 +86,7 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertTemplateUsed(response, 'feed.html')
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 0)
+        self.assert_menu(response)
 
 
     def test_get_log_in_with_redirect(self):

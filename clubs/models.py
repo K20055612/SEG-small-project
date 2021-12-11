@@ -7,7 +7,7 @@ from libgravatar import Gravatar
 from enum import Enum
 from django.utils.translation import gettext_lazy as _
 
-
+"""create a user model"""
 class User(AbstractUser):
     username = models.EmailField(
         unique=True,
