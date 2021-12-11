@@ -12,7 +12,9 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
     'clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/other_users.json']
+    'clubs/tests/fixtures/other_users.json',
+    'clubs/tests/fixtures/other_clubs.json']
+
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe@example.org')
@@ -92,7 +94,7 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         redirect_url = reverse_with_next('log_in',self.url)
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        
+
     def _create_test_applicants(self, user_count=10):
         for user_id in range(user_count):
             user = User.objects.create_user(
