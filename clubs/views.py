@@ -201,8 +201,6 @@ def apply_to_club(request,club_name):
     else:
         try:
             club.get_club_role(request.user)
-            if club.get_club_role(request.user) == 'BAN':
-                return redirect('feed')
         except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
             club.save()
@@ -224,6 +222,7 @@ def applicants_list(request,club_name):
 def club_feed(request,club_name):
     is_officer = False
     is_owner = False
+    is_banned = False
     current_club = Club.objects.get(club_name=club_name)
     club_role = current_club.get_club_role(request.user)
     members = current_club.get_members()
@@ -233,6 +232,8 @@ def club_feed(request,club_name):
         is_owner = True
     elif club_role == 'OFF':
         is_officer = True
+    elif club_role == 'BAN':
+        is_banned == True
     return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'banned_members':banned_members,'number_of_applicants':number_of_applicants})
 
 @login_required
