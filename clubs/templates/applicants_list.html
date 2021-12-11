@@ -45,7 +45,7 @@
           <td class="align-middle">
             <form action = "{% url 'ban_applicant' current_club.club_name user.id %}" method="post">
               {% csrf_token %}
-              <input type="submit" class="btn btn-outline-danger" value="Ban" name="ban-btn"/>
+              <input type="submit" class="btn btn-outline-secondary" value="Ban" name="ban-btn"/>
             </form>
           </td>
         </tr>
