@@ -12,7 +12,9 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
     'clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/other_users.json']
+    'clubs/tests/fixtures/other_users.json',
+    'clubs/tests/fixtures/other_clubs.json']
+
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe@example.org')

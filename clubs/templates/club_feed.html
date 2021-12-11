@@ -7,12 +7,19 @@
     <h1 class="col-7">
       {{club.club_name}}
       {%if is_owner%}
+      <form action = "{% url 'delete_club' club.club_name%}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-trash"></i> Delete club
+        </button>
+      </form>
       <form action = "{% url 'officer_list' club.club_name%}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-warning">
           <i class="bi bi-people-fill"></i> Officer management
         </button>
       </form>
+      
       {%endif%}
       {%if is_owner == True or is_officer == True%}
       <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">

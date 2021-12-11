@@ -86,7 +86,7 @@ def log_out(request):
 
 @login_required
 def feed(request):
-    clubs= Club.objects.all()
+    clubs  = Club.objects.all()
     current_user= request.user
     user_applicant_clubs = Club.objects.all().filter(
         club_members__username=current_user.username,
@@ -330,3 +330,11 @@ def demote_officer(request,club_name,user_id):
         return redirect('feed')
     else:
         return officer_list(request,current_club.club_name)
+
+@login_required
+@club_exists
+@owner_required
+def delete_club(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    current_club.delete()
+    return feed(request)
