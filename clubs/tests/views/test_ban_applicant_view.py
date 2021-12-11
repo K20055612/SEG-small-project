@@ -1,4 +1,4 @@
-"""Tests of the reject_applicant view."""
+"""Tests of the ban_applicant view."""
 from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
@@ -20,7 +20,6 @@ class BanApplicantViewTestCase(TestCase,LogInTester):
         self.club.club_members.add(self.user,through_defaults={'club_role':'OFF'})
         self.club.club_members.add(self.applicant,through_defaults={'club_role':'APP'})
         self.url = reverse('ban_applicant',kwargs={'club_name': self.club.club_name,'user_id':self.applicant.id})
-
 
     def test_ban_applicant_url(self):
         self.assertEqual(self.url,f'/applicants/{self.club.club_name}/ban/{self.applicant.id}/')
@@ -102,7 +101,7 @@ class BanApplicantViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
         self.assertTemplateUsed(response,'feed.html')
 
-    def test_reject_applicant_redirects_when_not_logged_in(self):
+    def test_ban_applicant_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

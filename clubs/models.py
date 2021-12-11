@@ -132,6 +132,11 @@ class Club(models.Model):
             club__club_name = self.club_name,
             role__club_role='APP')
 
+    def get_banned_applicants(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='BAN')
+
     def get_members(self):
         return User.objects.all().filter(
             club__club_name = self.club_name, role__club_role = 'MEM') | User.objects.all().filter(

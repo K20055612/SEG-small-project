@@ -289,7 +289,7 @@ def ban_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
             applicant = User.objects.get(id=user_id)
-            current_club.remove_user_from_club(applicant)
+            current_club.toggle_banned_member(applicant)
         except ObjectDoesNotExist:
             return redirect('feed')
         else:
