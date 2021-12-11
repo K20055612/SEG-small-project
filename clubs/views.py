@@ -175,6 +175,9 @@ class ShowUserView(LoginRequiredMixin, DetailView):
     context_object_name = "user"
     pk_url_kwarg = 'user_id'
 
+    def get_common_clubs(self):
+        user = self.get_object()
+
     def get_context_data(self, *args, **kwargs):
         """Generate content to be displayed in the template."""
 
