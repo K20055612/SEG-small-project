@@ -90,7 +90,6 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
         self.assertTemplateUsed(response,'feed.html')
 
-
     def test_accept_applicant_user_does_not_have_permission_is_applicant(self):
         applicant = User.objects.get(username='robertdoe@example.org')
         self.club.club_members.add(applicant,through_defaults={'club_role':'APP'})
