@@ -52,6 +52,9 @@
           <td class="align-middle"> {{member.username}}</td>
           <td class="align-middle"> {{member.get_chess_experience}}</td>
           {%endif%}
+          {% if is_banned == True %}
+          <p> Banned </p>
+          {% endif %}
           <td class="align-middle"> {{member.bio}}</td>
         </tr>
         {%endfor%}
