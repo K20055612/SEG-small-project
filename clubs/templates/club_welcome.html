@@ -30,7 +30,7 @@
           Go to club
         </button>
         {%endif%}
-        {%if is_member == False and is_applicant == False%}
+        {%if is_member == False and is_applicant == False and is_banned == False%}
         <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger">

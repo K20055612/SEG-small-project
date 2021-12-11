@@ -246,7 +246,7 @@ def club_welcome(request,club_name):
     try:
         club_role = club.get_club_role(user)
     except Role.DoesNotExist:
-        return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member})
+        return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member,'is_banned':is_banned})
     else:
         if club_role == 'APP':
             is_applicant = True
