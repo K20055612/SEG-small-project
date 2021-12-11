@@ -227,12 +227,13 @@ def club_feed(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     club_role = current_club.get_club_role(request.user)
     members = current_club.get_members()
+    banned_members = current_club.get_banned_applicants()
     number_of_applicants = current_club.get_applicants().count()
     if club_role == 'OWN':
         is_owner = True
     elif club_role == 'OFF':
         is_officer = True
-    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'number_of_applicants':number_of_applicants})
+    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'banned_members':banned_members,'number_of_applicants':number_of_applicants})
 
 @login_required
 @club_exists
