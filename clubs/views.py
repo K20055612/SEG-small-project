@@ -87,10 +87,13 @@ def log_out(request):
 @login_required
 def feed(request):
     clubs  = Club.objects.all()
+
     current_user= request.user
     user_applicant_clubs = current_user.get_applied_clubs()
+    applications_count = current_user.get_applied_clubs().count()
     user_clubs = current_user.get_user_clubs()
-    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
+    my_clubs_count = current_user.get_user_clubs().count()
+    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs,'my_clubs_count':my_clubs_count,'applications_count':applications_count})
 
 
 class SignUpView(LoginProhibitedMixin, FormView):
