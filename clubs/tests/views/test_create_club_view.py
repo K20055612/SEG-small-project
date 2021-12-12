@@ -47,7 +47,7 @@ class CreateClubViewTestCase(TestCase,LogInTester):
         self.assertTrue(isinstance(form, NewClubForm))
         self.assertTrue(form.is_bound)
 
-    def test_successful_sign_up(self):
+    def test_successful_create_club(self):
         self.client.login(username=self.user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         before_count = Club.objects.count()

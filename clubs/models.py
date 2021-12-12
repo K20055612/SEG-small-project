@@ -44,7 +44,7 @@ class User(AbstractUser):
         current_user = self
         user_applicant_clubs = Club.objects.all().filter(
             club_members__username = current_user.username,
-            role__club_role='APP')
+            role__club_role='APP',)
         user_clubs = Club.objects.all().filter(
             club_members__username=current_user.username).difference(user_applicant_clubs)
         return user_clubs
@@ -105,10 +105,17 @@ class Club(models.Model):
         role = Role.objects.get(club=self,user=user)
         if role.club_role == 'APP':
             return
+        elif role.club_role == 'BAN':
+            return
         else:
             role.club_role = 'OFF'
             role.save()
             return
+
+    def toggle_banned_member(self,user):
+        role = Role.objects.get(club=self,user=user)
+        role.club_role = 'BAN'
+        role.save()
 
     def transfer_ownership(self,old_owner,new_owner):
         new_owner_role = Role.objects.get(club=self,user=new_owner)
@@ -127,11 +134,17 @@ class Club(models.Model):
             club__club_name = self.club_name,
             role__club_role='APP')
 
+    def get_banned_applicants(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='BAN')
+
     def get_members(self):
         return User.objects.all().filter(
             club__club_name = self.club_name, role__club_role = 'MEM') | User.objects.all().filter(
                 club__club_name = self.club_name, role__club_role = 'OFF') | User.objects.all().filter(
-                    club__club_name = self.club_name, role__club_role = 'OWN')
+                    club__club_name = self.club_name, role__club_role = 'OWN') | User.objects.all().filter(
+                        club__club_name = self.club_name, role__club_role = 'BAN')
 
 
     def get_officers(self):
@@ -153,6 +166,7 @@ class Role(models.Model):
         MEMBER = 'MEM', _('Member')
         OFFICER = 'OFF', _('Officer')
         OWNER = 'OWN', _('Owner')
+        BANNED = 'BAN',_('BannedMember')
 
     club_role = models.CharField(
         max_length = 3,

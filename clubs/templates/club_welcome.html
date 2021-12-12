@@ -11,7 +11,10 @@
     <hr class="my-4">
     <p>This is a placeholder for the description of the club</p>
     <p class="lead">
-      {% if is_applicant%}
+      {% if is_banned %}
+      <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Sorry you are banned. You cannot apply this club.</a>
+      {% endif %}
+      {% if is_applicant %}
       <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Whoops!</h4>
@@ -27,7 +30,7 @@
           Go to club
         </button>
         {%endif%}
-        {%if is_member == False and is_applicant == False%}
+        {%if is_member == False and is_applicant == False and is_banned == False%}
         <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger">
