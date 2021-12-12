@@ -121,8 +121,7 @@ class Club(models.Model):
     def unban_member(self,user):
         role = Role.objects.get(club=self,user=user)
         if role.club_role == 'BAN':
-            role.club_role = 'MEM'
-            role.save()
+            role.delete()
             return
         else:
             return

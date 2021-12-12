@@ -83,7 +83,6 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
-
 @login_required
 def feed(request):
     clubs  = Club.objects.all()
@@ -195,13 +194,14 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 @login_required
 @club_exists
 def apply_to_club(request,club_name):
+    is_banned = False
     try:
         club = Club.objects.get(club_name=club_name)
     except (ObjectDoesNotExist):
         return redirect('feed')
     else:
         try:
-            club.get_club_role(request.user)
+            role = club.get_club_role(request.user)
         except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
             club.save()
@@ -293,7 +293,7 @@ def ban_member(request,club_name,user_id):
     except ObjectDoesNotExist:
         return redirect('club_feed')
     else:
-        return club_feed(request,current_club.club_name)
+        return members_management_list(request,current_club.club_name)
 
 @login_required
 @club_exists
@@ -306,14 +306,18 @@ def unban_member(request,club_name,user_id):
     except ObjectDoesNotExist:
         return redirect('club_feed')
     else:
-        return club_feed(request,current_club.club_name)
+        return members_management_list(request,current_club.club_name)
+
 @login_required
 @club_exists
 @management_required
-def banned_members_list(request,club_name):
+def members_management_list(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
+    members = current_club.get_members()
+    member_count = current_club.get_members().count()
     banned = current_club.get_banned_members()
-    return render(request,'banned_list.html', {'banned':banned, 'current_club':current_club})
+    banned_count = current_club.get_banned_members().count()
+    return render(request,'member_management.html', {'banned':banned,'members':members, 'banned_count':banned_count,'member_count':member_count, 'current_club':current_club})
 
 @login_required
 @club_exists
