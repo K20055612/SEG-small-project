@@ -7,9 +7,9 @@
   <div class="card">
   <div class="jumbotron">
     <h1 class="display-4">{{club.club_name}}</h1>
-    <p class="lead">This is a placeholder for the owner of the club</p>
+    <p class="lead">Owner: {% for owner in club.get_owner %}<p>{{ owner.full_name }}</p>{% endfor %}</p>
     <hr class="my-4">
-    <p>This is a placeholder for the description of the club</p>
+    <p>{{club.description}}</p>
     <p class="lead">
       {% if is_banned %}
       <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Sorry you are banned. You cannot apply this club.</a>
