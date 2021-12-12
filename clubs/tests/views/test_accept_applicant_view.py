@@ -22,7 +22,7 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         self.url = reverse('accept_applicant',kwargs={'club_name': self.club.club_name,'user_id':self.applicant.id})
 
     def test_accept_applicant_url(self):
-        self.assertEqual(self.url,f'/applicants/{self.club.club_name}/accept/{self.applicant.id}/')
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/applicants/accept/{self.applicant.id}/')
 
     def test_accept_applicant_with_valid_id(self):
         self.client.login(username=self.user.username, password='Password123')

@@ -22,7 +22,7 @@ class DemoteOfficerViewTestCase(TestCase,LogInTester):
         self.url = reverse('demote_officer',kwargs={'club_name': self.club.club_name,'user_id':self.officer.id})
 
     def test_transfer_ownwership_url(self):
-        self.assertEqual(self.url,f'/officers/{self.club.club_name}/demote_officer/{self.officer.id}/')
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/officer_management/demote_officer/{self.officer.id}/')
 
     def test_demote_officer_with_valid_id(self):
         self.client.login(username=self.user.username, password='Password123')

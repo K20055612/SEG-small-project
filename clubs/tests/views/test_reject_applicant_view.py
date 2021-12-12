@@ -23,7 +23,7 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
 
 
     def test_reject_applicant_url(self):
-        self.assertEqual(self.url,f'/applicants/{self.club.club_name}/reject/{self.applicant.id}/')
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/applicants/reject/{self.applicant.id}/')
 
     def test_reject_applicant_with_valid_id(self):
         self.client.login(username=self.user.username, password='Password123')

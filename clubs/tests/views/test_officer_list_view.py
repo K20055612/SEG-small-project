@@ -19,8 +19,8 @@ class OfficerListViewTestCase(TestCase,LogInTester):
         self.club.club_members.add(self.user,through_defaults={'club_role':'OWN'})
         self.url = reverse('officer_list',kwargs={'club_name': self.club.club_name})
 
-    def test_applicant_list_url(self):
-        self.assertEqual(self.url,f'/officers/{self.club.club_name}/')
+    def test_officer_list_url(self):
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/officer_management/')
 
     def test_get_officer_list(self):
         self.client.login(username=self.user.username, password='Password123')

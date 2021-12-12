@@ -21,7 +21,7 @@ class CreateClubViewTestCase(TestCase,LogInTester):
         self.user = User.objects.get(username='johndoe@example.org')
 
     def test_create_club_url(self):
-        self.assertEqual(self.url, '/create_club/' )
+        self.assertEqual(self.url,'/create_club/' )
 
     def test_get_create_club(self):
         self.client.login(username=self.user.username, password='Password123')

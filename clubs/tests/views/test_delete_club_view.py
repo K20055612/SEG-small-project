@@ -19,7 +19,7 @@ class DeleteClubViewTestCase(TestCase,LogInTester):
         self.url = reverse('delete_club',kwargs={'club_name': self.club.club_name})
 
     def test_delete_club_url(self):
-        self.assertEqual(self.url,f'/club/{self.club.club_name}/delete')
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/delete/')
 
     def test_delete_valid_club(self):
         self.client.login(username=self.user.username, password='Password123')

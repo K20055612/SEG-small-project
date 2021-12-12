@@ -23,7 +23,7 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.url = reverse('applicants_list',kwargs={'club_name': self.club.club_name})
 
     def test_applicant_list_url(self):
-        self.assertEqual(self.url,f'/applicants/{self.club.club_name}/')
+        self.assertEqual(self.url,f'/club/{self.club.club_name}/applicants/')
 
     def test_get_applicant_list(self):
         self.client.login(username=self.user.username, password='Password123')

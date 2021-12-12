@@ -5,7 +5,7 @@
 
 <div class="container">
   <div class="float-none">
-    <form action = "{% url 'create_club'%}" method="post">
+    <form action = "{% url 'create_club' %}" method="post">
       {% csrf_token %}
       <button type="submit" class="btn btn-dark">
         Create club <i class="bi bi-plus-circle-fill"></i>

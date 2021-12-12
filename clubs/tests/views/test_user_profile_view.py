@@ -16,7 +16,7 @@ class ShowUserTest(TestCase):
         self.url = reverse('show_user', kwargs={'user_id': self.target_user.id})
 
     def test_show_user_url(self):
-        self.assertEqual(self.url,f'/user/{self.target_user.id}')
+        self.assertEqual(self.url,f'/user/{self.target_user.id}/')
 
     def test_get_show_user_with_valid_id(self):
         self.client.login(username=self.user.username, password='Password123')

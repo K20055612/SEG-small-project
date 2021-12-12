@@ -40,14 +40,13 @@ class User(AbstractUser):
     )
 
     def get_user_clubs(self):
-        clubs = Club.objects.all()
-        current_user = self
-        user_applicant_clubs = Club.objects.all().filter(
-            club_members__username = current_user.username,
-            role__club_role='APP',)
-        user_clubs = Club.objects.all().filter(
-            club_members__username=current_user.username).difference(user_applicant_clubs)
-        return user_clubs
+        return Club.objects.all().filter(
+            club_members__username=self.username,role__club_role='MEM')|Club.objects.all().filter(
+            club_members__username=self.username,role__club_role='OFF')|Club.objects.all().filter(
+            club_members__username=self.username,role__club_role='OWN')
+
+    def get_applied_clubs(self):
+        return Club.objects.all().filter(club_members__username=self.username,role__club_role='APP')
 
     def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
@@ -103,19 +102,30 @@ class Club(models.Model):
 
     def toggle_officer(self,user):
         role = Role.objects.get(club=self,user=user)
-        if role.club_role == 'APP':
-            return
-        elif role.club_role == 'BAN':
+        if role.club_role == 'APP' or role.club_role == 'BAN':
             return
         else:
             role.club_role = 'OFF'
             role.save()
             return
 
-    def toggle_banned_member(self,user):
+    def ban_member(self,user):
         role = Role.objects.get(club=self,user=user)
-        role.club_role = 'BAN'
-        role.save()
+        if role.club_role == 'MEM':
+            role.club_role = 'BAN'
+            role.save()
+            return
+        else:
+            return
+
+    def unban_member(self,user):
+        role = Role.objects.get(club=self,user=user)
+        if role.club_role == 'BAN':
+            role.club_role = 'MEM'
+            role.save()
+            return
+        else:
+            return
 
     def transfer_ownership(self,old_owner,new_owner):
         new_owner_role = Role.objects.get(club=self,user=new_owner)
@@ -130,22 +140,23 @@ class Club(models.Model):
             return
 
     def get_applicants(self):
-        return User.objects.all().filter(
+        return self.club_members.all().filter(
             club__club_name = self.club_name,
             role__club_role='APP')
 
-    def get_banned_applicants(self):
-        return User.objects.all().filter(
+    def get_members(self):
+        return self.club_members.all().filter(
+            club__club_name = self.club_name, role__club_role = 'MEM')
+
+    def get_management(self):
+        return self.club_members.all().filter(
+            club__club_name = self.club_name, role__club_role = 'OFF') | self.club_members.all().filter(
+                club__club_name = self.club_name, role__club_role = 'OWN')
+
+    def get_banned_members(self):
+        return self.club_members.all().filter(
             club__club_name = self.club_name,
             role__club_role='BAN')
-
-    def get_members(self):
-        return User.objects.all().filter(
-            club__club_name = self.club_name, role__club_role = 'MEM') | User.objects.all().filter(
-                club__club_name = self.club_name, role__club_role = 'OFF') | User.objects.all().filter(
-                    club__club_name = self.club_name, role__club_role = 'OWN') | User.objects.all().filter(
-                        club__club_name = self.club_name, role__club_role = 'BAN')
-
 
     def get_officers(self):
         return User.objects.all().filter(

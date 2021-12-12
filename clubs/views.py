@@ -88,11 +88,8 @@ def log_out(request):
 def feed(request):
     clubs  = Club.objects.all()
     current_user= request.user
-    user_applicant_clubs = Club.objects.all().filter(
-        club_members__username=current_user.username,
-        role__club_role='APP')
-    user_clubs = Club.objects.all().filter(
-        club_members__username=current_user.username).difference(user_applicant_clubs)
+    user_applicant_clubs = current_user.get_applied_clubs()
+    user_clubs = current_user.get_user_clubs()
     return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs})
 
 
@@ -110,6 +107,7 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
 
 """only login user can create new club"""
 @login_required
@@ -222,19 +220,16 @@ def applicants_list(request,club_name):
 def club_feed(request,club_name):
     is_officer = False
     is_owner = False
-    is_banned = False
     current_club = Club.objects.get(club_name=club_name)
     club_role = current_club.get_club_role(request.user)
     members = current_club.get_members()
-    banned_members = current_club.get_banned_applicants()
+    management = current_club.get_management()
     number_of_applicants = current_club.get_applicants().count()
     if club_role == 'OWN':
         is_owner = True
     elif club_role == 'OFF':
         is_officer = True
-    elif club_role == 'BAN':
-        is_banned == True
-    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'banned_members':banned_members,'number_of_applicants':number_of_applicants})
+    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'management':management,'number_of_applicants':number_of_applicants})
 
 @login_required
 @club_exists
@@ -287,15 +282,35 @@ def reject_applicant(request,club_name,user_id):
 @login_required
 @club_exists
 @management_required
-def ban_applicant(request,club_name,user_id):
-        current_club = Club.objects.get(club_name=club_name)
-        try:
-            applicant = User.objects.get(id=user_id)
-            current_club.toggle_banned_member(applicant)
-        except ObjectDoesNotExist:
-            return redirect('feed')
-        else:
-            return applicants_list(request,current_club.club_name)
+def ban_member(request,club_name,user_id):
+    current_club = Club.objects.get(club_name=club_name)
+    try:
+        member = User.objects.get(id=user_id)
+        current_club.ban_member(member)
+    except ObjectDoesNotExist:
+        return redirect('club_feed')
+    else:
+        return club_feed(request,current_club.club_name)
+
+@login_required
+@club_exists
+@management_required
+def unban_member(request,club_name,user_id):
+    current_club = Club.objects.get(club_name=club_name)
+    try:
+        member = User.objects.get(id=user_id)
+        current_club.unban_member(member)
+    except ObjectDoesNotExist:
+        return redirect('club_feed')
+    else:
+        return club_feed(request,current_club.club_name)
+@login_required
+@club_exists
+@management_required
+def banned_members_list(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    banned = current_club.get_banned_members()
+    return render(request,'banned_list.html', {'banned':banned, 'current_club':current_club})
 
 @login_required
 @club_exists
