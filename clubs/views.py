@@ -168,16 +168,13 @@ class PasswordView(LoginRequiredMixin, FormView):
         messages.add_message(self.request, messages.SUCCESS, "Password updated!")
         return reverse('feed')
 
-class ShowUserView(DetailView, LoginRequiredMixin):
+class ShowUserView(LoginRequiredMixin, DetailView):
     """View that shows individual user details."""
 
     model = User
     template_name = 'show_user.html'
     context_object_name = "user"
     pk_url_kwarg = 'user_id'
-
-    def get_common_clubs(self):
-        user = self.get_object()
 
     def get_context_data(self, *args, **kwargs):
         """Generate content to be displayed in the template."""
@@ -187,6 +184,10 @@ class ShowUserView(DetailView, LoginRequiredMixin):
         current_user_clubs = self.request.user.get_user_clubs()
         selected_user_clubs = user.get_user_clubs()
         communal_clubs = current_user_clubs.intersection(selected_user_clubs)
+
+        context = super().get_context_data(object_list=communal_clubs, **kwargs)
+        context['user'] = user
+        context['communal_clubs'] = context['object_list']
         return context
 
     def get(self, request, *args, **kwargs):

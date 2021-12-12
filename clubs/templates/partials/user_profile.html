@@ -1,13 +1,28 @@
+
 <div class="row content">
   <div class="col-12">
     <img src="{{ user.gravatar }}" alt="Gravatar of {{ user.username }}" class="rounded-circle profile-image" >
     <div class="profile-text">
-      <h3 class="profile-title">{{ user.full_name }}</h3>
+      <h2 class="profile-title">{{ user.full_name }}</h2>
+      <p class="profile-bio">{{ user.bio }}</p>
     </div>
   </div>
-</div>
-<div class="row content">
-  <div class="col-12">
-    <p class="profile-bio">{{ user.bio }}</p>
-  </div>
+
+  {% if communal_clubs.exists %}
+    <div class="alert alert-info" role="alert">
+      Club(s) in common:
+      {% for club in communal_clubs %}
+        <p>{{ club.club_name }}</p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-dark" role="alert">
+      You do not have clubs in common.
+    </div>
+  {% endif %}
+
+  <form class="row justify-content-center">
+   <input type="button" class="btn-close btn-lg" aria-label="Close" onclick="history.back()">
+  </form>
+
 </div>
