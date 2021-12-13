@@ -58,7 +58,7 @@
           <td>
             <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle" >
           </td>
-          <td class="align-middle"><a href="{% url 'show_user' user.id %}">{{member.full_name}}</td>
+          <td class="align-middle"><a href="{% url 'show_user' member.id %}">{{member.full_name}}</td>
           {%if is_owner == True or is_officer == True%}
           <td class="align-middle"> {{member.username}}</td>
           <td class="align-middle"> {{member.get_chess_experience}}</td>

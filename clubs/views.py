@@ -173,6 +173,7 @@ class PasswordView(LoginRequiredMixin, FormView):
 
 class ShowUserView(LoginRequiredMixin, DetailView):
     """View that shows individual user details."""
+
     model = User
     template_name = 'show_user.html'
     context_object_name = "user"
@@ -183,6 +184,13 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 
         context = super().get_context_data(*args, **kwargs)
         user = self.get_object()
+        current_user_clubs = self.request.user.get_user_clubs()
+        selected_user_clubs = user.get_user_clubs()
+        communal_clubs = current_user_clubs.intersection(selected_user_clubs)
+
+        context = super().get_context_data(object_list=communal_clubs, **kwargs)
+        context['user'] = user
+        context['communal_clubs'] = context['object_list']
         return context
 
     def get(self, request, *args, **kwargs):

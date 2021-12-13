@@ -162,6 +162,11 @@ class Club(models.Model):
             club__club_name = self.club_name,
             role__club_role='OFF')
 
+    def get_owner(self):
+        return User.objects.all().filter(
+            club__club_name = self.club_name,
+            role__club_role='OWN')
+
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)
         role.delete()
