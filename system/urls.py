@@ -41,5 +41,5 @@ urlpatterns = [
     path('apply/<str:club_name>/', views.apply_to_club,name='apply_to_club'),
     path('create_club/', views.create_club,name='create_club'),
     path('club/<str:club_name>/delete/', views.delete_club, name = 'delete_club'),
-
+    path('club/<str:club_name>/search_member/', views.search_member ,name='search_member'),
 ]

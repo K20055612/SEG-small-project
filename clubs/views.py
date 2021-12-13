@@ -8,6 +8,7 @@ from .helpers import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
 from django.views import View
+from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.generic.detail import DetailView
@@ -18,6 +19,8 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
+from django.db.models import CharField, Value
+from django.db.models.functions import Concat
 
 def home(request):
     return render(request, 'home.html')
@@ -391,3 +394,15 @@ def delete_club(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     current_club.delete()
     return feed(request)
+
+@membership_required
+def search_member(request,club_name):
+    current_club = Club.objects.get(club_name=club_name)
+    members = current_club.get_members()
+    member_name = request.GET.get('member_name')
+    if member_name == '':
+        member_name = 'None'
+    queryset = members.annotate(search_name=Concat('first_name', Value(' '), 'last_name'))
+    search_results = queryset.filter(search_name__contains=member_name)
+
+    return render(request,'search_member.html', {'club':current_club,'members':search_results})

@@ -23,9 +23,38 @@
           </ul>
         </li>
       </div>
-    </h1>
+      {%if is_owner%}
+      <form action="{% url 'officer_list' club.club_name%}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+          <i class="bi bi-people-fill"></i> Officer management
+        </button>
+      </form>
+      {%endif%}
+        </h1>
   </div>
 </div>
+
+<div class="container">
+  <p>Search for a member:</p>
+  <form action="{% url 'search_member' club.club_name%}" method="get">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+      <input name ="member_name" type="text" id="" class="form-control" placeholder="Member's username" aria-label="Member's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-dark">
+          Search
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="container">
+  <p>Your fellow members:</p>
+</div>
+
+
 <div class="container">
   <div class="card">
   <div class="row">
@@ -44,7 +73,7 @@
         {% for member in management %}
         <tr>
           <td>
-            <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle" >
+            <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle">
           </td>
           <td class="align-middle"><a href="{% url 'show_user' member.id %}">{{member.full_name}}</td>
           {%if is_owner == True or is_officer == True%}
