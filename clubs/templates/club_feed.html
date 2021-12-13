@@ -9,10 +9,10 @@
       <div class="btn-group">
         <li class="club dropdown">
           <a class="club-link" href="#" id="management-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="buttonText">Dropdown</span>
-            <span class="bi-person-circle"></span>
+            <span class="bi bi-gear"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
+
             {%if is_owner%}
             <li><a class="dropdown-item" href="{% url 'delete_club' club.club_name%}">Delete Club</a></li>
             <li><a class="dropdown-item" href="{% url 'officer_list' club.club_name%}">Officer management</a></li>
