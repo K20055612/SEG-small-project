@@ -2,12 +2,13 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from clubs.models import Role,User,Club
+from django.core.exceptions import ObjectDoesNotExist
+
 
 class ClubModelTestCase(TestCase):
     """Unit tests for the Club model."""
 
     fixtures = [
-
         'clubs/tests/fixtures/default_club.json',
         'clubs/tests/fixtures/other_clubs.json',
         'clubs/tests/fixtures/default_user.json',
@@ -67,13 +68,6 @@ class ClubModelTestCase(TestCase):
         self.club.location = 'London, Street 2'
         self._assert_club_is_valid()
 
-    def test_toggle_member(self):
-        applicant_user = User.objects.get(username='janedoe@example.org')
-        self.club.club_members.add(applicant_user,through_defaults={'club_role':'APP'})
-        self.assertEqual(self.club.get_club_role(applicant_user),'APP')
-        self.club.toggle_member(applicant_user)
-        self.assertEqual(self.club.get_club_role(applicant_user),'MEM')
-
     def test_transfer_ownership_must_promote_officers(self):
         owner_user = User.objects.get(username='robertdoe@example.org')
         self.club.club_members.add(owner_user,through_defaults={'club_role':'OWN'})
@@ -103,7 +97,6 @@ class ClubModelTestCase(TestCase):
         self.club.toggle_member(applicant_user)
         self.assertEqual(self.club.get_club_role(applicant_user),'MEM')
 
-
     def test_toggle_officer_on_non_applicants(self):
         member_user = User.objects.get(username='robertdoe@example.org')
         self.club.club_members.add(member_user,through_defaults={'club_role':'MEM'})
@@ -117,6 +110,44 @@ class ClubModelTestCase(TestCase):
         self.assertEqual(self.club.get_club_role(applicant_user),'APP')
         self.club.toggle_officer(applicant_user)
         self.assertEqual(self.club.get_club_role(applicant_user),'APP')
+
+    def test_ban_member_must_be_member(self):
+        member_user = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(member_user,through_defaults={'club_role':'MEM'})
+        self.assertEqual(self.club.get_club_role(member_user),'MEM')
+        self.club.ban_member(member_user)
+        self.assertEqual(self.club.get_club_role(member_user),'BAN')
+
+    def test_ban_member_on_non_members(self):
+        officer_user = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(officer_user,through_defaults={'club_role':'OFF'})
+        self.assertEqual(self.club.get_club_role(officer_user),'OFF')
+        self.club.ban_member(officer_user)
+        self.assertEqual(self.club.get_club_role(officer_user),'OFF')
+
+    def test_unban_member_must_be_banned(self):
+        banned_user = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(banned_user,through_defaults={'club_role':'BAN'})
+        self.assertEqual(self.club.get_club_role(banned_user),'BAN')
+        self.club.unban_member(banned_user)
+        self.assertFalse(self.club.club_members.all().filter(id=banned_user.id,
+            club__club_name = self.club.club_name).exists())
+
+    def test_unban_member_on_non_banned_users(self):
+        member_user = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(member_user,through_defaults={'club_role':'MEM'})
+        self.assertEqual(self.club.get_club_role(member_user),'MEM')
+        self.club.unban_member(member_user)
+        self.assertTrue(self.club.club_members.all().filter(id=member_user.id,
+        club__club_name = self.club.club_name).exists())
+
+    def test_remove_user_from_club(self):
+        member_user = User.objects.get(username='robertdoe@example.org')
+        self.club.club_members.add(member_user,through_defaults={'club_role':'MEM'})
+        self.assertEqual(self.club.get_club_role(member_user),'MEM')
+        self.club.remove_user_from_club(member_user)
+        self.assertFalse(self.club.club_members.all().filter(id=member_user.id,
+            club__club_name = self.club.club_name).exists())
 
     def _assert_club_is_valid(self):
         try:

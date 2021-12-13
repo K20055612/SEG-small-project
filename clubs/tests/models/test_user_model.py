@@ -1,7 +1,7 @@
 """Unit tests for the User model."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from clubs.models import User
+from clubs.models import User,Club,Role
 
 class UserModelTestCase(TestCase):
     """Unit tests for the User model."""
@@ -10,11 +10,21 @@ class UserModelTestCase(TestCase):
 
         'clubs/tests/fixtures/default_user.json',
         'clubs/tests/fixtures/other_users.json',
+        'clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/other_clubs.json',
+
 
         ]
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe@example.org')
+        self.first_club = Club.objects.get(club_name='Beatles')
+        self.first_club.club_members.add(self.user,through_defaults={'club_role':'OFF'})
+        self.second_club = Club.objects.get(club_name='EliteChess')
+        self.second_club.club_members.add(self.user,through_defaults={'club_role':'MEM'})
+        self.third_club = Club.objects.get(club_name='ADCD')
+        self.third_club.club_members.add(self.user,through_defaults={'club_role':'OWN'})
+
 
     def test_valid_user(self):
         self._assert_user_is_valid()
@@ -120,6 +130,10 @@ class UserModelTestCase(TestCase):
     def test_get_full_name(self):
         self.assertEqual(self.user.full_name(),'John Doe')
 
+    def test_get_user_clubs(self):
+        clubs = self.user.get_user_clubs()
+        self.assertEqual(clubs.count(),3)
+        
     def _assert_user_is_valid(self):
         try:
             self.user.full_clean()

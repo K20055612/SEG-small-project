@@ -35,6 +35,8 @@ class UnbanMemberViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertNotContains(response, "Jane Doe")
         self.assertNotContains(response, "janedoe@example.org")
+        self.assertFalse(self.club.club_members.all().filter(id=self.banned.id,
+            club__club_name = self.club.club_name).exists())
 
     def test_unban_member_as_owner(self):
         owner = User.objects.get(username='bobdoe@example.org')
@@ -49,6 +51,8 @@ class UnbanMemberViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertNotContains(response, "Jane Doe")
         self.assertNotContains(response, "janedoe@example.org")
+        self.assertFalse(self.club.club_members.all().filter(id=self.banned.id,
+            club__club_name = self.club.club_name).exists())
 
     def test_unban_member_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -63,6 +67,8 @@ class UnbanMemberViewTestCase(TestCase,LogInTester):
         response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
+        self.assertTrue(self.club.club_members.all().filter(id=self.banned.id,
+            club__club_name = self.club.club_name).exists())
 
     def test_unban_member_invalid_club(self):
         self.client.login(username=self.user.username, password='Password123')
