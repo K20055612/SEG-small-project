@@ -116,6 +116,8 @@ def password(request):
 @login_required
 @club_exists
 def apply_to_club(request,club_name):
+    if request.method == 'POST':
+        messages.add_message(request, messages.SUCCESS, f'Application for {club_name} sent successfully. Hang tight while a club officer reviews your application.')
     try:
         club = Club.objects.get(club_name=club_name)
     except (ObjectDoesNotExist):
@@ -129,6 +131,20 @@ def apply_to_club(request,club_name):
             return feed(request)
         else:
             return redirect('feed')
+
+@login_required
+@club_exists
+def withdraw_application(request, club_name, user_id):
+    club = Club.objects.get(club_name = club_name)
+    try:
+        applicant = User.objects.get(id = user_id)
+        club.remove_user_from_club(applicant)
+        club.save()
+    except:
+        pass
+    if request.method == 'POST':
+        messages.add_message(request, messages.SUCCESS, f'Withdrawal from {club_name} completed successfully')
+    return redirect('feed')
 
 @login_required
 @club_exists
@@ -198,17 +214,6 @@ def reject_applicant(request,club_name,user_id):
             return redirect('feed')
         else:
             return applicants_list(request,current_club.club_name)
-
-@login_required
-@club_exists
-def withdraw_application(request, club_name, user_id):
-    current_club = Club.objects.get(club_name = club_name)
-    try:
-        applicant = User.objects.get(id = user_id)
-        current_club.remove_user_from_club(applicant)
-    except:
-        pass
-    return redirect('feed')
 
 @login_required
 @club_exists

@@ -142,6 +142,7 @@ class Club(models.Model):
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)
         role.delete()
+        self.club_members.delete(request.user)
 
 
 class Role(models.Model):

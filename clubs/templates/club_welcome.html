@@ -11,29 +11,47 @@
     <p>This is a placeholder for the description of the club</p>
     <p class="lead">
       {% if is_applicant%}
-      <a href = "{% url 'withdraw_application' club.club_name user.id %}" class="btn btn-primary btn-lg" role="button" >Withdraw</a>
-      <div class="alert alert-success" role="alert">
-        <h4 class="alert-heading">Whoops!</h4>
-        <p>It looks like you have already applied to join this club.</p>
-        <hr>
-        <p class="mb-0">Hang tight while a club officer reviews your application.</p>
-      </div>
+        <form action = "{% url 'withdraw_application' club.club_name user.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">
+            Withdraw
+          </button>
+          <p>
+            <div class="alert alert-success" role="alert">
+              <h4 class="alert-heading">Application pending!</h4>
+              <p>It looks like you have already applied to join this club.</p>
+              <hr>
+              <p class="mb-0">Hang tight while a club officer reviews your application.</p>
+              <hr>
+              <p class="mb-0">Meanwhile, if you change your mind you can withdraw your application.</p>
+            </div>
+          </p>
       {%endif%}
+
       {% if is_member %}
       <form action = "{% url 'club_feed' club.club_name%}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">
           Go to club
         </button>
-        {%endif%}
-        {%if is_member == False and is_applicant == False%}
+      {%endif%}
+
+      {%if is_member == False and is_applicant == False%}
         <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-primary">
             Apply!
           </button>
-          {% endif %}
-        </p>
-      </div>
-    </div>
-    {% endblock %}
+          <p>
+            <div class="alert alert-success" role="alert">
+              <h4 class="alert-heading">Apply to club!</h4>
+              <p>It looks like you are not a member of this club yet.</p>
+              <hr>
+              <p class="mb-0">You can apply here.</p>
+            </div>
+          </p>
+      {% endif %}
+    </p>
+  </div>
+</div>
+{% endblock %}
