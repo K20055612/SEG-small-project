@@ -140,6 +140,3 @@ REDIRECT_URL_WHEN_LOGGED_IN = 'feed'
 
 # Login URL for redirecting users.
 LOGIN_URL = 'log_in'
-
-
-AUTHENTICATION_BACKENDS = ('clubs.backend.CustomBackend',)

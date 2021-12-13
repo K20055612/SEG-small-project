@@ -53,7 +53,7 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
 
 """Form enabling registered users to log in"""
 class LogInForm(forms.Form):
-    email = forms.EmailField(label="Email")
+    username = forms.EmailField(label="Email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
     def get_user(self):
@@ -61,7 +61,7 @@ class LogInForm(forms.Form):
 
         user = None
         if self.is_valid():
-            username = self.cleaned_data.get('email')
+            username = self.cleaned_data.get('username')
             password = self.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
         return user

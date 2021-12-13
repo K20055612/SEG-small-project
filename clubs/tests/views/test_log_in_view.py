@@ -39,7 +39,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assert_no_menu(response)
 
     def test_unsuccesful_log_in(self):
-        form_input = { 'email': 'alicedoe@example.org', 'password': 'WrongPassword123' }
+        form_input = { 'username': 'alicedoe@example.org', 'password': 'WrongPassword123' }
         response = self.client.post(self.url, form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log_in.html')
@@ -52,7 +52,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertEqual(messages_list[0].level, messages.ERROR)
 
     def test_log_in_with_blank_email(self):
-        form_input = { 'email': '', 'password': 'WrongPassword123' }
+        form_input = { 'username': '', 'password': 'WrongPassword123' }
         response = self.client.post(self.url, form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log_in.html')
@@ -65,7 +65,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertEqual(messages_list[0].level, messages.ERROR)
 
     def test_log_in_with_blank_password(self):
-        form_input = { 'email': 'alicedoe@example.org', 'password': '' }
+        form_input = { 'username': 'alicedoe@example.org', 'password': '' }
         response = self.client.post(self.url, form_input)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log_in.html')
@@ -78,7 +78,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertEqual(messages_list[0].level, messages.ERROR)
 
     def test_succesful_log_in(self):
-        form_input = { 'email': 'alicedoe@example.org', 'password': 'Password123' }
+        form_input = { 'username': 'alicedoe@example.org', 'password': 'Password123' }
         response = self.client.post(self.url, form_input, follow=True)
         self.assertTrue(self._is_logged_in())
         response_url = reverse('feed')
@@ -105,7 +105,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
 
     def test_succesful_log_in_with_redirect(self):
         redirect_url = reverse('feed')
-        form_input = { 'email': 'alicedoe@example.org', 'password': 'Password123', 'next': redirect_url }
+        form_input = { 'username': 'alicedoe@example.org', 'password': 'Password123', 'next': redirect_url }
         response = self.client.post(self.url, form_input, follow=True)
         self.assertTrue(self._is_logged_in())
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -123,7 +123,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
 
     def test_post_log_in_redirects_when_logged_in(self):
         self.client.login(username=self.user.username,password="Password123")
-        form_input = { 'email': 'wrong@wronguser', 'password': 'WrongPassword123' }
+        form_input = { 'username': 'wrong@wronguser', 'password': 'WrongPassword123' }
         response = self.client.post(self.url, form_input, follow=True)
         redirect_url = reverse('feed')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -133,7 +133,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     def test_valid_log_in_by_inactive_user(self):
         self.user.is_active = False
         self.user.save()
-        form_input = { 'email': 'alicedoe@example.org', 'password': 'Password123' }
+        form_input = { 'username': 'alicedoe@example.org', 'password': 'Password123' }
         response = self.client.post(self.url, form_input, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log_in.html')
