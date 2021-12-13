@@ -25,7 +25,7 @@
             <tr>
               <td>
                 <div class="row">
-                  {%if my_clubs_count != 0%}
+                  {%if my_clubs_is_empty == False%}
                     {% for club in user_clubs %}
                     <div class="col-sm-6">
                       <tr>
@@ -41,11 +41,10 @@
                     </div>
                     {%endfor%}
                     {%endif%}
-                    {%if my_clubs_count == 0%}
+                    {%if my_clubs_is_empty%}
                     <div class="alert alert-warning" role="alert">
                       <h4 class="alert-heading">My clubs is empty!</h4>
                       <p>It looks like you haven't joined any club. Check out clubs below to start your journey in chess! </p>
-
                     </div>
                     {%endif%}
                 </div>
@@ -96,7 +95,7 @@
       <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
         <div class="accordion-body">
           <div class="d-grid gap-2">
-            {%if applications_count != 0%}
+            {%if applications_is_empty == False%}
             {% for club in user_applicant_clubs %}
             <tr>
               <td>
@@ -105,7 +104,7 @@
             </tr>
             {%endfor%}
             {%endif%}
-            {%if applications_count == 0%}
+            {%if applications_is_empty%}
             <div class="alert alert-warning" role="alert">
               <h5 class="alert-heading">No pending applications</h5>
             </div>

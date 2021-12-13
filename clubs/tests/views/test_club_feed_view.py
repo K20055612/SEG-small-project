@@ -19,11 +19,13 @@ class ClubFeedTestCase(TestCase,LogInTester):
             self.member = User.objects.get(username='janedoe@example.org')
             self.officer = User.objects.get(username='robertdoe@example.org')
             self.owner = User.objects.get(username='patrickdoe@example.org')
+            self.banned = User.objects.get(username='samdoe@example.org')
             self.applied_to_club = Club.objects.get(club_name='EliteChess')
             self.applied_to_club.club_members.add(self.user,through_defaults={'club_role':'APP'})
             self.applied_to_club.club_members.add(self.member,through_defaults={'club_role':'MEM'})
             self.applied_to_club.club_members.add(self.officer,through_defaults={'club_role':'OFF'})
             self.applied_to_club.club_members.add(self.owner,through_defaults={'club_role':'OWN'})
+            self.applied_to_club.club_members.add(self.banned,through_defaults={'club_role':'BAN'})
             self.url = reverse('club_feed',kwargs={'club_name': self.applied_to_club.club_name})
 
     def test_club_feed_url(self):
@@ -82,6 +84,14 @@ class ClubFeedTestCase(TestCase,LogInTester):
 
     def test_get_club_feed_cannot_be_accessed_by_applicants(self):
         self.client.login(username=self.user.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+    def test_get_club_feed_cannot_be_accessed_by_banned_users(self):
+        self.client.login(username=self.banned.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)
         response_url = reverse('feed')

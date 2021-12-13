@@ -22,7 +22,7 @@ Member management
               <td>
                 <div class="row">
                   <div class="col-12">
-                    {%if member_count != 0%}
+                    {%if member_count == False%}
                     <table class="table table-striped table-hover cellspacing="0" ">
                       <thead>
                         <th scope="col"></th>
@@ -46,11 +46,17 @@ Member management
                               <input type="submit" class="btn btn-outline-danger" value="Ban" name="ban-btn"/>
                             </form>
                           </td>
+                          <td class="align-middle">
+                            <form action = "{% url 'promote_member' current_club.club_name member.id %}" method="post">
+                              {% csrf_token %}
+                              <input type="submit" class="btn btn-outline-success" value="Promote" name="promote-btn"/>
+                            </form>
+                          </td>
                         </tr>
                         {%endfor%}
                       </table>
                       {%endif%}
-                      {%if member_count == 0%}
+                      {%if member_is_empty%}
                       <div class="alert alert-warning" role="alert">
                         <h5 class="alert-heading">There are currently no users with member role.</h5>
                       </div>
@@ -76,7 +82,7 @@ Member management
                     <td>
                       <div class="row">
                         <div class="col-12">
-                          {%if banned_count != 0%}
+                          {%if banned_is_empty == False%}
                           <table class="table table-striped table-hover cellspacing="0" ">
                             <thead>
                               <th scope="col"></th>
@@ -104,7 +110,7 @@ Member management
                               {%endfor%}
                             </table>
                             {%endif%}
-                            {%if banned_count == 0%}
+                            {%if banned_is_empty%}
                             <div class="alert alert-warning" role="alert">
                               <h5 class="alert-heading">No banned users.</h5>
                             </div>

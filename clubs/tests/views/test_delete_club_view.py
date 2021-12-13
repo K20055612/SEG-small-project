@@ -33,7 +33,6 @@ class DeleteClubViewTestCase(TestCase,LogInTester):
         for club_id in range(3-1):
             self.assertNotContains(response, self.club.club_name)
 
-
     def test_delete_invalid_club(self):
         self.client.login(username=self.user.username, password='Password123')
         self.assertTrue(self._is_logged_in())
@@ -48,6 +47,17 @@ class DeleteClubViewTestCase(TestCase,LogInTester):
     def test_delete_club_user_does_not_have_permission_is_officer(self):
         member = User.objects.get(username='janedoe@example.org')
         self.club.club_members.add(member,through_defaults={'club_role':'OFF'})
+        self.client.login(username=member.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        response = self.client.get(self.url,follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response,response_url,status_code=302,target_status_code=200)
+        self.assertTemplateUsed(response,'feed.html')
+
+
+    def test_delete_club_user_does_not_have_permission_is_banned(self):
+        member = User.objects.get(username='janedoe@example.org')
+        self.club.club_members.add(member,through_defaults={'club_role':'BAN'})
         self.client.login(username=member.username, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url,follow=True)

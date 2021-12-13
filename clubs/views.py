@@ -86,13 +86,16 @@ def log_out(request):
 @login_required
 def feed(request):
     clubs  = Club.objects.all()
-
+    applications_is_empty = False
+    my_clubs_is_empty = False
     current_user= request.user
     user_applicant_clubs = current_user.get_applied_clubs()
-    applications_count = current_user.get_applied_clubs().count()
     user_clubs = current_user.get_user_clubs()
-    my_clubs_count = current_user.get_user_clubs().count()
-    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs,'my_clubs_count':my_clubs_count,'applications_count':applications_count})
+    if user_applicant_clubs.count() == 0:
+        applications_is_empty = True
+    if user_clubs.count() == 0:
+        my_clubs_is_empty = True
+    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs,'my_clubs_is_empty':my_clubs_is_empty,'applications_is_empty':applications_is_empty})
 
 
 class SignUpView(LoginProhibitedMixin, FormView):
@@ -213,9 +216,12 @@ def apply_to_club(request,club_name):
 @club_exists
 @management_required
 def applicants_list(request,club_name):
+        is_empty = False
         current_club = Club.objects.get(club_name=club_name)
         applicants = current_club.get_applicants()
-        return render(request,'applicants_list.html', {'applicants':applicants, 'current_club':current_club})
+        if applicants.count() == 0:
+            is_empty = True
+        return render(request,'applicants_list.html', {'applicants':applicants,'is_empty':is_empty, 'current_club':current_club})
 
 @login_required
 @club_exists
@@ -261,7 +267,7 @@ def club_welcome(request,club_name):
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
-            applicant = User.objects.get(id=user_id)
+            applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
             current_club.toggle_member(applicant)
         except (ObjectDoesNotExist):
             return redirect('feed')
@@ -275,7 +281,7 @@ def accept_applicant(request,club_name,user_id):
 def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         try:
-            applicant = User.objects.get(id=user_id)
+            applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
             current_club.remove_user_from_club(applicant)
         except ObjectDoesNotExist:
             return redirect('feed')
@@ -288,10 +294,10 @@ def reject_applicant(request,club_name,user_id):
 def ban_member(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
     try:
-        member = User.objects.get(id=user_id)
+        member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
         current_club.ban_member(member)
     except ObjectDoesNotExist:
-        return redirect('club_feed')
+        return redirect('feed')
     else:
         return members_management_list(request,current_club.club_name)
 
@@ -301,10 +307,10 @@ def ban_member(request,club_name,user_id):
 def unban_member(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
     try:
-        member = User.objects.get(id=user_id)
-        current_club.unban_member(member)
+        banned = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'BAN')
+        current_club.unban_member(banned)
     except ObjectDoesNotExist:
-        return redirect('club_feed')
+        return redirect('feed')
     else:
         return members_management_list(request,current_club.club_name)
 
@@ -312,12 +318,16 @@ def unban_member(request,club_name,user_id):
 @club_exists
 @management_required
 def members_management_list(request,club_name):
+    banned_is_empty = False
+    member_is_empty = False
     current_club = Club.objects.get(club_name=club_name)
     members = current_club.get_members()
-    member_count = current_club.get_members().count()
     banned = current_club.get_banned_members()
-    banned_count = current_club.get_banned_members().count()
-    return render(request,'member_management.html', {'banned':banned,'members':members, 'banned_count':banned_count,'member_count':member_count, 'current_club':current_club})
+    if members.count() == 0:
+        member_is_empty = True
+    if banned.count() == 0:
+        banned_is_empty = True
+    return render(request,'member_management.html', {'banned':banned,'members':members, 'banned_is_empty':banned_is_empty,'member_is_empty':member_is_empty, 'current_club':current_club})
 
 @login_required
 @club_exists
@@ -333,7 +343,7 @@ def officer_list(request,club_name):
 def transfer_ownership(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
     try:
-        officer = User.objects.get(id=user_id)
+        officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
         current_club.transfer_ownership(request.user,officer)
     except (ObjectDoesNotExist):
         return redirect('feed')
@@ -346,12 +356,25 @@ def transfer_ownership(request,club_name,user_id):
 def demote_officer(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
     try:
-        officer = User.objects.get(id=user_id)
+        officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
         current_club.toggle_member(officer)
     except (ObjectDoesNotExist):
         return redirect('feed')
     else:
         return officer_list(request,current_club.club_name)
+
+@login_required
+@club_exists
+@management_required
+def promote_member(request,club_name,user_id):
+    current_club = Club.objects.get(club_name=club_name)
+    try:
+        member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
+        current_club.toggle_officer(member)
+    except (ObjectDoesNotExist):
+        return redirect('feed')
+    else:
+        return members_management_list(request,current_club.club_name)
 
 @login_required
 @club_exists

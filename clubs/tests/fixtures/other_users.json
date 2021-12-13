@@ -53,6 +53,19 @@
       "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
       "is_active": true
     }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 6,
+    "fields": {
+      "first_name": "Sam",
+      "last_name": "Doe",
+      "username": "samdoe@example.org",
+      "bio": "Hello, I am Sam Doe.",
+      "chess_experience_level": 1,
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+    }
   }
 
 ]
