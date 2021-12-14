@@ -56,7 +56,6 @@ class LogInView(LoginProhibitedMixin, View):
 
     def get(self, request):
         """Display log in template."""
-
         self.next = request.GET.get('next') or ''
         return self.render()
 
@@ -83,24 +82,19 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
-@login_required
-def feed(request):
-    clubs  = Club.objects.all()
-    applications_is_empty = False
-    my_clubs_is_empty = False
-    current_user= request.user
-    user_applicant_clubs = current_user.get_applied_clubs()
-    user_clubs = current_user.get_user_clubs()
-    if user_applicant_clubs.count() == 0:
-        applications_is_empty = True
-    if user_clubs.count() == 0:
-        my_clubs_is_empty = True
-    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs,'my_clubs_is_empty':my_clubs_is_empty,'applications_is_empty':applications_is_empty})
+class FeedView(LoginRequiredMixin,ListView):
+    model = Club
+    template_name = "feed.html"
+    context_object_name = 'clubs'
 
+    def get_context_data(self,*args,**kwargs):
+        context = super(FeedView,self).get_context_data(*args,**kwargs)
+        context['user_clubs'] = self.request.user.get_user_clubs()
+        context['user_applicant_clubs'] = self.request.user.get_applied_clubs()
+        return context
 
 class SignUpView(LoginProhibitedMixin, FormView):
     """View that signs up user."""
-
     form_class = SignUpForm
     template_name = "sign_up.html"
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
@@ -115,18 +109,18 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
 
 """only login user can create new club"""
-@login_required
-def create_club(request):
-    if request.method =='POST':
-        form = NewClubForm(request.POST)
-        if form.is_valid():
-            club = form.save()
-            club.club_members.add(request.user,through_defaults={'club_role':'OWN'})
-            return redirect('feed')
-    else:
-        form = NewClubForm()
-    return render(request,'new_club.html',{'form':form})
+class CreateClubView(LoginRequiredMixin,FormView):
+    form_class = NewClubForm
+    template_name = "new_club.html"
+    #redirect_when_logged_in_url = settings
 
+    def form_valid(self,form):
+        self.object = form.save()
+        self.object.club_members.add(self.request.user,through_defaults={'club_role':'OWN'})
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('feed')
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """View to update logged-in user's profile."""
@@ -181,7 +175,6 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         """Generate content to be displayed in the template."""
-
         context = super().get_context_data(*args, **kwargs)
         user = self.get_object()
         current_user_clubs = self.request.user.get_user_clubs()
@@ -195,7 +188,6 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         """Handle get request, and redirect to user_list if user_id invalid."""
-
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
@@ -220,33 +212,47 @@ def apply_to_club(request,club_name):
         else:
             return redirect('feed')
 
-@login_required
-@club_exists
-@management_required
-def applicants_list(request,club_name):
-        is_empty = False
-        current_club = Club.objects.get(club_name=club_name)
-        applicants = current_club.get_applicants()
-        if applicants.count() == 0:
-            is_empty = True
-        return render(request,'applicants_list.html', {'applicants':applicants,'is_empty':is_empty, 'current_club':current_club})
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(management_required,name='dispatch')
+class ApplicantListView(LoginRequiredMixin,ListView):
+    model = User
+    template_name = "applicants_list.html"
+    context_object_name = 'users'
 
-@login_required
-@club_exists
-@membership_required
-def club_feed(request,club_name):
-    is_officer = False
-    is_owner = False
-    current_club = Club.objects.get(club_name=club_name)
-    club_role = current_club.get_club_role(request.user)
-    members = current_club.get_members()
-    management = current_club.get_management()
-    number_of_applicants = current_club.get_applicants().count()
-    if club_role == 'OWN':
-        is_owner = True
-    elif club_role == 'OFF':
-        is_officer = True
-    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'management':management,'number_of_applicants':number_of_applicants})
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(ApplicantListView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        context['users'] = self.club.get_applicants()
+        context['club'] = self.club
+        return context
+
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(membership_required,name='dispatch')
+class ClubFeedView(LoginRequiredMixin,ListView):
+    model = User
+    template_name = "club_feed.html"
+    context_object_data = 'members'
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(ClubFeedView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        club_role = self.club.get_club_role(self.request.user)
+        context['members'] = self.club.get_members()
+        context['club'] = self.club
+        context['management'] = self.club.get_management()
+        is_officer = False
+        is_owner = False
+        if club_role == 'OWN':
+            is_owner = True
+        elif club_role == 'OFF':
+            is_officer = True
+        context['is_owner'] = is_owner
+        context['is_officer'] = is_officer
+        context['number_of_applicants'] = self.club.get_applicants().count()
+        return context
 
 @login_required
 @club_exists
