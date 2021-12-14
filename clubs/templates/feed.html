@@ -40,6 +40,7 @@
                       </tr>
                     </div>
                     {%endfor%}
+<<<<<<< HEAD
                     {%endif%}
                     {%if my_clubs_is_empty%}
                     <div class="alert alert-warning" role="alert">
@@ -49,6 +50,10 @@
                     {%endif%}
                 </div>
                 </div>
+=======
+                 </div>
+               </div>
+>>>>>>> withdraw-application
               </td>
             </tr>
           </div>
@@ -99,7 +104,11 @@
             {% for club in user_applicant_clubs %}
             <tr>
               <td>
+<<<<<<< HEAD
                 <a class="btn btn-danger" href='{% url 'club_feed' club.club_name %}' role="button">{{club.club_name}}</a>
+=======
+                <a class="btn btn-primary" href='{% url 'club_welcome' club.club_name %}' role="button">{{club.club_name}}</a>
+>>>>>>> withdraw-application
               </td>
             </tr>
             {%endfor%}

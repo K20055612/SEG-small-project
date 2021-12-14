@@ -40,6 +40,7 @@ class User(AbstractUser):
     )
 
     def get_user_clubs(self):
+<<<<<<< HEAD
         return Club.objects.all().filter(
             club_members__username=self.username,role__club_role='MEM')|Club.objects.all().filter(
             club_members__username=self.username,role__club_role='OFF')|Club.objects.all().filter(
@@ -47,6 +48,16 @@ class User(AbstractUser):
 
     def get_applied_clubs(self):
         return Club.objects.all().filter(club_members__username=self.username,role__club_role='APP')
+=======
+        clubs = Club.objects.all()
+        current_user = self
+        user_applicant_clubs = Club.objects.all().filter(
+            club_members__username = current_user.username,
+            role__club_role='APP')
+        user_clubs = Club.objects.all().filter(
+            club_members__username = current_user.username).difference(user_applicant_clubs)
+        return user_clubs
+>>>>>>> withdraw-application
 
     def get_chess_experience(self):
         return self.ChessExperience(self.chess_experience_level).name.title()
@@ -170,6 +181,7 @@ class Club(models.Model):
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)
         role.delete()
+        self.club_members.delete(request.user)
 
 
 class Role(models.Model):

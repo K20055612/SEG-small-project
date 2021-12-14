@@ -85,7 +85,7 @@ class NewClubForm(forms.ModelForm):
             description=self.cleaned_data.get('description'),
         )
         return club
-
+    
 class UserForm(forms.ModelForm):
     """Form to update user profiles."""
 
