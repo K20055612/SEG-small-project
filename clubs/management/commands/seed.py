@@ -62,7 +62,7 @@ class Command(BaseCommand):
         return email
 
     def _create_club(self):
-        club_name = self.faker.first_name() + " Chess Club"
+        club_name = self.faker.word().capitalize() + " Chess Club"
         location = 'Test'
         description = self.faker.text(max_nb_chars=520)
 
@@ -79,10 +79,9 @@ class Command(BaseCommand):
         club.club_members.add(club_owner,through_defaults={'club_role':'OWN'})
 
         club_roles = ['APP','MEM','OFF','BAN']
-        for user_number in range(1, int(self.USER_COUNT/2)):
+        for user_number in range(1, int(self.USER_COUNT/3)):
             current_user = random.choice(User.objects.all().difference(club.get_all_users_in_club()))
             club.club_members.add(current_user,through_defaults={'club_role':random.choice(club_roles)})
-        print(club.get_all_users_in_club().count())
 
     def _create_required_roles(self):
 
