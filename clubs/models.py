@@ -157,6 +157,11 @@ class Club(models.Model):
         return self.club_members.all().filter(
             club__club_name = self.club_name, role__club_role = 'MEM')
 
+    def get_all_users_in_club(self):
+        return self.club_members.all().filter(
+        club__club_name = self.club_name)
+        
+
     def get_management(self):
         return self.club_members.all().filter(
             club__club_name = self.club_name, role__club_role = 'OFF') | self.club_members.all().filter(
@@ -188,7 +193,7 @@ class Club(models.Model):
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)
         role.delete()
-        
+
 
 
 class Role(models.Model):

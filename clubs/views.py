@@ -202,7 +202,6 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 @login_required
 @club_exists
 def apply_to_club(request,club_name):
-
     if request.method == 'POST':
         messages.add_message(request, messages.SUCCESS, f'Application for {club_name} sent successfully. Hang tight while a club officer reviews your application.')
     club = Club.objects.get(club_name=club_name)
@@ -293,26 +292,31 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
             return redirect('feed')
 
 @login_required
+@user_in_club
 @club_exists
 def withdraw_application(request, club_name, user_id):
     club = Club.objects.get(club_name = club_name)
     try:
-        applicant = User.objects.get(id = user_id)
+        applicant = User.objects.get(id=user_id,club__club_name = club.club_name, role__club_role = 'APP')
         club.remove_user_from_club(applicant)
         club.save()
-    except:
-        pass
+    except ObjectDoesNotExist:
+        return redirect('feed')
     if request.method == 'POST':
-        messages.add_message(request, messages.SUCCESS, f'Withdrawal from {club_name} completed successfully')
+        messages.add_message(request, messages.WARNING, f'Withdrawal from {club_name} completed successfully')
     return redirect('feed')
 
+@login_required
 @user_in_club
 @management_required
 def accept_applicant(request,club_name,user_id):
-        current_club = Club.objects.get(club_name=club_name)
-        applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
-        current_club.toggle_member(applicant)
-        return redirect('applicants_list', current_club.club_name)
+
+    current_club = Club.objects.get(club_name=club_name)
+    applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
+    current_club.toggle_member(applicant)
+    if request.method == 'POST':
+        messages.add_message(request, messages.SUCCESS, f'{applicant.full_name()} has become a member of the club.')
+    return redirect('applicants_list', current_club.club_name)
 
 @login_required
 @club_exists
@@ -322,6 +326,9 @@ def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
         applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
         current_club.remove_user_from_club(applicant)
+        if request.method == 'POST':
+            messages.add_message(request, messages.DANGER, f'{applicant.full_name()} has been rejected.')
+        return redirect('applicants_list', current_club.club_name)
         return redirect('applicants_list', current_club.club_name)
 
 @login_required
@@ -424,7 +431,7 @@ def delete_club(request,club_name):
 @membership_required
 def search_member(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
-    members = current_club.get_members()
+    members = current_club.get_all_users_in_club()
     member_name = request.GET.get('member_name')
     if member_name == '':
         member_name = 'None'

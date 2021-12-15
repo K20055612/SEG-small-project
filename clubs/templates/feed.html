@@ -57,8 +57,6 @@
             </tr>
           </div>
         </div>
-      </div>
-    </div>
     <div class="accordion-item">
       <h2 class="accordion-header" id="panelsStayOpen-headingTwo"><font size="+2">
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
@@ -103,7 +101,7 @@
             {% for club in user_applicant_clubs %}
             <tr>
               <td>
-                <a class="btn btn-primary" href='{% url 'club_welcome' club.club_name %}' role="button">{{club.club_name}}</a>
+                <a class="btn btn-primary" href='{% url 'club_welcome' club.id %}' role="button">{{club.club_name}}</a>
               </td>
             </tr>
             {%endfor%}
@@ -118,4 +116,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{%endblock%}

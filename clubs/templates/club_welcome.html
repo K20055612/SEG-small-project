@@ -14,31 +14,21 @@
       {% if user_role == 'BAN' %}
       <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Sorry you are banned. You cannot apply this club.</a>
       {% endif %}
+
       {% if user_role == 'APP' %}
-      <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
-      <div class="alert alert-success" role="alert">
-        <h4 class="alert-heading">Whoops!</h4>
-        <p>It looks like you have already applied to join this club.</p>
-        <hr>
-        <p class="mb-0">Hang tight while a club officer reviews your application.</p>
-      </div>
-      {%endif%}
-      {% if user_role == 'APP' %}
+      <p>
+        <div class="alert alert-warning" role="alert">
+          <h4 class="alert-heading">Application pending!</h4>
+          <p>An officer from the club is currently reviewing your application.</p>
+          <hr>
+          <p class="mb-0">Meanwhile, if you change your mind you can withdraw your application below.</p>
+        </div>
+      </p>
         <form action = "{% url 'withdraw_application' club.club_name user.id %}" method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-primary">
-            Withdraw
+          <button type="submit" class="btn btn-danger">
+            Withdraw Application
           </button>
-          <p>
-            <div class="alert alert-success" role="alert">
-              <h4 class="alert-heading">Application pending!</h4>
-              <p>It looks like you have already applied to join this club.</p>
-              <hr>
-              <p class="mb-0">Hang tight while a club officer reviews your application.</p>
-              <hr>
-              <p class="mb-0">Meanwhile, if you change your mind you can withdraw your application.</p>
-            </div>
-          </p>
       {%endif%}
 
       {% if user_role == 'MEM' %}

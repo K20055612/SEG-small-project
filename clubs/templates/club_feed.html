@@ -6,6 +6,7 @@
   <div class="row justify-content-between">
     <h1 class="col-7">
       {{club.club_name}}
+      {%if user_role == 'OWN' or user_role == 'OFF'%}
       <div class="btn-group">
         <li class="club dropdown">
           <a class="club-link" href="#" id="management-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -16,7 +17,6 @@
             <li><a class="dropdown-item" href="{% url 'delete_club' club.club_name%}">Delete Club</a></li>
             <li><a class="dropdown-item" href="{% url 'officer_list' club.club_name%}">Officer management</a></li>
             {%endif%}
-            {%if user_role == 'OWN' or user_role == 'OFF'%}
             <li><a class="dropdown-item" href="{% url 'applicants_list'  club.club_name  %}">Applicants</a></li>
             <li><a class="dropdown-item" href="{% url 'member_management'  club.club_name  %}">Manage members</a></li>
             {%endif%}
@@ -31,26 +31,7 @@
         </button>
       </form>
       {%endif%}
-<<<<<<< HEAD
         </h1>
-=======
-      {%if user_role == 'OWN' or user_role == 'OFF'%}
-      <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-dark">
-          Applicants <span class="badge alert-light">{{number_of_applicants}}</span>
-        </button>
-      </form>
-      <form action = "{% url 'member_management'  club.club_name  %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-dark">
-          Manage members
-        </button>
-      </form>
-
-      {%endif%}
-    </h1>
->>>>>>> refactor-2
   </div>
 </div>
 
