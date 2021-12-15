@@ -31,10 +31,7 @@ class UnbanMemberViewTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         after_banned =  Role.objects.all().filter(club=self.club,club_role='BAN').count()
         self.assertEqual(before_banned,after_banned+1)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(self.club.club_members.all().filter(id=self.banned.id,
             club__club_name = self.club.club_name).exists())
 
@@ -47,10 +44,7 @@ class UnbanMemberViewTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         after_banned =  Role.objects.all().filter(club=self.club,club_role='BAN').count()
         self.assertEqual(before_banned,after_banned+1)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(self.club.club_members.all().filter(id=self.banned.id,
             club__club_name = self.club.club_name).exists())
 

@@ -36,10 +36,7 @@ class PromoteMemberViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_officers+1,after_officers)
         role = self.member.role_set.get(club=self.club)
         self.assertEqual('OFF',role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.member, club=self.club).club_role,'OFF')
 
     def test_promote_member_as_owner(self):
@@ -56,10 +53,7 @@ class PromoteMemberViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_officers+1,after_officers)
         role = self.member.role_set.get(club=self.club)
         self.assertEqual('OFF',role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.member, club=self.club).club_role,'OFF')
 
     def test_promote_member_with_invalid_id(self):

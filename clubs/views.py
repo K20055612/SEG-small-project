@@ -199,23 +199,25 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 @login_required
 @club_exists
 def apply_to_club(request,club_name):
-    is_banned = False
     club = Club.objects.get(club_name=club_name)
     try:
         role = club.get_club_role(request.user)
     except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
             club.save()
-            return FeedView.as_view()(request)
+            return redirect('club_welcome',club.id)
     else:
-            return FeedView.as_view()(request)
+            return redirect('feed')
 
+@method_decorator(login_required,name='dispatch')
 @method_decorator(club_exists,name='dispatch')
 @method_decorator(management_required,name='dispatch')
 class ApplicantListView(LoginRequiredMixin,ListView):
+
     model = User
     template_name = "applicants_list.html"
     context_object_name = 'applicants'
+
 
     def post(self,*args,**kwargs):
         return super().get(*args,**kwargs)
@@ -227,12 +229,16 @@ class ApplicantListView(LoginRequiredMixin,ListView):
         context['applicants'] = self.club.get_applicants()
         return context
 
+@method_decorator(login_required,name='dispatch')
 @method_decorator(club_exists,name='dispatch')
 @method_decorator(membership_required,name='dispatch')
 class ClubFeedView(LoginRequiredMixin,ListView):
     model = User
     template_name = "club_feed.html"
     context_object_data = 'members'
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
 
     def get_context_data(self,*args,**kwargs):
         context = super(ClubFeedView,self).get_context_data(*args,**kwargs)
@@ -252,6 +258,9 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
     context_object_name = "club"
     pk_url_kwarg = 'club_id'
 
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
     def get_context_data(self, *args, **kwargs):
         """Generate content to be displayed in the template."""
         context = super(ClubWelcomeView,self).get_context_data(*args, **kwargs)
@@ -266,6 +275,7 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
             elif club_role ==  'MEM' or club_role ==  'OWN' or club_role ==  'OFF':
                 user_role = 'MEM'
         context['club'] = club
+        context['user'] = self.request.user
         context['user_role'] = user_role
         return context
 
@@ -316,6 +326,7 @@ def unban_member(request,club_name,user_id):
     current_club.unban_member(banned)
     return redirect('member_management', current_club.club_name)
 
+@method_decorator(login_required,name='dispatch')
 @method_decorator(club_exists,name='dispatch')
 @method_decorator(management_required,name='dispatch')
 class MemberManagementListView(LoginRequiredMixin,ListView):
@@ -334,6 +345,7 @@ class MemberManagementListView(LoginRequiredMixin,ListView):
         context['members'] = self.club.get_members()
         return context
 
+@method_decorator(login_required,name='dispatch')
 @method_decorator(club_exists,name='dispatch')
 @method_decorator(owner_required,name='dispatch')
 class OfficerListView(LoginRequiredMixin,ListView):

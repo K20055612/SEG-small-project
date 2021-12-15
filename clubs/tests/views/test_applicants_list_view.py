@@ -33,7 +33,6 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
         self.assertEqual(len(response.context['applicants']), 14)
-        self.assertFalse(response.context['is_empty'])
         for user_id in range(15-1):
             self.assertContains(response, f'user{user_id}')
             self.assertContains(response, f'First{user_id}')
@@ -46,7 +45,6 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
         self.assertEqual(len(response.context['applicants']), 0)
-        self.assertTrue(response.context['is_empty'])
         for user_id in range(15-1):
             self.assertNotContains(response, f'user{user_id}')
             self.assertNotContains(response, f'First{user_id}')
@@ -61,7 +59,6 @@ class ApplicantListViewTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'applicants_list.html')
         self.assertEqual(len(response.context['applicants']), 14)
-        self.assertFalse(response.context['is_empty'])
         for user_id in range(15-1):
             self.assertContains(response, f'user{user_id}')
             self.assertContains(response, f'First{user_id}')
