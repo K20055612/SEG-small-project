@@ -8,7 +8,20 @@
       <th scope="col">Experience level</th>
       {%endif%}
   </thead>
-  {% for member in management %}
+  {%for owner in owner%}
+  <tr>
+    <td>
+      <img src="{{ owner.mini_gravatar }}" alt="Gravatar of {{ owner.username }}" class="rounded-circle">
+    </td>
+    <td class="align-middle"><a href="{% url 'show_user' owner.id %}">{{owner.full_name}} <i class="fas fa-crown"></i>
+</td>
+    {%if user_role == 'OWN' or user_role == 'OFF'%}
+    <td class="align-middle"> {{owner.username}}</td>
+    <td class="align-middle"> {{owner.get_chess_experience}}</td>
+    {%endif%}
+  </tr>
+  {%endfor%}
+  {% for member in officers %}
   <tr>
     <td>
       <img src="{{ member.mini_gravatar }}" alt="Gravatar of {{ member.username }}" class="rounded-circle">

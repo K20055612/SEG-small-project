@@ -8,7 +8,7 @@ from enum import Enum
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
-"""create a user model"""
+"""Create a user model"""
 class User(AbstractUser):
     username = models.EmailField(
         unique=True,
@@ -40,12 +40,14 @@ class User(AbstractUser):
         choices = ChessExperience.choices
     )
 
+    """Returns clubs that a user is in"""
     def get_user_clubs(self):
         return Club.objects.all().filter(
             club_members__username=self.username,role__club_role='MEM')|Club.objects.all().filter(
             club_members__username=self.username,role__club_role='OFF')|Club.objects.all().filter(
             club_members__username=self.username,role__club_role='OWN')
 
+    """Returns clubs that a user has applied to"""
     def get_applied_clubs(self):
         return Club.objects.all().filter(club_members__username=self.username,role__club_role='APP')
         clubs = Club.objects.all()
@@ -76,7 +78,7 @@ class User(AbstractUser):
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
 
-
+"""Create club model"""
 class Club(models.Model):
     club_name = models.CharField(
     unique=True,
@@ -105,11 +107,13 @@ class Club(models.Model):
     def get_club_role(self,user):
         return Role.objects.get(club = self, user = user).club_role
 
+    """Changes user's role to member"""
     def toggle_member(self,user):
         role = Role.objects.get(club=self,user=user)
         role.club_role = 'MEM'
         role.save()
 
+    """Changes user's role to officer"""
     def toggle_officer(self,user):
         role = Role.objects.get(club=self,user=user)
         if role.club_role == 'APP' or role.club_role == 'BAN':
@@ -118,7 +122,7 @@ class Club(models.Model):
             role.club_role = 'OFF'
             role.save()
             return
-
+    """Bans a user from club"""
     def ban_member(self,user):
         role = Role.objects.get(club=self,user=user)
         if role.club_role == 'MEM':
@@ -127,61 +131,64 @@ class Club(models.Model):
             return
         else:
             return
-
+    """Unbans a banned user from club"""
     def unban_member(self,user):
         role = Role.objects.get(club=self,user=user)
         if role.club_role == 'BAN':
+            """User must re-apply to re-join club"""
             role.delete()
             return
         else:
             return
-
+    """Makes an officer the owner of the club"""
     def transfer_ownership(self,old_owner,new_owner):
         new_owner_role = Role.objects.get(club=self,user=new_owner)
         old_owner_role = Role.objects.get(club=self,user=old_owner)
         if new_owner_role.club_role == 'OFF':
             new_owner_role.club_role = 'OWN'
             new_owner_role.save()
+            """Old owner becomes an officer at the club"""
             old_owner_role.club_role = 'OFF'
             old_owner_role.save()
             return
         else:
             return
 
+    """Returns all user objects that are applicants of a club"""
     def get_applicants(self):
         return self.club_members.all().filter(
             club__club_name = self.club_name,
             role__club_role='APP')
 
+    """Returns all user objects that are members of a club"""
     def get_members(self):
         return self.club_members.all().filter(
             club__club_name = self.club_name, role__club_role = 'MEM')
 
+    """Returns all user objects that are applicants of a club"""
     def get_all_users_in_club(self):
         return self.club_members.all().filter(
         club__club_name = self.club_name)
-        
 
-    def get_management(self):
-        return self.club_members.all().filter(
-            club__club_name = self.club_name, role__club_role = 'OFF') | self.club_members.all().filter(
-                club__club_name = self.club_name, role__club_role = 'OWN')
-
+    """ Returns all banned users in the club"""
     def get_banned_members(self):
         return self.club_members.all().filter(
             club__club_name = self.club_name,
             role__club_role='BAN')
 
+    """ Returns all officer users in the club"""
     def get_officers(self):
         return User.objects.all().filter(
             club__club_name = self.club_name,
             role__club_role='OFF')
 
+    """Returns owner of club"""
     def get_owner(self):
         return User.objects.all().filter(
             club__club_name = self.club_name,
             role__club_role='OWN')
 
+    """Checks if user is in club"""
     def is_user_in_club(self,user):
         try:
              role = self.get_club_role(user)
@@ -189,13 +196,13 @@ class Club(models.Model):
             return False
         else:
             return True
-
+    """Deletes user's role in the club"""
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)
         role.delete()
 
 
-
+"""Create role model"""
 class Role(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)

@@ -1,29 +1,25 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login, logout
-from clubs.models import User,Club,Role
+from clubs.models import User,Club
 from django.contrib import messages
-from clubs.forms import LogInForm,SignUpForm,UserForm,PasswordForm,NewClubForm
+from clubs.forms import NewClubForm
 from django.contrib.auth.decorators import login_required
-from clubs.helpers import *
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.hashers import check_password
+from clubs.helpers import club_exists_id,club_exists,owner_required
 from django.views import View
-from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.generic.detail import DetailView
-from django.views.generic import ListView
 from django.http import HttpResponseForbidden, Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.urls import reverse
-from django.views.generic.edit import UpdateView
 from django.db.models import CharField, Value
 from django.db.models.functions import Concat
 
 @method_decorator(club_exists_id,name='dispatch')
 class ClubWelcomeView(LoginRequiredMixin,DetailView):
+    """View that displays information of a club"""
     model = Club
     template_name = 'club_welcome.html'
     context_object_name = "club"
@@ -61,11 +57,13 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
 @club_exists
 @owner_required
 def delete_club(request,club_name):
-        current_club = Club.objects.get(club_name=club_name)
-        current_club.delete()
-        return redirect('feed')
-"""only login user can create new club"""
+    """View that deletes a club"""
+    current_club = Club.objects.get(club_name=club_name)
+    current_club.delete()
+    return redirect('feed')
+
 class CreateClubView(LoginRequiredMixin,FormView):
+    """View that allows a logged-in user to create a club"""
     form_class = NewClubForm
     template_name = "new_club.html"
 
