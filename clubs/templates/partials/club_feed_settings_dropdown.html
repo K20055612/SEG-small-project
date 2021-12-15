@@ -1,0 +1,26 @@
+{%if user_role == 'OWN' or user_role == 'OFF'%}
+<div class="btn-group">
+  <li class="club dropdown">
+    <a class="club-link" href="#" id="management-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="bi bi-gear"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
+      {%if user_role == 'OWN'%}
+      <li><a class="dropdown-item" href="{% url 'delete_club' club.club_name%}">Delete club <i class="bi bi-trash-fill"></i>
+</a></li>
+      <li><a class="dropdown-item" href="{% url 'officer_list' club.club_name%}">Officer management <i class="bi bi-file-person-fill"></i></a></li>
+      {%endif%}
+      <li><a class="dropdown-item" href="{% url 'applicants_list'  club.club_name  %}">Applicants ({{number_of_applicants}}) <i class="bi bi-person-plus-fill"></i></a></li>
+      <li><a class="dropdown-item" href="{% url 'member_management'  club.club_name  %}">Manage members</a></li>
+      {%endif%}
+    </ul>
+  </li>
+</div>
+{%if is_owner%}
+<form action="{% url 'officer_list' club.club_name%}" method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-warning">
+    <i class="bi bi-people-fill"></i> Officer management
+  </button>
+</form>
+{%endif%}

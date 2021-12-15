@@ -408,7 +408,6 @@ def demote_officer(request,club_name,user_id):
     current_club.toggle_member(officer)
     return redirect('officer_list', current_club.club_name)
 
-
 @login_required
 @club_exists
 @user_in_club
@@ -428,6 +427,7 @@ def delete_club(request,club_name):
     current_club.delete()
     return redirect('feed')
 
+@login_required
 @membership_required
 def search_member(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
