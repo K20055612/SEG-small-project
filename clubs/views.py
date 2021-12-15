@@ -257,7 +257,7 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
         context = super(ClubWelcomeView,self).get_context_data(*args, **kwargs)
         club = Club.objects.get(id=self.kwargs['club_id'])
         user_role = None
-        if club.is_member_in_club(self.request.user):
+        if club.is_user_in_club(self.request.user):
             club_role = club.get_club_role(self.request.user)
             if club_role == 'APP':
                 user_role = 'APP'
