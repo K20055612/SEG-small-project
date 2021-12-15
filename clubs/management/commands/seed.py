@@ -1,8 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
+import random
 from clubs.models import User,Club,Role
+from django.core import management
+from django.db.utils import IntegrityError
 
 class Command(BaseCommand):
+
     PASSWORD = "Password123"
     USER_COUNT = 30
     CLUB_COUNT = 4
@@ -12,27 +16,29 @@ class Command(BaseCommand):
         self.faker = Faker('en_GB')
 
     def handle(self, *args, **options):
+        management.call_command('loaddata', 'clubs/management/commands/fixtures/required_clubs.json')
+        management.call_command('loaddata', 'clubs/management/commands/fixtures/required_users.json')
+        self._create_required_roles()
+
         user_count = 0
         club_count = 0
-        self._create_test_data()
-        while club_count < Command.CLUB_COUNT:
-            print(f'Seeding club {club_count}',  end='\r')
-            try:
-                self._create_club()
-            except (django.db.utils.IntegrityError):
-                continue
-            club_count += 1
-
-        print('Club seeding complete')
-
         while user_count < Command.USER_COUNT:
             print(f'Seeding user {user_count}',  end='\r')
             try:
                 self._create_user()
-            except (django.db.utils.IntegrityError):
+            except IntegrityError as e:
                 continue
             user_count += 1
         print('User seeding complete')
+
+        while club_count < Command.CLUB_COUNT:
+            try:
+                self._create_club()
+            except IntegrityError as e:
+                continue
+            club_count += 1
+
+        print('Club seeding complete')
 
     def _create_user(self):
         first_name = self.faker.first_name()
@@ -50,39 +56,52 @@ class Command(BaseCommand):
             chess_experience_level=chess_experience_level,
         )
 
+
     def _email(self, first_name, last_name):
-        email = f'{first_name}.{last_name}@fake.seed'
+        email = f'{first_name}.{last_name}@example.org'
         return email
 
     def _create_club(self):
-        club_name = self.faker.first_name()
+        club_name = self.faker.word().capitalize() + " Chess Club"
         location = 'Test'
         description = self.faker.text(max_nb_chars=520)
 
-        Club.objects.create(
+        new_club = Club.objects.create(
                 club_name=club_name,
                 location=location,
                 description=description,
             )
 
-    def _create_test_data(self):
+        self._create_club_roles(new_club)
 
-        jebediah = User.objects.create(username="jeb@example.org",first_name="Jebebiah",last_name="Kerman",
-        password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=',bio="Hi guys",chess_experience_level=4)
+    def _create_club_roles(self,club):
+        club_owner=random.choice(User.objects.all())
+        club.club_members.add(club_owner,through_defaults={'club_role':'OWN'})
 
+        club_roles = ['APP','MEM','OFF','BAN']
+        for user_number in range(1, int(self.USER_COUNT/3)):
+            current_user = random.choice(User.objects.all().difference(club.get_all_users_in_club()))
+            club.club_members.add(current_user,through_defaults={'club_role':random.choice(club_roles)})
 
-        valentina = User.objects.create(username="val@example.org",first_name="Valentina",last_name="Kerman",
-        bio="Hi guys",chess_experience_level=2,password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=')
+    def _create_required_roles(self):
 
-        billie = User.objects.create(username="billie@example.org",first_name="Billie",last_name="Kerman",
-        password='pbkdf2_sha256$260000$LnafUF8ekxltY63RK2jDbQ$v/g4SLvK1DV/sMFd0u4e38pWzVHWNrBXLdXsjPE4d9E=',bio="Hi guys",chess_experience_level=4)
+        jebediah = User.objects.get(username='jeb@example.org')
+        valentina = User.objects.get(username='val@example.org')
+        billie = User.objects.get(username='billie@example.org')
 
-        kerbal_club = Club.objects.create(club_name="Kerbal Chess Club",location="Test",description="Welcome to the Kerbals!")
-        atlantis_club = Club.objects.create(club_name="Atlantis",location="Test",description="Welcome to the Atlantis!")
+        kerbal_club = Club.objects.get(club_name='Kerbal Chess Club')
+        billie_club = Club.objects.get(club_name='Billie Chess Club')
+        valentina_club = Club.objects.get(club_name='Valentina Chess Club')
+        jebediah_club = Club.objects.get(club_name='Jebediah Chess Club')
 
-        atlantis_club.club_members.add(billie,through_defaults={'club_role':'APP'})
-        atlantis_club.club_members.add(valentina,through_defaults={'club_role':'OFF'})
-
-        kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'OFF'})
-        kerbal_club.club_members.add(valentina,through_defaults={'club_role':'MEM'})
+        kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'MEM'})
+        kerbal_club.club_members.add(valentina,through_defaults={'club_role':'OFF'})
         kerbal_club.club_members.add(billie,through_defaults={'club_role':'OWN'})
+
+        billie_club.club_members.add(jebediah,through_defaults={'club_role':'OFF'})
+        billie_club.club_members.add(billie,through_defaults={'club_role':'OWN'})
+
+        valentina_club.club_members.add(valentina,through_defaults={'club_role':'OWN'})
+
+        jebediah_club.club_members.add(billie,through_defaults={'club_role':'MEM'})
+        jebediah_club.club_members.add(jebediah,through_defaults={'club_role':'OWN'})

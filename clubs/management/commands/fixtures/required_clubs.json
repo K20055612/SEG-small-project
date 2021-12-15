@@ -1,0 +1,40 @@
+[
+  {
+    "model": "clubs.club",
+    "pk": 1,
+    "fields": {
+      "club_name":"Kerbal Chess Club",
+      "location":"Test",
+      "description":"Kerbal's family chess club!"
+
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 2,
+    "fields": {
+      "club_name":"Billie Chess Club",
+      "location":"Test",
+      "description":"Billie's chess club!"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 3,
+    "fields": {
+      "club_name":"Valentina Chess Club",
+      "location":"Test",
+      "description":"Valentina's chess club"
+    }
+  },
+  {
+    "model": "clubs.club",
+    "pk": 4,
+    "fields": {
+      "club_name":"Jebediah Chess Club",
+      "location":"Test",
+      "description":"Jebediah's chess club"
+    }
+  }
+
+]
