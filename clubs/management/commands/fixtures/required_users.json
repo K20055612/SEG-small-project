@@ -1,0 +1,44 @@
+[
+  {
+    "model": "clubs.user",
+    "pk": 1,
+    "fields": {
+      "first_name": "Jebediah",
+      "last_name": "Kerman",
+      "username": "jeb@example.org",
+      "bio": "Hello, I am Jebediah Kerman.",
+      "chess_experience_level": 3,
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 2,
+    "fields": {
+      "first_name": "Valentina",
+      "last_name": "Kerman",
+      "username": "val@example.org",
+      "bio": "Hello, I am Valentina Kerman.",
+      "chess_experience_level": 4,
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+
+    }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 3,
+    "fields": {
+      "first_name": "Billie",
+      "last_name": "Kerman",
+      "username": "billie@example.org",
+      "bio": "Hello, I am Billie Kerman.",
+      "chess_experience_level": 5,
+      "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
+      "is_active": true
+
+    }
+  }
+]
