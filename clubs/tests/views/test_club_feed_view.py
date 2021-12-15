@@ -39,7 +39,9 @@ class ClubFeedTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club_feed.html')
         self.assertEqual(len(response.context['members']), 15)
-        self.assertEqual(len(response.context['management']), 2)
+        self.assertEqual(len(response.context['officers']), 1)
+        self.assertEqual(len(response.context['owner']), 1)
+
 
         for user_id in range(15-1):
             self.assertContains(response, f'user{user_id}')
@@ -54,8 +56,8 @@ class ClubFeedTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club_feed.html')
         self.assertEqual(len(response.context['members']),15)
-        self.assertEqual(len(response.context['management']), 2)
-
+        self.assertEqual(len(response.context['officers']), 1)
+        self.assertEqual(len(response.context['owner']), 1)
         for user_id in range(15-1):
             self.assertContains(response, f'user{user_id}')
             self.assertContains(response, f'First{user_id}')
@@ -69,8 +71,8 @@ class ClubFeedTestCase(TestCase,LogInTester):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club_feed.html')
         self.assertEqual(len(response.context['members']), 15)
-        self.assertEqual(len(response.context['management']), 2)
-
+        self.assertEqual(len(response.context['officers']), 1)
+        self.assertEqual(len(response.context['owner']), 1)
         for user_id in range(15-1):
             self.assertContains(response, f'user{user_id}')
             self.assertContains(response, f'First{user_id}')
