@@ -35,7 +35,7 @@ class ApplyViewTestCase(TestCase,LogInTester):
         before_applicants = Role.objects.all().filter(club=self.club,club_role='APP').count()
         response = self.client.get(self.url)
         after_applicants = Role.objects.all().filter(club=self.club,club_role='APP').count()
-        self.assertEqual(before_applicants-1,after_applicants)
+        self.assertEqual(before_applicants+1,after_applicants)
         role = self.club.get_club_role(self.user)
         self.assertEqual(role,'APP')
         self.assertEqual(response.status_code, 200)

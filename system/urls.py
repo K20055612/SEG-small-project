@@ -40,11 +40,8 @@ urlpatterns = [
     path('club/<str:club_name>/officer_management/demote_officer/<int:user_id>/', views.demote_officer,name='demote_officer'),
     path('apply/<str:club_name>/', views.apply_to_club,name='apply_to_club'),
     path('create_club/', views.create_club,name='create_club'),
-<<<<<<< HEAD
     path('club/<str:club_name>/delete/', views.delete_club, name = 'delete_club'),
     path('club/<str:club_name>/search_member/', views.search_member ,name='search_member'),
-=======
     path('withdraw_application/<str:club_name>/<int:user_id>/', views.withdraw_application, name = 'withdraw_application'),
 
->>>>>>> withdraw-application
 ]
