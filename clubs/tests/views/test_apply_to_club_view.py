@@ -7,7 +7,7 @@ from clubs.tests.helpers import LogInTester,reverse_with_next
 
 
 class ApplyViewTestCase(TestCase,LogInTester):
-    """Tests of the aapply_to_club view."""
+    """Tests of the apply_to_club view."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
                 'clubs/tests/fixtures/default_club.json',

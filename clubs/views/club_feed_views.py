@@ -41,11 +41,13 @@ class ClubFeedView(LoginRequiredMixin,ListView):
 @login_required
 @membership_required
 def search_member(request,club_name):
+    """View that searches for a member by their name"""
     current_club = Club.objects.get(club_name=club_name)
     members = current_club.get_all_users_in_club()
     member_name = request.GET.get('member_name')
     if member_name == '':
         member_name = 'None'
+        return redirect('club_feed',current_club.club_name)
     queryset = members.annotate(search_name=Concat('first_name', Value(' '), 'last_name'))
     search_results = queryset.filter(search_name__contains=member_name)
 

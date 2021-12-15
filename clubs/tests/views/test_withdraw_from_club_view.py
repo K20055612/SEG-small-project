@@ -102,7 +102,14 @@ class WithdrawApplicationViewTestCase(TestCase,LogInTester):
         after_owner = Role.objects.all().filter(club=self.club,club_role='OWN').count()
         self.assertEqual(before_applicants,after_applicants)
         self.assertEqual(before_owner,after_owner)
-        response = self.client.get(self.url, follow=True)
+        response_url = reverse('feed')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+
+    def test_withdraw_application_applicant_does_not_exist(self):
+        self.client.login(username=self.applicant.username, password='Password123')
+        self.assertTrue(self._is_logged_in())
+        url = reverse('withdraw_application', kwargs={'club_name': self.club.club_name,'user_id': 99999})
+        response = self.client.get(url,follow=True)
         response_url = reverse('feed')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
 
