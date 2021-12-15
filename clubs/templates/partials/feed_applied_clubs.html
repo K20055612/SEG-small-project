@@ -1,0 +1,7 @@
+{% for club in user_applicant_clubs %}
+<tr>
+  <td>
+    <a class="btn btn-primary" href='{% url 'club_welcome' club.id %}' role="button">{{club.club_name}}</a>
+  </td>
+</tr>
+{%endfor%}
