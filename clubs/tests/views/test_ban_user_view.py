@@ -36,10 +36,7 @@ class BanMemberViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_banned+1,after_banned)
         role = self.member.role_set.get(club=self.club)
         self.assertEqual('BAN',role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertContains(response, "Jane Doe")
-        self.assertContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.member, club=self.club).club_role,'BAN')
 
     def test_ban_member_as_owner(self):
@@ -56,10 +53,7 @@ class BanMemberViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_banned+1,after_banned)
         role = self.member.role_set.get(club=self.club)
         self.assertEqual('BAN',role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'member_management.html')
-        self.assertContains(response, "Jane Doe")
-        self.assertContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.member, club=self.club).club_role,'BAN')
 
 

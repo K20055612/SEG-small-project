@@ -38,10 +38,8 @@ class DemoteOfficerViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_members+1,after_members)
         after_demote_role = self.officer.role_set.get(club=self.club)
         self.assertEqual('MEM',after_demote_role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'officer_list.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
+        
 
     def test_demote_officer_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')

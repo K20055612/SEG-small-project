@@ -29,12 +29,12 @@
           <td class="align-middle"> {{user.username}}</td>
           <td class="align-middle"> {{user.get_chess_experience}}</td>
           <td class="align-middle">
-            <form action = "{% url 'transfer_ownership' current_club.club_name user.id %}" method="post">
+            <form action = "{% url 'transfer_ownership' club.club_name user.id %}" method="post">
               {% csrf_token %}
               <input type="submit" class="btn btn-outline-warning" value="Make owner" name="transfer_ownership-btn"/>
             </form>
             <td class="align-middle">
-              <form action = "{% url 'demote_officer' current_club.club_name user.id %}" method="post">
+              <form action = "{% url 'demote_officer' club.club_name user.id %}" method="post">
                 {% csrf_token %}
                 <input type="submit" class="btn btn-outline-danger" value="Demote" name="demote-btn"/>
               </form>

@@ -34,8 +34,7 @@ class MemberManagementListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertEqual(len(response.context['members']), 14)
         self.assertEqual(len(response.context['banned']), 14)
-        self.assertFalse(response.context['member_is_empty'])
-        self.assertFalse(response.context['banned_is_empty'])
+
 
     def test_get_member_management_list_with_no_banned_and_with_members(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -46,8 +45,7 @@ class MemberManagementListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertEqual(len(response.context['members']), 14)
         self.assertEqual(len(response.context['banned']), 0)
-        self.assertFalse(response.context['member_is_empty'])
-        self.assertTrue(response.context['banned_is_empty'])
+
 
 
     def test_get_member_management_list_with_banned_and_with_no_members(self):
@@ -59,8 +57,6 @@ class MemberManagementListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertEqual(len(response.context['members']), 0)
         self.assertEqual(len(response.context['banned']), 14)
-        self.assertTrue(response.context['member_is_empty'])
-        self.assertFalse(response.context['banned_is_empty'])
 
     def test_get_member_management_list_with_no_banned_and_no_members(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -70,8 +66,7 @@ class MemberManagementListViewTestCase(TestCase,LogInTester):
         self.assertTemplateUsed(response, 'member_management.html')
         self.assertEqual(len(response.context['members']), 0)
         self.assertEqual(len(response.context['banned']), 0)
-        self.assertTrue(response.context['member_is_empty'])
-        self.assertTrue(response.context['banned_is_empty'])
+
 
     def test_member_management_list_user_does_not_have_permission_is_member(self):
         member = User.objects.get(username='janedoe@example.org')

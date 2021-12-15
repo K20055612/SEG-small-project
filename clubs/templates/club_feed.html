@@ -12,11 +12,11 @@
             <span class="bi bi-gear"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
-            {%if is_owner%}
+            {%if user_role == 'OWN'%}
             <li><a class="dropdown-item" href="{% url 'delete_club' club.club_name%}">Delete Club</a></li>
             <li><a class="dropdown-item" href="{% url 'officer_list' club.club_name%}">Officer management</a></li>
             {%endif%}
-            {%if is_owner == True or is_officer == True%}
+            {%if user_role == 'OWN' or user_role == 'OFF'%}
             <li><a class="dropdown-item" href="{% url 'applicants_list'  club.club_name  %}">Applicants</a></li>
             <li><a class="dropdown-item" href="{% url 'member_management'  club.club_name  %}">Manage members</a></li>
             {%endif%}
@@ -31,7 +31,26 @@
         </button>
       </form>
       {%endif%}
+<<<<<<< HEAD
         </h1>
+=======
+      {%if user_role == 'OWN' or user_role == 'OFF'%}
+      <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-dark">
+          Applicants <span class="badge alert-light">{{number_of_applicants}}</span>
+        </button>
+      </form>
+      <form action = "{% url 'member_management'  club.club_name  %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-dark">
+          Manage members
+        </button>
+      </form>
+
+      {%endif%}
+    </h1>
+>>>>>>> refactor-2
   </div>
 </div>
 

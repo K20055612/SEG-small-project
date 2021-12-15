@@ -11,10 +11,10 @@
     <hr class="my-4">
     <p>{{club.description}}</p>
     <p class="lead">
-      {% if is_banned %}
+      {% if user_role == 'BAN' %}
       <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Sorry you are banned. You cannot apply this club.</a>
       {% endif %}
-      {% if is_applicant %}
+      {% if user_role == 'APP' %}
       <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Apply for membership</a>
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Whoops!</h4>
@@ -23,7 +23,7 @@
         <p class="mb-0">Hang tight while a club officer reviews your application.</p>
       </div>
       {%endif%}
-      {% if is_applicant %}
+      {% if user_role == 'APP' %}
         <form action = "{% url 'withdraw_application' club.club_name user.id %}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-primary">
@@ -41,15 +41,15 @@
           </p>
       {%endif%}
 
-      {% if is_member %}
+      {% if user_role == 'MEM' %}
       <form action = "{% url 'club_feed' club.club_name%}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-dark">
           Go to club
         </button>
         {%endif%}
-        {%if is_member == False and is_applicant == False and is_banned == False%}
-        <form action = "{% url 'apply_to_club' club.club_name%}" method="post">
+        {%if user_role == None%}
+        <form action = "{% url 'apply_to_club' club.club_name %}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger">
             Apply!

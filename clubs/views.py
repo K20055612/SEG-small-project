@@ -59,7 +59,6 @@ class LogInView(LoginProhibitedMixin, View):
 
     def get(self, request):
         """Display log in template."""
-
         self.next = request.GET.get('next') or ''
         return self.render()
 
@@ -86,24 +85,22 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
-@login_required
-def feed(request):
-    clubs  = Club.objects.all()
-    applications_is_empty = False
-    my_clubs_is_empty = False
-    current_user= request.user
-    user_applicant_clubs = current_user.get_applied_clubs()
-    user_clubs = current_user.get_user_clubs()
-    if user_applicant_clubs.count() == 0:
-        applications_is_empty = True
-    if user_clubs.count() == 0:
-        my_clubs_is_empty = True
-    return render(request,'feed.html', {'clubs':clubs, 'user_clubs':user_clubs, 'user_applicant_clubs':user_applicant_clubs,'my_clubs_is_empty':my_clubs_is_empty,'applications_is_empty':applications_is_empty})
+class FeedView(LoginRequiredMixin,ListView):
+    model = Club
+    template_name = "feed.html"
+    context_object_name = 'clubs'
 
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(FeedView,self).get_context_data(*args,**kwargs)
+        context['user_clubs'] = self.request.user.get_user_clubs()
+        context['user_applicant_clubs'] = self.request.user.get_applied_clubs()
+        return context
 
 class SignUpView(LoginProhibitedMixin, FormView):
     """View that signs up user."""
-
     form_class = SignUpForm
     template_name = "sign_up.html"
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
@@ -118,18 +115,17 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
 
 """only login user can create new club"""
-@login_required
-def create_club(request):
-    if request.method =='POST':
-        form = NewClubForm(request.POST)
-        if form.is_valid():
-            club = form.save()
-            club.club_members.add(request.user,through_defaults={'club_role':'OWN'})
-            return redirect('feed')
-    else:
-        form = NewClubForm()
-    return render(request,'new_club.html',{'form':form})
+class CreateClubView(LoginRequiredMixin,FormView):
+    form_class = NewClubForm
+    template_name = "new_club.html"
 
+    def form_valid(self,form):
+        self.object = form.save()
+        self.object.club_members.add(self.request.user,through_defaults={'club_role':'OWN'})
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('feed')
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """View to update logged-in user's profile."""
@@ -170,10 +166,10 @@ class PasswordView(LoginRequiredMixin, FormView):
 
     def get_success_url(self):
         """Redirect the user after successful password change."""
-
         messages.add_message(self.request, messages.SUCCESS, "Password updated!")
         return reverse('feed')
 
+@method_decorator(user_exists,name='dispatch')
 class ShowUserView(LoginRequiredMixin, DetailView):
     """View that shows individual user details."""
 
@@ -184,7 +180,6 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         """Generate content to be displayed in the template."""
-
         context = super().get_context_data(*args, **kwargs)
         user = self.get_object()
         current_user_clubs = self.request.user.get_user_clubs()
@@ -198,7 +193,6 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         """Handle get request, and redirect to user_list if user_id invalid."""
-
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
@@ -208,20 +202,94 @@ class ShowUserView(LoginRequiredMixin, DetailView):
 @login_required
 @club_exists
 def apply_to_club(request,club_name):
+
     if request.method == 'POST':
         messages.add_message(request, messages.SUCCESS, f'Application for {club_name} sent successfully. Hang tight while a club officer reviews your application.')
+    club = Club.objects.get(club_name=club_name)
     try:
-        club = Club.objects.get(club_name=club_name)
+        role = club.get_club_role(request.user)
     except (ObjectDoesNotExist):
-        return redirect('feed')
-    else:
-        try:
-            role = club.get_club_role(request.user)
-        except (ObjectDoesNotExist):
             club.club_members.add(request.user,through_defaults={'club_role':'APP'})
             club.save()
-            return feed(request)
-        else:
+            return redirect('club_welcome',club.id)
+    else:
+            return redirect('feed')
+
+@method_decorator(login_required,name='dispatch')
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(management_required,name='dispatch')
+class ApplicantListView(LoginRequiredMixin,ListView):
+
+    model = User
+    template_name = "applicants_list.html"
+    context_object_name = 'applicants'
+
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(ApplicantListView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        context['club'] = self.club
+        context['applicants'] = self.club.get_applicants()
+        return context
+
+@method_decorator(login_required,name='dispatch')
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(membership_required,name='dispatch')
+class ClubFeedView(LoginRequiredMixin,ListView):
+    model = User
+    template_name = "club_feed.html"
+    context_object_data = 'members'
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(ClubFeedView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        user_role = self.club.get_club_role(self.request.user)
+        context['members'] = self.club.get_members()
+        context['club'] = self.club
+        context['management'] = self.club.get_management()
+        context['user_role'] = user_role
+        context['number_of_applicants'] = self.club.get_applicants().count()
+        return context
+
+@method_decorator(club_exists_id,name='dispatch')
+class ClubWelcomeView(LoginRequiredMixin,DetailView):
+    model = Club
+    template_name = 'club_welcome.html'
+    context_object_name = "club"
+    pk_url_kwarg = 'club_id'
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        """Generate content to be displayed in the template."""
+        context = super(ClubWelcomeView,self).get_context_data(*args, **kwargs)
+        club = Club.objects.get(id=self.kwargs['club_id'])
+        user_role = None
+        if club.is_user_in_club(self.request.user):
+            club_role = club.get_club_role(self.request.user)
+            if club_role == 'APP':
+                user_role = 'APP'
+            elif club_role == 'BAN':
+                user_role = 'BAN'
+            elif club_role ==  'MEM' or club_role ==  'OWN' or club_role ==  'OFF':
+                user_role = 'MEM'
+        context['club'] = club
+        context['user'] = self.request.user
+        context['user_role'] = user_role
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """Handle get request, and redirect to user_list if user_id invalid."""
+        try:
+          return super().get(request, *args, **kwargs)
+        except Http404:
             return redirect('feed')
 
 @login_required
@@ -238,169 +306,112 @@ def withdraw_application(request, club_name, user_id):
         messages.add_message(request, messages.SUCCESS, f'Withdrawal from {club_name} completed successfully')
     return redirect('feed')
 
-@login_required
-@club_exists
-@management_required
-def applicants_list(request,club_name):
-        is_empty = False
-        current_club = Club.objects.get(club_name=club_name)
-        applicants = current_club.get_applicants()
-        if applicants.count() == 0:
-            is_empty = True
-        return render(request,'applicants_list.html', {'applicants':applicants,'is_empty':is_empty, 'current_club':current_club})
-
-@login_required
-@club_exists
-@membership_required
-def club_feed(request,club_name):
-    is_officer = False
-    is_owner = False
-    current_club = Club.objects.get(club_name=club_name)
-    club_role = current_club.get_club_role(request.user)
-    members = current_club.get_members()
-    management = current_club.get_management()
-    number_of_applicants = current_club.get_applicants().count()
-    if club_role == 'OWN':
-        is_owner = True
-    elif club_role == 'OFF':
-        is_officer = True
-    return render(request,'club_feed.html', {'club':current_club,'is_officer':is_officer,'is_owner':is_owner,'members':members,'management':management,'number_of_applicants':number_of_applicants})
-
-@login_required
-@club_exists
-def club_welcome(request,club_name):
-    is_applicant = False
-    is_member = False
-    is_banned = False
-    club = Club.objects.get(club_name=club_name)
-    user = request.user
-    try:
-        club_role = club.get_club_role(user)
-    except Role.DoesNotExist:
-        return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member,'is_banned':is_banned})
-    else:
-        if club_role == 'APP':
-            is_applicant = True
-        elif club_role == 'BAN':
-            is_banned = True
-        elif club_role ==  'MEM' or club_role ==  'OWN' or club_role ==  'OFF':
-            is_member = True
-    return render(request,'club_welcome.html', {'club':club, 'user':user, 'is_applicant':is_applicant,'is_member':is_member, 'is_banned':is_banned})
-
-@login_required
-@club_exists
+@user_in_club
 @management_required
 def accept_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
-        try:
-            applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
-            current_club.toggle_member(applicant)
-        except (ObjectDoesNotExist):
-            return redirect('feed')
-
-        else:
-            return applicants_list(request,current_club.club_name)
+        applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
+        current_club.toggle_member(applicant)
+        return redirect('applicants_list', current_club.club_name)
 
 @login_required
 @club_exists
+@user_in_club
 @management_required
 def reject_applicant(request,club_name,user_id):
         current_club = Club.objects.get(club_name=club_name)
-        try:
-            applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
-            current_club.remove_user_from_club(applicant)
-        except ObjectDoesNotExist:
-            return redirect('feed')
-        else:
-            return applicants_list(request,current_club.club_name)
+        applicant = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'APP')
+        current_club.remove_user_from_club(applicant)
+        return redirect('applicants_list', current_club.club_name)
 
 @login_required
 @club_exists
+@user_in_club
 @management_required
 def ban_member(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
-    try:
-        member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
-        current_club.ban_member(member)
-    except ObjectDoesNotExist:
-        return redirect('feed')
-    else:
-        return members_management_list(request,current_club.club_name)
+    member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
+    current_club.ban_member(member)
+    return redirect('member_management', current_club.club_name)
 
 @login_required
 @club_exists
+@user_in_club
 @management_required
 def unban_member(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
-    try:
-        banned = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'BAN')
-        current_club.unban_member(banned)
-    except ObjectDoesNotExist:
-        return redirect('feed')
-    else:
-        return members_management_list(request,current_club.club_name)
+    banned = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'BAN')
+    current_club.unban_member(banned)
+    return redirect('member_management', current_club.club_name)
+
+@method_decorator(login_required,name='dispatch')
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(management_required,name='dispatch')
+class MemberManagementListView(LoginRequiredMixin,ListView):
+    model = User
+    template_name = "member_management.html"
+    context_object_name = 'members'
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(MemberManagementListView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        context['club'] = self.club
+        context['banned'] = self.club.get_banned_members()
+        context['members'] = self.club.get_members()
+        return context
+
+@method_decorator(login_required,name='dispatch')
+@method_decorator(club_exists,name='dispatch')
+@method_decorator(owner_required,name='dispatch')
+class OfficerListView(LoginRequiredMixin,ListView):
+    model = User
+    template_name = "officer_list.html"
+    context_object_name = 'officers'
+
+    def post(self,*args,**kwargs):
+        return super().get(*args,**kwargs)
+
+    def get_context_data(self,*args,**kwargs):
+        context = super(OfficerListView,self).get_context_data(*args,**kwargs)
+        self.club = Club.objects.get(club_name=self.kwargs['club_name'])
+        context['club'] = self.club
+        context['officers'] = self.club.get_officers()
+        return context
 
 @login_required
 @club_exists
-@management_required
-def members_management_list(request,club_name):
-    banned_is_empty = False
-    member_is_empty = False
-    current_club = Club.objects.get(club_name=club_name)
-    members = current_club.get_members()
-    banned = current_club.get_banned_members()
-    if members.count() == 0:
-        member_is_empty = True
-    if banned.count() == 0:
-        banned_is_empty = True
-    return render(request,'member_management.html', {'banned':banned,'members':members, 'banned_is_empty':banned_is_empty,'member_is_empty':member_is_empty, 'current_club':current_club})
-
-@login_required
-@club_exists
-@owner_required
-def officer_list(request,club_name):
-    current_club = Club.objects.get(club_name=club_name)
-    officers = current_club.get_officers()
-    return render(request,'officer_list.html', {'officers':officers, 'current_club':current_club})
-
-@login_required
-@club_exists
+@user_in_club
 @owner_required
 def transfer_ownership(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
-    try:
-        officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
-        current_club.transfer_ownership(request.user,officer)
-    except (ObjectDoesNotExist):
-        return redirect('feed')
-    else:
-        return officer_list(request,current_club.club_name)
+    officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
+    current_club.transfer_ownership(request.user,officer)
+    return redirect('officer_list', current_club.club_name)
 
 @login_required
 @club_exists
+@user_in_club
 @owner_required
 def demote_officer(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
-    try:
-        officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
-        current_club.toggle_member(officer)
-    except (ObjectDoesNotExist):
-        return redirect('feed')
-    else:
-        return officer_list(request,current_club.club_name)
+    officer = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'OFF')
+    current_club.toggle_member(officer)
+    return redirect('officer_list', current_club.club_name)
+
 
 @login_required
 @club_exists
+@user_in_club
 @management_required
 def promote_member(request,club_name,user_id):
     current_club = Club.objects.get(club_name=club_name)
-    try:
-        member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
-        current_club.toggle_officer(member)
-    except (ObjectDoesNotExist):
-        return redirect('feed')
-    else:
-        return members_management_list(request,current_club.club_name)
+    member = User.objects.get(id=user_id,club__club_name = current_club.club_name, role__club_role = 'MEM')
+    current_club.toggle_officer(member)
+    return redirect('member_management', current_club.club_name)
+
 
 @login_required
 @club_exists
@@ -408,7 +419,7 @@ def promote_member(request,club_name,user_id):
 def delete_club(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     current_club.delete()
-    return feed(request)
+    return redirect('feed')
 
 @membership_required
 def search_member(request,club_name):

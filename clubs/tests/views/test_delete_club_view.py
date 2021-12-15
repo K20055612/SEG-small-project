@@ -29,9 +29,7 @@ class DeleteClubViewTestCase(TestCase,LogInTester):
         after_count = Club.objects.count()
         self.assertEqual(before_count,after_count+1)
         response_url = reverse('feed')
-        self.assertTemplateUsed(response, 'feed.html')
-        for club_id in range(3-1):
-            self.assertNotContains(response, self.club.club_name)
+        
 
     def test_delete_invalid_club(self):
         self.client.login(username=self.user.username, password='Password123')

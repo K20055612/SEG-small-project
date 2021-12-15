@@ -129,7 +129,6 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'feed.html')
 
-
     def test_valid_log_in_by_inactive_user(self):
         self.user.is_active = False
         self.user.save()

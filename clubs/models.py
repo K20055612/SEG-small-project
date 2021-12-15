@@ -5,6 +5,7 @@ from django.db.models import When
 from django.contrib.auth.models import AbstractUser
 from libgravatar import Gravatar
 from enum import Enum
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 """create a user model"""
@@ -175,6 +176,14 @@ class Club(models.Model):
         return User.objects.all().filter(
             club__club_name = self.club_name,
             role__club_role='OWN')
+
+    def is_user_in_club(self,user):
+        try:
+             role = self.get_club_role(user)
+        except ObjectDoesNotExist:
+            return False
+        else:
+            return True
 
     def remove_user_from_club(self,user):
         role = Role.objects.get(club=self,user=user)

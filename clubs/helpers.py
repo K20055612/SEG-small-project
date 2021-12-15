@@ -8,11 +8,11 @@ def management_required(view_function):
     def modified_view_function(request,club_name,*args,**kwargs):
         try:
             club = Club.objects.get(club_name=club_name)
-            role = request.user.role_set.get(club=club)
+            role = club.get_club_role(request.user)
         except ObjectDoesNotExist:
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
-            if role.club_role == 'OFF' or role.club_role == 'OWN':
+            if role == 'OFF' or role == 'OWN':
                 return view_function(request,club_name,*args,**kwargs)
             else:
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
@@ -23,11 +23,11 @@ def owner_required(view_function):
     def modified_view_function(request,club_name,*args,**kwargs):
         try:
             club = Club.objects.get(club_name=club_name)
-            role = request.user.role_set.get(club=club)
+            role = club.get_club_role(request.user)
         except ObjectDoesNotExist:
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
-            if role.club_role == 'OWN':
+            if role == 'OWN':
                 return view_function(request,club_name,*args,**kwargs)
             else:
                 return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
@@ -57,4 +57,36 @@ def club_exists(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request,club_name,*args,**kwargs)
+    return modified_view_function
+
+def club_exists_id(view_function):
+    def modified_view_function(request,club_id,*args,**kwargs):
+        try:
+            club = Club.objects.get(id=club_id)
+        except ObjectDoesNotExist:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request,club_id,*args,**kwargs)
+    return modified_view_function
+
+def user_exists(view_function):
+    def modified_view_function(request,user_id,*args,**kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request,user_id,*args,**kwargs)
+    return modified_view_function
+
+def user_in_club(view_function):
+    def modified_view_function(request,club_name,user_id,*args,**kwargs):
+        try:
+            club = Club.objects.get(club_name=club_name)
+            user = User.objects.get(id=user_id)
+            role = club.get_club_role(user)
+        except ObjectDoesNotExist:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request,club_name,user_id,*args,**kwargs)
     return modified_view_function

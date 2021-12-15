@@ -32,10 +32,8 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         after =  Role.objects.all().filter(club=self.club,club_role='APP').count()
         self.assertEqual(before,after+1)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'applicants_list.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
+
 
     def test_reject_applcant_as_owner(self):
         owner = User.objects.get(username='bobdoe@example.org')
@@ -46,10 +44,7 @@ class RejectApplicantViewTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         after =  Role.objects.all().filter(club=self.club,club_role='APP').count()
         self.assertEqual(before,after+1)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'applicants_list.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
 
     def test_reject_applicant_with_invalid_id(self):
         self.client.login(username=self.user.username, password='Password123')

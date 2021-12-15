@@ -36,10 +36,7 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_members+1,after_members)
         role = self.applicant.role_set.get(club=self.club)
         self.assertEqual('MEM',role.club_role)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'applicants_list.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.applicant, club=self.club).club_role,'MEM')
 
     def test_accept_applcant_as_owner(self):
@@ -51,10 +48,7 @@ class AcceptApplicantViewTestCase(TestCase,LogInTester):
         response = self.client.get(self.url)
         after =  Role.objects.all().filter(club=self.club,club_role='APP').count()
         self.assertEqual(before,after+1)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'applicants_list.html')
-        self.assertNotContains(response, "Jane Doe")
-        self.assertNotContains(response, "janedoe@example.org")
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Role.objects.get(user=self.applicant, club=self.club).club_role,'MEM')
 
     def test_accept_applicant_with_invalid_id(self):

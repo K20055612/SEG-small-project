@@ -38,8 +38,7 @@ class ApplyViewTestCase(TestCase,LogInTester):
         self.assertEqual(before_applicants+1,after_applicants)
         role = self.club.get_club_role(self.user)
         self.assertEqual(role,'APP')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'feed.html')
+        self.assertEqual(response.status_code, 302)
 
     def test_apply_to_invalid_club(self):
         self.client.login(username=self.user.username, password='Password123')
