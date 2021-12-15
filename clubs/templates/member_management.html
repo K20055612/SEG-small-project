@@ -22,7 +22,7 @@ Member management
               <td>
                 <div class="row">
                   <div class="col-12">
-                    {%if member_is_empty == False%}
+                    {%if members.count != 0%}
                     <table class="table table-striped table-hover cellspacing="0" ">
                       <thead>
                         <th scope="col"></th>
@@ -54,7 +54,7 @@ Member management
                         {%endfor%}
                       </table>
                       {%endif%}
-                      {%if member_is_empty%}
+                      {%if members.count == 0%}
                       <div class="alert alert-warning" role="alert">
                         <h5 class="alert-heading">There are currently no users with member role.</h5>
                       </div>
@@ -80,7 +80,7 @@ Member management
                     <td>
                       <div class="row">
                         <div class="col-12">
-                          {%if banned_is_empty == False%}
+                          {%if banned.count != 0%}
                           <table class="table table-striped table-hover cellspacing="0" ">
                             <thead>
                               <th scope="col"></th>
@@ -106,7 +106,7 @@ Member management
                               {%endfor%}
                             </table>
                             {%endif%}
-                            {%if banned_is_empty%}
+                            {%if banned.count==0%}
                             <div class="alert alert-warning" role="alert">
                               <h5 class="alert-heading">No banned users.</h5>
                             </div>

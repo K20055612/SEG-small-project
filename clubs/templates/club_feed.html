@@ -6,7 +6,7 @@
   <div class="row justify-content-between">
     <h1 class="col-7">
       {{club.club_name}}
-      {%if is_owner%}
+      {%if user_role == 'OWN'%}
       <form action = "{% url 'delete_club' club.club_name%}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">
@@ -20,7 +20,7 @@
         </button>
       </form>
       {%endif%}
-      {%if is_owner == True or is_officer == True%}
+      {%if user_role == 'OWN' or user_role == 'OFF'%}
       <form action = "{% url 'applicants_list'  club.club_name  %}" method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-dark">

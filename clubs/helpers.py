@@ -67,3 +67,25 @@ def club_exists(view_function):
         else:
             return view_function(request,club_name,*args,**kwargs)
     return modified_view_function
+
+def user_exists(view_function):
+    def modified_view_function(request,user_id,*args,**kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request,club_name,*args,**kwargs)
+    return modified_view_function
+
+def user_in_club(view_function):
+    def modified_view_function(request,club_name,user_id,*args,**kwargs):
+        try:
+            club = Club.objects.get(club_name=club_name)
+            user = User.objects.get(id=user_id)
+            role = club.get_club_role(user)
+        except ObjectDoesNotExist:
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request,club_name,user_id,*args,**kwargs)
+    return modified_view_function
