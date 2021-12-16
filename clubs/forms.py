@@ -66,6 +66,7 @@ class LogInForm(forms.Form):
             user = authenticate(username=username, password=password)
         return user
 
+"""Form enabling logged in users to create a club"""
 class NewClubForm(forms.ModelForm):
     class Meta:
         model = Club
@@ -85,7 +86,7 @@ class NewClubForm(forms.ModelForm):
             description=self.cleaned_data.get('description'),
         )
         return club
-    
+
 class UserForm(forms.ModelForm):
     """Form to update user profiles."""
 
@@ -96,7 +97,6 @@ class UserForm(forms.ModelForm):
         "username": "Email:"}
         fields = ['first_name', 'last_name','username', 'bio', 'chess_experience_level']
         widgets = { 'bio': forms.Textarea() }
-
 
 class PasswordForm(NewPasswordMixin):
     """Form enabling users to change their password."""
