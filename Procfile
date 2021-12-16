@@ -1,1 +1,1 @@
-web: gunicorn SEG-small-project.wsgi
+web: gunicorn chess-island.wsgi
