@@ -16,7 +16,7 @@
   <form action="{% url 'search_member' club.club_name%}" method="get">
     {% csrf_token %}
     <div class="input-group mb-3">
-      <input name ="member_name" type="text" id="" class="form-control" placeholder="Member's name" aria-label="Member's username" aria-describedby="basic-addon2">
+      <input name ="member_name" type="text" id="" class="form-control" placeholder="Begin with capital letter." aria-label="Member's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button type="submit" class="btn btn-dark">
           Search
