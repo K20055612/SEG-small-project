@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "club_name":"Kerbal Chess Club",
-      "location":"Test",
+      "location":"London",
       "description":"Kerbal's family chess club!"
 
     }
@@ -14,7 +14,7 @@
     "pk": 2,
     "fields": {
       "club_name":"London Chess Club",
-      "location":"Test",
+      "location":"London",
       "description":"Best chess club in London!"
     }
   },
@@ -23,7 +23,7 @@
     "pk": 3,
     "fields": {
       "club_name":"Elite Chess Club",
-      "location":"Test",
+      "location":"London",
       "description":"Our goal is to make the most elite chess players ever seen."
     }
   },
@@ -32,7 +32,7 @@
     "pk": 4,
     "fields": {
       "club_name":"House of Dukes",
-      "location":"Test",
+      "location":"London",
       "description":"The perfect place to have fun, with chess."
     }
   }
