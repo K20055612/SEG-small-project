@@ -10,7 +10,7 @@ The members of the team are:
 
 ## Project structure
 The project is called `chess-island`.  It currently consists of a single app `clubs`.
-Admin login: 
+Admin login:
 username = admin@admin.com
 password = admin123
 
@@ -54,3 +54,4 @@ $ python3 manage.py test
 The packages used by this application are specified in `requirements.txt`.
 
 The code has borrowed ideas from the training materials.
+Home page image taken from: https://hdwallpapers.cat/chess-isle-island-green-fantasy-sky-blue-67Lt
