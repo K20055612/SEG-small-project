@@ -3,13 +3,13 @@
 ## Team members
 The members of the team are:
 - Jose Carneiro De Sousa
-- Zirui Ding 
-- Nicolae-Marian Gartu 
-- An (Ann) Hsu 
-- Jacqueline Ilie 
+- Zirui Ding
+- Nicolae-Marian Gartu
+- An (Ann) Hsu
+- Jacqueline Ilie
 
 ## Project structure
-The project is called `system`.  It currently consists of a single app `clubs`.
+The project is called `chess-island`.  It currently consists of a single app `clubs`.
 
 ## Deployed version of the application
 The deployed version of the application can be found at [URL](URL).
