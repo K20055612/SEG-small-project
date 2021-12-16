@@ -10,6 +10,9 @@ The members of the team are:
 
 ## Project structure
 The project is called `chess-island`.  It currently consists of a single app `clubs`.
+Admin login: 
+username = admin@admin.com
+password = admin123
 
 ## Deployed version of the application
 The deployed version of the application can be found at https://fierce-ridge-23240.herokuapp.com/ (URL).
