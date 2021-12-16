@@ -13,27 +13,27 @@
     "model": "clubs.club",
     "pk": 2,
     "fields": {
-      "club_name":"Billie Chess Club",
+      "club_name":"London Chess Club",
       "location":"Test",
-      "description":"Billie's chess club!"
+      "description":"Best chess club in London!"
     }
   },
   {
     "model": "clubs.club",
     "pk": 3,
     "fields": {
-      "club_name":"Valentina Chess Club",
+      "club_name":"Elite Chess Club",
       "location":"Test",
-      "description":"Valentina's chess club"
+      "description":"Our goal is to make the most elite chess players ever seen."
     }
   },
   {
     "model": "clubs.club",
     "pk": 4,
     "fields": {
-      "club_name":"Jebediah Chess Club",
+      "club_name":"House of Dukes",
       "location":"Test",
-      "description":"Jebediah's chess club"
+      "description":"The perfect place to have fun, with chess."
     }
   }
 

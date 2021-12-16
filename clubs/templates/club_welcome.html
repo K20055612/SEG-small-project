@@ -2,58 +2,13 @@
 {% block title %}
 {% endblock %}
 {% block content %}
-
 <div class="container">
   <div class="card">
-  <div class="jumbotron">
-    <h1 class="display-4">{{club.club_name}}</h1>
-    <p class="lead">Owner: {% for owner in club.get_owner %}<p>{{ owner.full_name }}</p>{% endfor %}</p>
-    <hr class="my-4">
-    <p>{{club.description}}</p>
-    <p class="lead">
-      {% if user_role == 'BAN' %}
-      <a href="#" class="btn btn-dark btn-lg disabled" role="button" aria-disabled="true">Sorry you are banned. You cannot apply this club.</a>
-      {% endif %}
-
-      {% if user_role == 'APP' %}
-      <p>
-        <div class="alert alert-warning" role="alert">
-          <h4 class="alert-heading">Application pending!</h4>
-          <p>An officer from the club is currently reviewing your application.</p>
-          <hr>
-          <p class="mb-0">Meanwhile, if you change your mind you can withdraw your application below.</p>
+    <div class="jumbotron">
+      <h1 class="display-4">{{club.club_name}}</h1>
+      <p>{{club.description}}</p>
+      <h5 class="display-10">Owner:</h5>
+      {%include 'partials/club_welcome_information.html' with user_role=user_role owner=owner member_count=member_count%}
+          </div>
         </div>
-      </p>
-        <form action = "{% url 'withdraw_application' club.club_name user.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">
-            Withdraw Application
-          </button>
-      {%endif%}
-
-      {% if user_role == 'MEM' %}
-      <form action = "{% url 'club_feed' club.club_name%}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-dark">
-          Go to club
-        </button>
-        {%endif%}
-        {%if user_role == None%}
-        <form action = "{% url 'apply_to_club' club.club_name %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">
-            Apply!
-          </button>
-          <p>
-            <div class="alert alert-success" role="alert">
-              <h4 class="alert-heading">Apply to club!</h4>
-              <p>It looks like you are not a member of this club yet.</p>
-              <hr>
-              <p class="mb-0">You can apply here.</p>
-            </div>
-          </p>
-      {% endif %}
-    </p>
-  </div>
-</div>
-{% endblock %}
+        {% endblock %}

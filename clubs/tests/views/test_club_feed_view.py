@@ -117,6 +117,5 @@ class ClubFeedTestCase(TestCase,LogInTester):
                 password='Password123',
                 bio=f'Bio {user_id}',
                 chess_experience_level = 1,
-
-            )
+)
             self.applied_to_club.club_members.add(user,through_defaults={'club_role':'MEM'})

@@ -44,6 +44,8 @@ class ClubWelcomeView(LoginRequiredMixin,DetailView):
         context['club'] = club
         context['user'] = self.request.user
         context['user_role'] = user_role
+        context['owner'] = club.get_owner()
+        context['member_count'] = club.get_all_users_in_club().count()
         return context
 
     def get(self, request, *args, **kwargs):

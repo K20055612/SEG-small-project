@@ -165,10 +165,12 @@ class Club(models.Model):
         return self.club_members.all().filter(
             club__club_name = self.club_name, role__club_role = 'MEM')
 
-    """Returns all user objects that are applicants of a club"""
+    """Returns all user objects that are in the club of a club"""
     def get_all_users_in_club(self):
         return self.club_members.all().filter(
-        club__club_name = self.club_name)
+            club__club_name = self.club_name, role__club_role = 'MEM')|self.club_members.all().filter(
+                club__club_name = self.club_name, role__club_role = 'OFF')|self.club_members.all().filter(
+                    club__club_name = self.club_name, role__club_role = 'OWN')
 
     """ Returns all banned users in the club"""
     def get_banned_members(self):

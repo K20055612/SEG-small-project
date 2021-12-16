@@ -77,13 +77,13 @@ def apply_to_club(request,club_name):
 def withdraw_application(request, club_name, user_id):
     """View that allows an applicant to stop being an applicant"""
     club = Club.objects.get(club_name = club_name)
-    try:
-        applicant = User.objects.get(id=user_id,club__club_name = club.club_name, role__club_role = 'APP')
-        club.remove_user_from_club(applicant)
-        club.save()
-        """If user is not an applicant"""
-    except ObjectDoesNotExist:
+    user = User.objects.get(id=user_id,club__club_name = club.club_name)
+    """If user is not an applicant"""
+    if club.get_club_role(user) != 'APP':
         return redirect('feed')
+    else:
+        club.remove_user_from_club(user)
+        club.save()
     if request.method == 'POST':
         messages.add_message(request, messages.WARNING, f'Withdrawal from {club_name} completed successfully')
     return redirect('feed')

@@ -44,7 +44,7 @@ class Command(BaseCommand):
         first_name = self.faker.first_name()
         last_name = self.faker.last_name()
         username = self._email(first_name, last_name)
-        bio = self.faker.text(max_nb_chars=520)
+        bio = "Hi, my name is " + first_name + " " + last_name
         chess_experience_level=self.faker.pyint(min_value=1,max_value=5)
 
         User.objects.create_user(
@@ -63,8 +63,8 @@ class Command(BaseCommand):
 
     def _create_club(self):
         club_name = self.faker.word().capitalize() + " Chess Club"
-        location = 'Test'
-        description = self.faker.text(max_nb_chars=520)
+        location = 'London'
+        description = "At " + club_name + " our aim is make you the best chess player you can be."
 
         new_club = Club.objects.create(
                 club_name=club_name,
@@ -90,18 +90,18 @@ class Command(BaseCommand):
         billie = User.objects.get(username='billie@example.org')
 
         kerbal_club = Club.objects.get(club_name='Kerbal Chess Club')
-        billie_club = Club.objects.get(club_name='Billie Chess Club')
-        valentina_club = Club.objects.get(club_name='Valentina Chess Club')
-        jebediah_club = Club.objects.get(club_name='Jebediah Chess Club')
+        london_chess_club = Club.objects.get(club_name='London Chess Club')
+        elite_chess_club = Club.objects.get(club_name='Elite Chess Club')
+        house_of_dukes = Club.objects.get(club_name='House of Dukes')
 
         kerbal_club.club_members.add(jebediah,through_defaults={'club_role':'MEM'})
         kerbal_club.club_members.add(valentina,through_defaults={'club_role':'OFF'})
         kerbal_club.club_members.add(billie,through_defaults={'club_role':'OWN'})
 
-        billie_club.club_members.add(jebediah,through_defaults={'club_role':'OFF'})
-        billie_club.club_members.add(billie,through_defaults={'club_role':'OWN'})
+        london_chess_club.club_members.add(jebediah,through_defaults={'club_role':'OFF'})
+        london_chess_club.club_members.add(billie,through_defaults={'club_role':'OWN'})
 
-        valentina_club.club_members.add(valentina,through_defaults={'club_role':'OWN'})
+        elite_chess_club.club_members.add(valentina,through_defaults={'club_role':'OWN'})
 
-        jebediah_club.club_members.add(billie,through_defaults={'club_role':'MEM'})
-        jebediah_club.club_members.add(jebediah,through_defaults={'club_role':'OWN'})
+        house_of_dukes.club_members.add(billie,through_defaults={'club_role':'MEM'})
+        house_of_dukes.club_members.add(jebediah,through_defaults={'club_role':'OWN'})
