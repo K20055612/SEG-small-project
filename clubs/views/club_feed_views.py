@@ -45,6 +45,7 @@ def search_member(request,club_name):
     current_club = Club.objects.get(club_name=club_name)
     members = current_club.get_all_users_in_club()
     member_name = request.GET.get('member_name')
+    member_name.capitalize()
     if member_name == '':
         member_name = 'None'
         return redirect('club_feed',current_club.club_name)
